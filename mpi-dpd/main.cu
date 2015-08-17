@@ -27,6 +27,10 @@ float tend;
 bool walls, pushtheflow, doublepoiseuille, rbcs, ctcs, xyz_dumps, hdf5field_dumps, hdf5part_dumps, is_mps_enabled, adjust_message_sizes;
 int steps_per_report, steps_per_dump, wall_creation_stepid, nvtxstart, nvtxstop;
 
+#ifdef DO_STRETCHING
+float stretching_force;
+#endif
+
 LocalComm localcomm;
 
 namespace SignalHandling
@@ -82,6 +86,9 @@ int main(int argc, char ** argv)
     nvtxstart = argp("-nvtxstart").asInt(10400);
     nvtxstop = argp("-nvtxstop").asInt(10500);
     adjust_message_sizes = argp("-adjust_message_sizes").asBool(false);
+#ifdef DO_STRETCHING
+    stretching_force = argp("-stretching_force").asDouble(10);
+#endif
 
 #ifndef _NO_DUMPS_
     const bool mpi_thread_safe = argp("-mpi_thread_safe").asBool(true);

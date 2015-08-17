@@ -18,11 +18,13 @@
 #define cuda_printf(...) do { printf(__VA_ARGS__); } while(0)
 #endif
 
+#define DO_STRETCHING
+
 enum
 {
-    XSIZE_SUBDOMAIN = 48,
-    YSIZE_SUBDOMAIN = 48,
-    ZSIZE_SUBDOMAIN = 48,
+    XSIZE_SUBDOMAIN = 8,
+    YSIZE_SUBDOMAIN = 8,
+    ZSIZE_SUBDOMAIN = 8,
     XMARGIN_WALL = 6,
     YMARGIN_WALL = 6,
     ZMARGIN_WALL = 6,
@@ -41,6 +43,9 @@ extern float tend;
 extern bool walls, pushtheflow, doublepoiseuille, rbcs, ctcs, xyz_dumps, hdf5field_dumps, hdf5part_dumps, is_mps_enabled;
 extern int steps_per_report, steps_per_dump, wall_creation_stepid, nvtxstart, nvtxstop;
 
+#ifdef DO_STRETCHING
+extern float stretching_force;
+#endif
 
 
 __device__ __forceinline__

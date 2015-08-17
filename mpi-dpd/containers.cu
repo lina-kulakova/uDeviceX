@@ -26,7 +26,9 @@ int (*CollectionCTC::indices)[3] = NULL, CollectionCTC::ntriangles = -1, Collect
 namespace ParticleKernels
 {
     __global__ void update_stage1(Particle * p, Acceleration * a, int n, float dt,
-				  const float _driving_acceleration, const float threshold, const bool doublePoiseuille, const bool check = true)
+				  const float _driving_acceleration, const float threshold,
+				  const bool doublePoiseuille, const float stretchingForce = 0,
+				  const bool check = true)
     {
 	assert(blockDim.x * gridDim.x >= n);
 
@@ -50,6 +52,39 @@ namespace ParticleKernels
 	for(int c = 0; c < 3; ++c)
 	    p[pid].u[c] += (a[pid].a[c] + (c == 0 ? driving_acceleration : 0)) * dt * 0.5;
 
+#ifdef DO_STRETCHING
+	// left side
+	if (pid == 68 ||
+		pid == 179 ||
+		pid == 209 ||
+		pid == 214 ||
+		pid == 238 ||
+		pid == 348 ||
+		pid == 359 ||
+		pid == 456 ||
+		pid == 467 ||
+		pid == 487)
+	{
+		for(int c = 0; c < 3; ++c)
+			p[pid].u[c] += -stretchingForce * dt * 0.5;
+	}
+	// right side
+	if (pid == 95 ||
+		pid == 112 ||
+		pid == 140 ||
+		pid == 242 ||
+		pid == 270 ||
+		pid == 320 ||
+		pid == 342 ||
+		pid == 406 ||
+		pid == 489 ||
+		pid == 500)
+	{
+		for(int c = 0; c < 3; ++c)
+			p[pid].u[c] += stretchingForce * dt * 0.5;
+	}
+#endif
+ 
 	for(int c = 0; c < 3; ++c)
 	    p[pid].x[c] += p[pid].u[c] * dt;
 
@@ -230,8 +265,16 @@ namespace ParticleKernels
 void ParticleArray::update_stage1(const float driving_acceleration, cudaStream_t stream)
 {
     if (size)
-	ParticleKernels::update_stage1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>(
-	    xyzuvw.data, axayaz.data, xyzuvw.size, dt, driving_acceleration, globalextent.y * 0.5 - origin.y, doublepoiseuille, false);
+	{
+		ParticleKernels::update_stage1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>(
+		    xyzuvw.data, axayaz.data, xyzuvw.size, dt, driving_acceleration,
+			globalextent.y * 0.5 - origin.y, doublepoiseuille, false);
+#ifdef DO_STRETCHING
+		ParticleKernels::update_stage1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>(
+		    xyzuvw.data, axayaz.data, xyzuvw.size, dt, driving_acceleration,
+			globalextent.y * 0.5 - origin.y, doublepoiseuille, stretching_force, false);
+#endif
+	}
 }
 
 void  ParticleArray::update_stage2_and_1(const float driving_acceleration, cudaStream_t stream)
