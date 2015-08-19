@@ -53,32 +53,33 @@ namespace ParticleKernels
 	    p[pid].u[c] += (a[pid].a[c] + (c == 0 ? driving_acceleration : 0)) * dt * 0.5;
 
 #ifdef DO_STRETCHING
+	// geometry from ../cuda-rbc/rbc.dat; pulling in x direction
 	// left side
-	if (pid == 68 ||
-		pid == 179 ||
-		pid == 209 ||
-		pid == 214 ||
-		pid == 238 ||
-		pid == 348 ||
-		pid == 359 ||
-		pid == 456 ||
-		pid == 467 ||
-		pid == 487)
+	if (pid == 165 ||
+		pid == 166 ||
+		pid == 171 ||
+		pid == 172 ||
+		pid == 379 ||
+		pid == 380 ||
+		pid == 386 ||
+		pid == 391 ||
+		pid == 393 ||
+		pid == 394)
 	{
 		for(int c = 0; c < 3; ++c)
 			p[pid].u[c] += -stretchingForce * dt * 0.5;
 	}
 	// right side
-	if (pid == 95 ||
-		pid == 112 ||
-		pid == 140 ||
-		pid == 242 ||
-		pid == 270 ||
-		pid == 320 ||
-		pid == 342 ||
-		pid == 406 ||
-		pid == 489 ||
-		pid == 500)
+	if (pid == 146 ||
+		pid == 309 ||
+		pid == 311 ||
+		pid == 314 ||
+		pid == 315 ||
+		pid == 316 ||
+		pid == 321 ||
+		pid == 324 ||
+		pid == 326 ||
+		pid == 329)
 	{
 		for(int c = 0; c < 3; ++c)
 			p[pid].u[c] += stretchingForce * dt * 0.5;
