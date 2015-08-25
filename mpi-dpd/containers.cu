@@ -25,7 +25,7 @@ namespace ParticleKernels
 					       const float /* z */ , const int dim)
     {
 	using namespace kolmogorov_force;
-	const float ky = 2.0f*M_PI/Ly;
+	const float ky = 2.0f*M_PI*wavenum/Ly;
 	if      (dim==0) return  F0*cos(ky*y);
 	else             return  0.0f;
     }

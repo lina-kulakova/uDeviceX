@@ -66,6 +66,7 @@ namespace kolmogorov_force {
                                      //  OX, the gradient of the force
                                      //  is in OY
   const  float F0 =  0.2f; // force amplitude [length/time^2]
+  const  int wavenum = 1;
 }
 #endif
 
