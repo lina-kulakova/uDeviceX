@@ -27,14 +27,14 @@ enum {
     ZMARGIN_WALL = 6,
 };
 
-const int numberdensity = 4;
-const float dt = 0.001;
-const float tend = 50000;
+const int numberdensity = 10.125;
+const float dt = 8.333e-4;
+const float tend = 5000;
 const float kBT = 0.0945;
 const float gammadpd = 45;
 const float sigma = sqrt(2 * gammadpd * kBT); 
 const float sigmaf = sigma / sqrt(dt);
-const float aij = 25;
+const float aij = 6;
 const float hydrostatic_a = 0.05;
 const bool walls = false;
 const bool pushtheflow = false;
@@ -65,7 +65,7 @@ namespace kolmogorov_force {
                                      //  direction of the force is in
                                      //  OX, the gradient of the force
                                      //  is in OY
-  const  float F0 =  0.2f; // force amplitude [length/time^2]
+  const  float F0 =  1.031653527168267e-4*100; // force amplitude [length/time^2]
   const  int wavenum = 1;
 }
 #endif
