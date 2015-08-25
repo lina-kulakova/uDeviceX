@@ -25,6 +25,46 @@ int (*CollectionCTC::indices)[3] = NULL, CollectionCTC::ntriangles = -1, Collect
 
 namespace ParticleKernels
 {
+//#ifdef DO_STRETCHING
+//	__host__ __device__ int check_pid_stretching(int pid)
+//	{
+//		// geometry from ../cuda-rbc/rbc.dat; pulling in x direction
+//		// left side
+//		if (pid == 165 ||
+//			pid == 166 ||
+//			pid == 171 ||
+//			pid == 172 ||
+//			pid == 379 ||
+//			pid == 380 ||
+//			pid == 386 ||
+//			pid == 391 ||
+//			pid == 393 ||
+//			pid == 394)
+//		{
+//			printf("Doing stretching with -1 for pid = %d...\n", pid);
+//			return -1;
+//		}
+//		// right side
+//		if (pid == 146 ||
+//			pid == 309 ||
+//			pid == 311 ||
+//			pid == 314 ||
+//			pid == 315 ||
+//			pid == 316 ||
+//			pid == 321 ||
+//			pid == 324 ||
+//			pid == 326 ||
+//			pid == 329)
+//		{
+//			printf("Doing stretching with +1 for pid = %d...\n", pid);
+//			return +1;
+//		}
+//
+//		printf("Doing stretching with 0 for pid = %d...\n", pid);
+//		return 0;
+//	}
+//#endif
+
     __global__ void update_stage1(Particle * p, Acceleration * a, int n, float dt,
 				  const float _driving_acceleration, const float threshold,
 				  const bool doublePoiseuille, const float stretchingForce = 0,
@@ -52,39 +92,11 @@ namespace ParticleKernels
 	for(int c = 0; c < 3; ++c)
 	    p[pid].u[c] += (a[pid].a[c] + (c == 0 ? driving_acceleration : 0)) * dt * 0.5;
 
-#ifdef DO_STRETCHING
-	// geometry from ../cuda-rbc/rbc.dat; pulling in x direction
-	// left side
-	if (pid == 165 ||
-		pid == 166 ||
-		pid == 171 ||
-		pid == 172 ||
-		pid == 379 ||
-		pid == 380 ||
-		pid == 386 ||
-		pid == 391 ||
-		pid == 393 ||
-		pid == 394)
-	{
-		for(int c = 0; c < 3; ++c)
-			p[pid].u[c] += -stretchingForce * dt * 0.5;
-	}
-	// right side
-	if (pid == 146 ||
-		pid == 309 ||
-		pid == 311 ||
-		pid == 314 ||
-		pid == 315 ||
-		pid == 316 ||
-		pid == 321 ||
-		pid == 324 ||
-		pid == 326 ||
-		pid == 329)
-	{
-		for(int c = 0; c < 3; ++c)
-			p[pid].u[c] += stretchingForce * dt * 0.5;
-	}
-#endif
+//#ifdef DO_STRETCHING
+//	int stretch = check_pid_stretching(pid);
+//	for(int c = 0; c < 3; ++c)
+//		p[pid].u[c] += stretch * stretchingForce * dt * 0.5;
+//#endif
  
 	for(int c = 0; c < 3; ++c)
 	    p[pid].x[c] += p[pid].u[c] * dt;
@@ -102,8 +114,9 @@ namespace ParticleKernels
     }
 
     __global__ void update_stage2_and_1(float2 * const _pdata, const float * const _adata,
-					const int nparticles, const float dt, const float _driving_acceleration, const float threshold,
-					const bool doublePoiseuille)
+					const int nparticles, const float dt, const float _driving_acceleration,
+					const float threshold, const bool doublePoiseuille,
+					const float stretchingForce = 0)
     {
 
 #if !defined(__CUDA_ARCH__)
@@ -193,6 +206,24 @@ namespace ParticleKernels
 	 if (doublePoiseuille && s0.y <= threshold)
 	     driving_acceleration *= -1;
 
+//#ifdef DO_STRETCHING
+//	if (laneid < nwords)
+//	{
+//		int stretch = check_pid_stretching(laneid);
+//		driving_acceleration += stretch * stretchingForce;
+//	}
+//	if (laneid + 32 < nwords)
+//	{
+//		int stretch = check_pid_stretching(laneid+32);
+//		driving_acceleration += stretch * stretchingForce;
+//	}
+//	if (laneid + 64 < nwords)
+//	{
+//		int stretch = check_pid_stretching(laneid+64);
+//		driving_acceleration += stretch * stretchingForce;
+//	}
+//#endif
+
 	 s1.y += (ax + driving_acceleration) * dt;
 	 s2.x += ay * dt;
 	 s2.y += az * dt;
@@ -267,22 +298,32 @@ void ParticleArray::update_stage1(const float driving_acceleration, cudaStream_t
 {
     if (size)
 	{
+//#ifndef DO_STRETCHING
 		ParticleKernels::update_stage1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>(
 		    xyzuvw.data, axayaz.data, xyzuvw.size, dt, driving_acceleration,
 			globalextent.y * 0.5 - origin.y, doublepoiseuille, false);
-#ifdef DO_STRETCHING
-		ParticleKernels::update_stage1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>(
-		    xyzuvw.data, axayaz.data, xyzuvw.size, dt, driving_acceleration,
-			globalextent.y * 0.5 - origin.y, doublepoiseuille, stretching_force, false);
-#endif
+//#else
+//		ParticleKernels::update_stage1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>(
+//		    xyzuvw.data, axayaz.data, xyzuvw.size, dt, driving_acceleration,
+//			globalextent.y * 0.5 - origin.y, doublepoiseuille, stretching_force, false);
+//#endif
 	}
 }
 
 void  ParticleArray::update_stage2_and_1(const float driving_acceleration, cudaStream_t stream)
 {
     if (size)
-	ParticleKernels::update_stage2_and_1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>
-	    ((float2 *)xyzuvw.data, (float *)axayaz.data, xyzuvw.size, dt, driving_acceleration, globalextent.y * 0.5 - origin.y, doublepoiseuille);
+	{
+//#ifndef DO_STRETCHING
+		ParticleKernels::update_stage2_and_1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>(
+			(float2 *)xyzuvw.data, (float *)axayaz.data, xyzuvw.size, dt, driving_acceleration,
+			globalextent.y * 0.5 - origin.y, doublepoiseuille);
+//#else
+//		ParticleKernels::update_stage2_and_1<<<(xyzuvw.size + 127) / 128, 128, 0, stream>>>(
+//			(float2 *)xyzuvw.data, (float *)axayaz.data, xyzuvw.size, dt, driving_acceleration,
+//			globalextent.y * 0.5 - origin.y, doublepoiseuille, stretching_force);
+//#endif
+	}
 }
 
 void ParticleArray::resize(int n)

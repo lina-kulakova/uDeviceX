@@ -18,7 +18,7 @@
 #define cuda_printf(...) do { printf(__VA_ARGS__); } while(0)
 #endif
 
-#define DO_STRETCHING
+//#define DO_STRETCHING
 
 enum
 {

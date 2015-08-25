@@ -777,8 +777,15 @@ void ComputeInteractionsRBC::post_p()
 
 void ComputeInteractionsRBC::internal_forces(const Particle * const rbcs, const int nrbcs, Acceleration * accrbc, cudaStream_t stream)
 {
-    CudaRBC::forces_nohost(stream, nrbcs, (float *)rbcs, (float *)accrbc);
+    CudaRBC::forces_nohost(stream, nrbcs, (float *)rbcs, (float *)accrbc, stretching_force);
 }
+
+#ifdef DO_STRETCHING
+void ComputeInteractionsRBC::compute_diameter(const Particle * const rbcs)
+{
+    CudaRBC::compute_diameter((float *)rbcs);
+}
+#endif
 
 void ComputeInteractionsRBC::fsi_bulk(const Particle * const solvent, const int nparticles, Acceleration * accsolvent,
 				      const int * const cellsstart_solvent, const int * const cellscount_solvent,

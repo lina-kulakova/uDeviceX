@@ -477,6 +477,10 @@ void Simulation::_datadump(const int idtimestep)
 	CUDA_CHECK(cudaMemcpyAsync(particles_datadump.data + start, rbcscoll->xyzuvw.data, sizeof(Particle) * rbcscoll->pcount(), cudaMemcpyDeviceToHost, 0));
 	CUDA_CHECK(cudaMemcpyAsync(accelerations_datadump.data + start, rbcscoll->axayaz.data, sizeof(Acceleration) * rbcscoll->pcount(), cudaMemcpyDeviceToHost, 0));
 
+#ifdef DO_STRETCHING
+	rbc_interactions.compute_diameter(rbcscoll->data());
+#endif
+
 	start += rbcscoll->pcount();
     }
 

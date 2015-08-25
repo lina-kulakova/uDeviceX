@@ -88,6 +88,7 @@ int main(int argc, char ** argv)
     adjust_message_sizes = argp("-adjust_message_sizes").asBool(false);
 #ifdef DO_STRETCHING
     stretching_force = argp("-stretching_force").asDouble(10);
+	printf("Stretching RBS with a force = %g\n", stretching_force);
 #endif
 
 #ifndef _NO_DUMPS_
