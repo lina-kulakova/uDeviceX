@@ -457,7 +457,11 @@ void Simulation::_data_dump(const int idtimestep)
     diagnostics(activecomm, cartcomm, p, n, dt, idtimestep, a);
 	
     if (xyz_dumps)
-	xyz_dump(activecomm, cartcomm, "particles.xyz", "all-particles", p, n, idtimestep > 0);
+	{
+		char filename[256];
+		sprintf(filename,"xyz/particles-%d.xyz",idtimestep);
+		xyz_dump(activecomm, cartcomm, filename, "all-particles", p, n, idtimestep > 0);
+	}
     
     if (hdf5part_dumps)
 	if (dump_part_solvent)
