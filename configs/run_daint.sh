@@ -1,3 +1,4 @@
 #!/bin/bash -l
 
-sbatch run_daint_template.sh
+mv mpi-dpd/test .
+sbatch configs/run_daint_template.sh

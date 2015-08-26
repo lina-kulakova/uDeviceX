@@ -1,9 +1,9 @@
 #!/bin/bash
 
 default_dir=ctc-debug
-script_name=gcp
+script_name=configs/setup_daint.sh
 
-rname=test1
+rname=test1 #= rname=%my_dir_name% 
 
 # remote host name
 uname=lina
@@ -24,7 +24,21 @@ function move() {
     "${ltop}"/configs/gcp "${default_dir}" "${rhost}":"${rpath}"    
 }
 
+function compile() {
+    rt "bash configs/compile_daint.sh"
+}
 
-move
+function run() {
+    rt "bash configs/run_daint.sh"
+}
 
+function post() {
+    echo "mkdir -p ${rname} ; rsync -r -avz ${rhost}:${rpath}/${default_dir}/* ${rname}" >> ~/rsync.sh
+    echo "${rname}"                                                                      >> ~/local.list
+    echo "${rhost}:${rpath}/${default_dir}"                                              >> ~/remote.list    
+}
 
+#move
+#compile
+#run
+post
