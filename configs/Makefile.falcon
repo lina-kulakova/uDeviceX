@@ -1,0 +1,5 @@
+h5part = 0
+NVCC = nvcc -I/opt/mpich/include/ -L/opt/mpich/lib/ -I/opt/hdf5_mpich/include/ -L/opt/hdf5_mpich/lib/
+CXX = /opt/mpich/bin/mpicxx -L/opt/mpich/lib/ -L/opt/hdf5_mpich/lib/
+#NVCC = nvcc -I/usr/include/openmpi-x86_64/ -L/usr/lib64/openmpi/lib  -I/opt/hdf5_openmpi/include/ -L/opt/hdf5_openmpi/lib/
+#CXX = /usr/lib64/openmpi/bin/mpicxx -L/usr/lib64/openmpi//lib/ -L/opt/hdf5_openmpi/lib/
