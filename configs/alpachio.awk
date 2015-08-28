@@ -34,7 +34,7 @@ BEGIN {
 }
 
 function rep_all(s,    i, new, old) {
-    print "(alpachio.awk) before" $0 > "/dev/stderr"    
+    print "(alpachio.awk) before " $0 > "/dev/stderr"    
     for (i in rep) {
 	old = i
 	new = rep[i]

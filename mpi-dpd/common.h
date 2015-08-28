@@ -27,14 +27,14 @@ enum {
     ZMARGIN_WALL = 6,
 };
 
-const int numberdensity = 10.125;
-const float dt = 8.333e-4;
-const float tend = 5000;
-const float kBT = 0.0945;
-const float gammadpd = 45;
+const int numberdensity = 10.125; //=const int numberdensity = %numberdensity%;
+const float dt = 8.333e-4; //=const float dt = %dt%;
+const float tend = 42;
+const float kBT = 0.0945; //=const float kBT = %kBT%;
+const float gammadpd = 45; //=const float gammadpd = %gammadpd%;
 const float sigma = sqrt(2 * gammadpd * kBT); 
 const float sigmaf = sigma / sqrt(dt);
-const float aij = 6;
+const float aij = 6; //=const float aij = %aij%;
 const float hydrostatic_a = 0.05;
 const bool walls = false;
 const bool pushtheflow = false;
@@ -44,7 +44,7 @@ const bool xyz_dumps = false;
 const bool hdf5field_dumps = true;
 const bool hdf5part_dumps = false;
 const int steps_per_report = 1000;
-const int steps_per_dump = 10000;
+const int steps_per_dump = 1000;
 const int wall_creation_stepid = 5000;
 
 
@@ -65,8 +65,9 @@ namespace kolmogorov_force {
                                      //  direction of the force is in
                                      //  OX, the gradient of the force
                                      //  is in OY
-  const  float F0 =  1.031653527168267e-4*100; // force amplitude [length/time^2]
-  const  int wavenum = 1;
+									 // force amplitude [length/time^2]
+  const  float F0 =  1.031653527168267e-4*100; //=  const  float F0 = %F0%;
+  const  int wavenum = 1; //=  const  int wavenum = %wavenum%;
 }
 #endif
 

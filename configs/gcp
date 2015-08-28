@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 # Usage:
 # ./gcp <remote dir>
 # ./gcp username@panda.ethz.ch:~/remote-dir
@@ -47,26 +45,36 @@ branch=`"${GIT}" rev-parse --abbrev-ref HEAD`
 revid=`"${GIT}" rev-parse HEAD`
 
 msg "Current branch: %s\n" "${branch}"
-${GIT} clone ${GITFLAGS} -b "${branch}" -- "${top}" "${local_target}"
+${GIT} clone ${GITFLAGS} -b "${branch}" -- file://"${top}" "${local_target}"
 msg "Current id    : %s\n" "${revid}"
 
 msg "Create a list of all staged files: %s\n" "${file_list}"
-(
-    cd "${top}"
-    ${GIT} ls-files --cached --full-name  > "${file_list}"
- 
-    msg "Create a list of all staged directories: %s\n" "${dir_list}"
-    xargs -n 1 dirname  -- < "${file_list}"    | sort | uniq  > "${dir_list}"
 
+function create_list() {
+    msg "Create a list of all staged directories: %s\n" "${dir_list}"
+    awk 'NR' "${file_list}" | xargs -n 1 -I {} dirname {} | sort | uniq  > "${dir_list}"
+    ${GIT} ls-files --cached --full-name  > "${file_list}"
+}
+
+function copy_directory_structure() {
     msg "Copy directory structure to %s\n" "${local_target}"
     xargs  -I {}   mkdir -p -- "${local_target}"/{}           < "${dir_list}"
-    
+}
+
+function copy_staged_files() {
     msg "Copy staged files to %s\n" "${local_target}"
     while read fname; do
 	test -r "${fname}" && cp -- "${fname}" "${local_target}/${fname}"
     done < "${file_list}"
+}
+
+(
+    cd "${top}"
+    create_list
+    copy_directory_structure
+    copy_staged_files
 )
 
 msg "Copying directory from %s to %s\n" "${local_target}" "${target}"
-ssh "${thost}" "test -d ${tpath} || mkdir -p -- ${tpath}"
+ssh "${thost}" "test -d ${tpath} || mkdir -p ${tpath}"
 "${cpy}" ${cpy_args} -- "${local_target}" "${target}"

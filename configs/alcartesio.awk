@@ -46,6 +46,7 @@ is_parameter() {
 }
 
 {
+	# create directory name
     val = $1
     for (i = 1; i<=iprev; i++) {
 	sep = prev[i] ? FIELD_SEP : ""

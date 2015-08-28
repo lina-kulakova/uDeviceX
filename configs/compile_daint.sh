@@ -9,3 +9,4 @@ module load cray-mpich
 
 cd mpi-dpd
 make clean && make -j slevel="-2"
+cd -

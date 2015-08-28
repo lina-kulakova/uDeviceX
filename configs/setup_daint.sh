@@ -38,7 +38,7 @@ function post() {
     echo "${rhost}:${rpath}/${default_dir}"                                              >> ~/remote.list    
 }
 
-#move
-#compile
-#run
+move
+compile
+run
 post
