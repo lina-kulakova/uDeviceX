@@ -12,7 +12,13 @@ rhost="${uname}"@daint
 # remote path name
 rpath=/scratch/daint/"${uname}"/RBC/"${rname}"
 
-source "run_utils.sh"
+err () {
+    printf "(setup_daint.sh) $@\n"
+    exit
+}
+
+test   -r "run_utils.sh" || err "cannot find run_utils.sh, I am in `pwd`"
+.         "run_utils.sh"
 
 # local top
 ltop=$(git rev-parse --show-toplevel)
