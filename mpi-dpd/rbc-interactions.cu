@@ -15,6 +15,7 @@
 
 #include "rbc-interactions.h"
 #include "minmax-massimo.h"
+#include "config.h"
 
 namespace KernelsRBC
 {

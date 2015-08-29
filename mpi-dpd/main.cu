@@ -21,6 +21,7 @@
 
 #include "argument-parser.h"
 #include "simulation.h"
+#include "config.h"
 
 bool currently_profiling = false;
 float tend;

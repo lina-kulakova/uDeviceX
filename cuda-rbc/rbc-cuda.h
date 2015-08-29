@@ -10,8 +10,8 @@
 #pragma once
 
 #include <cuda_runtime.h>
+#include "config.h"
 
-#define DO_STRETCHING
 using namespace std;
 
 namespace CudaRBC

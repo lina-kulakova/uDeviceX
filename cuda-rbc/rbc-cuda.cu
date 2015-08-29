@@ -23,6 +23,7 @@
 #include <algorithm>
 
 #include "helper_math.h"
+#include "config.h"
 
 using namespace std;
 

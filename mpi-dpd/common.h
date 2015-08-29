@@ -18,6 +18,8 @@
 #define cuda_printf(...) do { printf(__VA_ARGS__); } while(0)
 #endif
 
+#include "config.h"
+
 enum
 {
     XSIZE_SUBDOMAIN = 8,

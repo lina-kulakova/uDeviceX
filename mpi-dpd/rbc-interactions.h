@@ -16,6 +16,7 @@
 #include <rbc-cuda.h>
 
 #include "common.h"
+#include "config.h"
 
 #include <../dpd-rng.h>
 

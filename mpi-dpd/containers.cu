@@ -18,6 +18,7 @@
 #include "containers.h"
 #include "io.h"
 #include "ctc.h"
+#include "config.h"
 
 int (*CollectionRBC::indices)[3] = NULL, CollectionRBC::ntriangles = -1, CollectionRBC::nvertices = -1;
 
