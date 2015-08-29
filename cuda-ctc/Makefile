@@ -1,3 +1,5 @@
+-include .cache.Makefile
+
 CXX ?= g++
 NVCC ?= nvcc
 CXXFLAGS +=  -L$(subst :, -L,$(LD_LIBRARY_PATH))

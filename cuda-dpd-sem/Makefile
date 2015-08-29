@@ -1,3 +1,5 @@
+-include .cache.Makefile
+
 ARCH_VAL ?= compute_35
 CODE_VAL ?= sm_35
 
@@ -31,7 +33,7 @@ test-cell-lists: test-cell-lists.cu cell-lists-faster.cu
 	$(NVCC) $(NVCCFLAGS) $^ -o test-cell-lists
 
 profiler-dpd.o:	profiler-dpd.cpp profiler-dpd.h
-	$(CXX) $(CXXFLAGS) -c profiler-dpd.cpp
+	$(NVCC) $(CXXFLAGS) -c profiler-dpd.cpp
 
 cell-lists.o: cell-lists.cu cell-lists.h
 	$(NVCC) $(NVCCFLAGS) -c $< -o $@
