@@ -777,7 +777,11 @@ void ComputeInteractionsRBC::post_p()
 
 void ComputeInteractionsRBC::internal_forces(const Particle * const rbcs, const int nrbcs, Acceleration * accrbc, cudaStream_t stream)
 {
+#ifdef DO_STRETCHING
     CudaRBC::forces_nohost(stream, nrbcs, (float *)rbcs, (float *)accrbc, stretching_force);
+#else
+    CudaRBC::forces_nohost(stream, nrbcs, (float *)rbcs, (float *)accrbc);
+#endif
 }
 
 #ifdef DO_STRETCHING

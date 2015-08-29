@@ -74,8 +74,9 @@ public:
 
     virtual void internal_forces(const Particle * const xyzuvw, const int nrbcs, Acceleration * acc, cudaStream_t stream);
 
-	void compute_diameter(const Particle * const rbcs);
-
+#ifdef DO_STRETCHING
+    void compute_diameter(const Particle * const rbcs);
+#endif
     void fsi_bulk(const Particle * const solvent, const int nparticles, Acceleration * accsolvent,
 	     const int * const cellsstart_solvent, const int * const cellscount_solvent,
 	     const Particle * const rbcs, const int nrbcs, Acceleration * accrbc, cudaStream_t stream);

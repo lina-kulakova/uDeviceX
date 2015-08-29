@@ -12,7 +12,6 @@
 #include <cuda_runtime.h>
 
 #define DO_STRETCHING
-
 using namespace std;
 
 namespace CudaRBC
@@ -43,8 +42,12 @@ namespace CudaRBC
 	void initialize(float *device_xyzuvw, const float (*transform)[4]);
 
 	/* non-synchronizing */
-	void forces_nohost(cudaStream_t stream, int ncells, const float * const device_xyzuvw,
-		float * const device_axayaz, const float stretching_force);
+#ifdef DO_STRETCHING
+	void forces_nohost(cudaStream_t stream, int ncells, const float * const device_xyzuvw, float * const device_axayaz,
+			   const float stretching_force);
+#else
+	void forces_nohost(cudaStream_t stream, int ncells, const float * const device_xyzuvw, float * const device_axayaz);
+#endif
 
 	void compute_diameter(const float * const device_xyzuvw);
 

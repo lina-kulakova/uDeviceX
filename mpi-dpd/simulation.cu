@@ -480,7 +480,6 @@ void Simulation::_datadump(const int idtimestep)
 #ifdef DO_STRETCHING
 	rbc_interactions.compute_diameter(rbcscoll->data());
 #endif
-
 	start += rbcscoll->pcount();
     }
 

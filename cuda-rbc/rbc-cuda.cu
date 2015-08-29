@@ -118,8 +118,12 @@ namespace CudaRBC
 
     template <int nvertices>
     __global__ __launch_bounds__(128, 12)
+#ifdef DO_STRETCHING
     void fall_kernel(const int nrbcs, float* const __restrict__ av, float * const acc,
 		const float stretchingForce);
+#else
+    void fall_kernel(const int nrbcs, float* const __restrict__ av, float * const acc);
+#endif
 
 #ifdef DO_STRETCHING
 	__host__ __device__ int check_pid_stretching(int pid)
@@ -159,7 +163,9 @@ namespace CudaRBC
 //		printf("Doing stretching with 0 for pid = %d...\n", pid);
 		return 0;
 	}
+#endif
 
+#ifdef DO_STRETCHING
 	__global__ void diameter_kernel(const float * device_xyzuvw, int nvertices)
 	{
         float3 border[2]; // min and max for each direction
@@ -184,7 +190,7 @@ namespace CudaRBC
 				border[0].y = t;
             else if(t > border[1].y) // max y
 				border[1].y = t;
-				
+
 			t = device_xyzuvw[6*i+2];
             if(t < border[0].z) // min z
 				border[0].z = t;
@@ -456,7 +462,6 @@ namespace CudaRBC
         return params;
     }
 
-
     __global__ void transformKernel(float* xyzuvw, int n)
     {
         int i = blockIdx.x * blockDim.x + threadIdx.x;
@@ -500,7 +505,6 @@ namespace CudaRBC
         return val;
     }
 
-	// Lina: it seems to add a force to each triangle
     __global__ void areaAndVolumeKernel(float* totA_V)
     {
         float2 a_v = make_float2(0.0f, 0.0f);
@@ -698,9 +702,14 @@ namespace CudaRBC
     }
 
     template <int nvertices>
+#ifdef DO_STRETCHING
     __global__ __launch_bounds__(128, 12)
     void fall_kernel(const int nrbcs, float* const __restrict__ av, float * const acc,
 		const float stretchingForce)
+#else
+    __global__ __launch_bounds__(128, 12)
+    void fall_kernel(const int nrbcs, float* const __restrict__ av, float * const acc)
+#endif
     {
         const int degreemax = 7;
         const int pid = (threadIdx.x + blockDim.x * blockIdx.x) / degreemax;
@@ -718,7 +727,6 @@ namespace CudaRBC
 			int stretch = check_pid_stretching(pid%nvertices);
 			f.x += stretch * stretchingForce;
 #endif
- 
             if (f.x > -1.0e9f)
             {
                 atomicAdd(&acc[3*pid+0], f.x);
@@ -730,8 +738,12 @@ namespace CudaRBC
 
     // **************************************************************************************************
 
-    void forces_nohost(cudaStream_t stream, int ncells, const float * const device_xyzuvw,
-		float * const device_axayaz, const float stretchingForce)
+#ifdef DO_STRETCHING
+    void forces_nohost(cudaStream_t stream, int ncells, const float * const device_xyzuvw, float * const device_axayaz,
+		       const float stretchingForce)
+#else
+    void forces_nohost(cudaStream_t stream, int ncells, const float * const device_xyzuvw, float * const device_axayaz)
+#endif
     {
         if (ncells == 0) return;
 
@@ -762,13 +774,17 @@ namespace CudaRBC
         int threads = 128;
         int blocks  = (ncells*params.nvertices*7 + threads-1) / threads;
 
+#ifdef DO_STRETCHING
         fall_kernel<498><<<blocks, threads, 0, stream>>>(ncells, host_av, device_axayaz,
-			stretchingForce);
+							 stretchingForce);
+#else
+        fall_kernel<498><<<blocks, threads, 0, stream>>>(ncells, host_av, device_axayaz);
+#endif
     }
 
 #ifdef DO_STRETCHING
 // Lina: compute diameters of an RBC here (only one thread computes)
-	void compute_diameter(const float * const device_xyzuvw)
+  void compute_diameter(const float * const device_xyzuvw)
 	{
 		diameter_kernel<<<1,1>>>(device_xyzuvw, params.nvertices);
 	}
