@@ -1,0 +1,11 @@
+=numberdensity
+=dt
+=kBT
+=gammadpd
+Omega0/numberdensity
+=aij
+Omega0*OmegaA2
+=F0
+=wavenum
+=Omega0
+=OmegaA2
