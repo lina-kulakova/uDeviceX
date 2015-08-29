@@ -1,7 +1,23 @@
 #!/usr/bin/awk -f
 
-# [curr, icurr]
-# [prev, iprev]
+# Takes "cartesian" file and produce a list of parameter strings
+# Usage:
+# ./alcartesio.awk cartesian_file > list_of_parameter_strings
+#
+# TEST: alcartesio1
+# ./alcartesio.awk test_data/cartesian1.config  > alcartesio.out.config
+#
+# TEST: alcartesio2
+# ./alcartesio.awk test_data/cartesian2.config  > alcartesio.out.config
+#
+# TEST: alcartesio3
+# ./alcartesio.awk test_data/cartesian3.config  > alcartesio.out.config
+#
+# TEST: alcartesio4
+# ./alcartesio.awk test_data/cartesian4.config  > alcartesio.out.config
+#
+# TEST: alcartesio5
+# ./alcartesio.awk test_data/cartesian5.config  > alcartesio.out.config
 
 BEGIN {
     curr[1] = ""
@@ -14,20 +30,20 @@ function is_parameter() {
     return substr($0, 1, 1)=="="
 }
 
+# remove "="
 function norm_name(s) {
     sub("^=", "", s)
     return s
 }
 
+# copy array
 function copy(src, dest, i) {
     for (i in src)
 	dest[i] = src[i]
 }
 
-{ # strip comments
-    ncomm = split($0, comm_arr, "#")
-    if (ncomm>1)
-	$0 = comm_arr[1]
+{
+    sub(/#.*/, "")         # strip comments
 }
 
 !NF {
