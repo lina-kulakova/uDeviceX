@@ -2,4 +2,4 @@
 
 . configs/falcon/vars.sh
 cd mpi-dpd
-./test "$args"
+./test $args
