@@ -3,7 +3,7 @@
 # Check if #include "config.h" and defs are used consistently
 # Usage:
 # ./has_config.awk ../mpi-dpd/*.cu  ../mpi-dpd/*.h ../mpi-dpd/*.cu
-# ./has_config.awk `find .. '(' -name '*.h' -or -name '*.cpp' -or -name '*.h' ')'`
+# ./has_config.awk `find .. '(' -name '*.h' -or -name '*.cpp' -or -name '*.cu' ')'`
 
 BEGIN {
     pat = "#include\"config.h\""
