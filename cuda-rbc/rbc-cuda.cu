@@ -127,42 +127,9 @@ namespace CudaRBC
 #endif
 
 #ifdef DO_STRETCHING
-	__host__ __device__ int check_pid_stretching(int pid)
+	__host__ __device__ float check_pid_stretching(int pid)
 	{
-		// geometry from ../cuda-rbc/rbc.dat; pulling in x direction
-		// left side
-		if (pid == 165 ||
-			pid == 166 ||
-			pid == 171 ||
-			pid == 172 ||
-			pid == 379 ||
-			pid == 380 ||
-			pid == 386 ||
-			pid == 391 ||
-			pid == 393 ||
-			pid == 394)
-		{
-//			printf("Doing stretching with -1 for pid = %d...\n", pid);
-			return -1;
-		}
-		// right side
-		if (pid == 146 ||
-			pid == 309 ||
-			pid == 311 ||
-			pid == 314 ||
-			pid == 315 ||
-			pid == 316 ||
-			pid == 321 ||
-			pid == 324 ||
-			pid == 326 ||
-			pid == 329)
-		{
-//			printf("Doing stretching with +1 for pid = %d...\n", pid);
-			return +1;
-		}
-
-//		printf("Doing stretching with 0 for pid = %d...\n", pid);
-		return 0;
+#include "check_pid_stretching_body.h"
 	}
 #endif
 
@@ -725,8 +692,8 @@ namespace CudaRBC
 
 			// Lina: should I check for (pid % nvertices) and add a force here?
 #ifdef DO_STRETCHING
-			int stretch = check_pid_stretching(pid%nvertices);
-			f.x += stretch * stretchingForce;
+	    const int lid = pid % nvertices;
+	    f.x += stretchingForce*check_pid_stretching(lid);
 #endif
             if (f.x > -1.0e9f)
             {
