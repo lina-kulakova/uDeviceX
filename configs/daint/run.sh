@@ -1,6 +1,4 @@
 #!/bin/bash
 
-. configs/falcon/vars.sh
-cd mpi-dpd
-#./test $args
-sbatch run_daint_template.sh $args
+. configs/daint/vars.sh
+sbatch configs/daint/run_daint_template.sh

@@ -1,6 +1,8 @@
 #!/bin/bash
 
-cp configs/falcon/Makefile mpi-dpd/.cache.Makefile
-cp configs/falcon/Makefile cuda-ctc/.cache.Makefile
+cp configs/daint/Makefile mpi-dpd/.cache.Makefile
+cp configs/daint/Makefile cuda-ctc/.cache.Makefile
 cd mpi-dpd
-make -j clean && make slevel="-2"
+source ../configs/daint/load_modules.sh
+make clean && make -j slevel="-2"
+cd -

@@ -1,19 +1,16 @@
 #!/bin/bash -l
 #
-#SBATCH --job-name="dpd_kolmogorov"
-#SBATCH --time=00:30:00
+#SBATCH --job-name="rbc_stretching"
+#SBATCH --time=00:10:00
 #SBATCH --nodes=1
 #SBATCH --ntasks-per-node=1
-#SBATCH --output=dpd_kolmogorov.%j.o
-#SBATCH --error=dpd_kolmogorov.%j.e
+#SBATCH --output=rbc_stretching.%j.o
+#SBATCH --error=rbc_stretching.%j.e
 
 #======START=====
-args=$1
+source configs/daint/vars.sh
+source configs/daint/load_modules.sh
 
-module swap PrgEnv-cray PrgEnv-gnu
-module load cudatoolkit
-module load cray-hdf5-parallel
-module load cray-mpich
-
+cd mpi-dpd
 aprun ./test ${args}
 #=====END====
