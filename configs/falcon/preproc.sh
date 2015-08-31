@@ -2,10 +2,5 @@
 
 . configs/falcon/vars.sh
 
-(
-    cd cell-placement
-    make
-    ./cell-placement $XSIZE_SUBDOMAIN $YSIZE_SUBDOMAIN $ZSIZE_SUBDOMAIN $xranks $yranks $zranks
-)
-
-cp ./cell-placement/rbcs-ic.txt mpi-dpd/
+# setup one RBC
+cp configs/initial-conditions/rbc1-ic.txt mpi-dpd/rbcs-ic.txt
