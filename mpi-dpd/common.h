@@ -36,7 +36,7 @@ const float kBT = 0.40484; //=const float kBT = %kBT%;
 const float gammadpd = 35; //=const float gammadpd = %gammadpd%;
 const float sigma = sqrt(2 * gammadpd * kBT);
 const float sigmaf = sigma / sqrt(dt);
-const float aij = 25;
+const float aij = 25; //=const float aij = %aij%;
 const float hydrostatic_a = 0.05;
 
 extern float tend;

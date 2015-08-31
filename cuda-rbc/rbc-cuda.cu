@@ -360,7 +360,12 @@ namespace CudaRBC
         maxCells = 0;
         CUDA_CHECK( cudaMalloc(&host_av, 1 * 2 * sizeof(float)) );
 
-        unitsSetup(1.64, 0.001412, 19.0476, 35, 2500, 3500, 50, 135, 91, 1e-6, 2.4295e-6, 4, report);
+        unitsSetup(
+			1.64,	0.001412,	19.0476	, //= %lmax%,	%p%,	%cq%	,
+			35	,	2500	,	3500	, //= %kb%	,	%ka%,	%kv%	,
+			50	,	135		,	91		, //= %gammaC%,	%totArea0%,	%totVolume0%	,
+			// non-modifiable
+			1e-6, 2.4295e-6, 4, report);
 
         CUDA_CHECK( cudaFuncSetCacheConfig(fall_kernel<498>, cudaFuncCachePreferL1) );
     }
@@ -578,8 +583,8 @@ namespace CudaRBC
         return make_float3(-1.0e10f, -1.0e10f, -1.0e10f);
     }
 
-    //======================================
-    //======================================
+    // ======================================
+    // ======================================
 
     template<int update>
     __device__  __forceinline__  float3 _fdihedral(float3 v1, float3 v2, float3 v3, float3 v4)

@@ -9,7 +9,7 @@ ZSIZE_SUBDOMAIN=8
 xranks=1
 yranks=1
 zranks=1
-stretching_force=100.0
+stretchingforce=100.0 #= stretchingforce=%stretchingforce%
 tend=50
 
-args="$xranks $yranks $zranks -rbcs -stretching_force=$stretching_force -tend=$tend"
+args="$xranks $yranks $zranks -rbcs -stretching_force=$stretchingforce -tend=$tend"
