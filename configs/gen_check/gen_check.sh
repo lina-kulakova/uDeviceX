@@ -12,7 +12,7 @@ rbc=../../cuda-rbc/rbc.dat
     ./gen_check_pid2.awk         | \
     ./gen_check_pid3.awk -v N=$N | \
     ./gen_check_pid4.awk $rbc    | \
-    ./gen_check_pid5.awk         | \
+    ./gen_check_pid5.awk -v N=$N | \
     ./gen_check_pid6.awk         | \
     tee  ../../cuda-rbc/check_pid_stretching_body.h
 

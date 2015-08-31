@@ -2,7 +2,9 @@
 #
 # Scale force according to degree
 # sum(force*degree) should be zero
-
+BEGIN {
+	N = length(N) ? N : 10
+}
 {
   sub(/#.*/, "") # strip comments
   force_idx = 2
@@ -18,7 +20,7 @@ NF {
 
   # we add "force" `ang' times in the code
   # here it should be scaled accordingly
-  $(force_idx) = force/ang
+  $(force_idx) = force/ang/N
 
   print
 }
