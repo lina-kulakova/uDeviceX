@@ -1,4 +1,4 @@
-// this file was generated with gen_check.sh
+// this file was generated with configs/gen_check/gen_check.sh
 // `ang' is a number of angles atom is in
 if      (pid == 391) return         -0.2f; // ang: 5
 else if (pid == 380) return    -0.166667f; // ang: 6
