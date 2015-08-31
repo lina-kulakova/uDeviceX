@@ -8,4 +8,4 @@ gitroot=/home/lisergey/work/kulina/kolmogorov
 
 ./alcartesio.awk dimensionless/cart.dl.daint | \
     ./altransformio-pipe.sh dimensionless/cart.transform | \
-    sh -x ./aldriver-pipe.sh "$gitroot"
+    sh -x ./aldriver.sh "$gitroot"

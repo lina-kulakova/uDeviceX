@@ -3,11 +3,13 @@
 #set -eu
 
 # Usage:
-#   cat <parameter lines> | ./aldriver2.sh <source directory>
+#  ./aldriver2.sh <source directory> <parameter_line>
 
 set -eu
 
 source_directory=$1
+parameter_line=$2
+
 tmp_source_directory=`mktemp -d /tmp/alldriver.XXXX`
 alpachio_config=`mktemp /tmp/alpachio.XXXX`
 cart_list=`mktemp /tmp/cartlist.XXXX`
@@ -23,7 +25,6 @@ function err() {
 
 test -d "$source_directory" || \
     err "\"$source_directory\" is not a directory"
-
 
 function run_case() {
     (cd "$tmp_source_directory"
@@ -44,6 +45,4 @@ function create_case() {
     run_case
 }
 
-while read -r line; do
-    create_case "${line}"
-done
+create_case "$parameter_line"
