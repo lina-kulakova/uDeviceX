@@ -30,10 +30,10 @@ enum
     ZMARGIN_WALL = 6,
 };
 
-const int numberdensity = 4;
-const float dt = 0.001;
-const float kBT = 0.0945;
-const float gammadpd = 45;
+const int numberdensity = 10; //=const int numberdensity = %numberdensity%;
+const float dt = 0.001; //=const float dt = %dt%;
+const float kBT = 0.40484; //=const float kBT = %kBT%;
+const float gammadpd = 35; //=const float gammadpd = %gammadpd%;
 const float sigma = sqrt(2 * gammadpd * kBT);
 const float sigmaf = sigma / sqrt(dt);
 const float aij = 25;
