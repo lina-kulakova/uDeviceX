@@ -29,7 +29,7 @@ enum {
 
 const int numberdensity = 10.125; //=const int numberdensity = %numberdensity%;
 const float dt = 8.333e-4; //=const float dt = %dt%;
-const float tend = 42;
+const float tend = 200;
 const float kBT = 0.0945; //=const float kBT = %kBT%;
 const float gammadpd = 45; //=const float gammadpd = %gammadpd%;
 const float sigma = sqrt(2 * gammadpd * kBT); 
