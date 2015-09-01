@@ -10,6 +10,6 @@ xranks=1
 yranks=1
 zranks=1
 stretchingforce=100.0 #= stretchingforce=%stretchingforce%
-tend=50
+tend=250
 
 args="$xranks $yranks $zranks -rbcs -stretching_force=$stretchingforce -tend=$tend"
