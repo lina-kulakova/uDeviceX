@@ -1,0 +1,15 @@
+%%% function abs(x) {
+%%% 	     return x > 0 ? x : -x
+%%% }
+
+   a>=1
+&&
+(
+   b==10
+||
+   q = 20
+   abs(b)==q
+)
+)
+   q = 20
+   abs(b)==q

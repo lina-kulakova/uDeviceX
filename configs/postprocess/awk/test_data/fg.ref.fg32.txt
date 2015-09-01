@@ -1,0 +1,5 @@
+
+     __rc1 = __fun__rc1()
+     __rc2 = __fun__rc2()
+     __rc3 = __fun__rc3()
+     __rc4 = __fun__rc4()

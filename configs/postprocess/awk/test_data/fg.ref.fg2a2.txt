@@ -1,0 +1,18 @@
+function __fun__rc1() {
+   return a>=1
+}
+
+function __fun__rc2() {
+   return b==10
+}
+
+function __fun__rc3() {
+   q = 20
+   return abs(b)==q
+}
+
+function __fun__rc4() {
+   q = 20
+   return abs(b)==q
+}
+

@@ -1,0 +1,4 @@
+function __fun__rc1() {
+   return a=2
+}
+
