@@ -121,7 +121,7 @@ namespace wall {
     if (n > 0) k_sdf::bounce<<<k_cnf(n)>>>((float2 *)p, n);
   }
 
-  void interactions(Particle *p, int n, CellLists* cells,
+  void interactions(Particle *p, int n, CellLists* cells, Logistic::KISS* rnd,
 		    Force *acc) {
     // cellsstart and cellscount IGNORED for now
     if (n > 0 && w_n > 0) {
@@ -142,7 +142,7 @@ namespace wall {
 			 sizeof(int) * cells->ncells));
 
       k_wall::interactions_3tpp<<<k_cnf(3 * n)>>>
-	((float2 *)p, n, w_n, (float *)acc, trunk->get_float());
+	((float2 *)p, n, w_n, (float *)acc, rnd->get_float());
       CC(cudaUnbindTexture(k_wall::texWallParticles));
       CC(cudaUnbindTexture(k_wall::texWallCellStart));
       CC(cudaUnbindTexture(k_wall::texWallCellCount));

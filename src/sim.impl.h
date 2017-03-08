@@ -74,8 +74,8 @@ void clear_forces(Force* ff, int n) {
 }
 
 void forces_wall() {
-  if (rbcs && wall_created) wall::interactions(r_pp, r_n, wall_cells, r_ff);
-  if (wall_created)         wall::interactions(s_pp, s_n, wall_cells, s_ff);
+  if (rbcs && wall_created) wall::interactions(r_pp, r_n, wall_cells, rnd, r_ff);
+  if (wall_created)         wall::interactions(s_pp, s_n, wall_cells, rnd, s_ff);
 }
 
 void forces_cnt(std::vector<ParticlesWrap> *w_r) {
@@ -196,7 +196,6 @@ void init() {
   if (rbcs)
       mpDeviceMalloc(&r_pp); mpDeviceMalloc(&r_ff);
 
-  wall::trunk = new Logistic::KISS;
   sdstr::init();
   mpDeviceMalloc(&s_pp); mpDeviceMalloc(&s_pp0);
   mpDeviceMalloc(&s_ff);
@@ -270,7 +269,6 @@ void close() {
 
   CC(cudaFree(r_host_av));
 
-  delete wall::trunk;
   CC(cudaFree(r_pp )); CC(cudaFree(r_ff ));
   CC(cudaFree(s_pp )); CC(cudaFree(s_ff ));
   CC(cudaFree(s_pp0));
