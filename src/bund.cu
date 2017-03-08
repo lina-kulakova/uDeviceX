@@ -49,7 +49,6 @@
 #include "field.decl.h"
 #include "field.impl.h"
 
-#include "wall.decl.h"
 #include "k/wvel.h" /* wall velocity used by sdf and wall */
 
 #include "k/sdf.h"

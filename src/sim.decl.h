@@ -24,8 +24,10 @@ namespace sim {
 
   Particle      s_pp_hst[MAX_PART_NUM]; /* solvent on host */
   Particle      r_pp_hst[MAX_PART_NUM]; /* RBC on host */
-
   Particle      sr_pp[MAX_PART_NUM];    /* solvent + RBC on host */
+
+  int w_n; /* Wall particles */
+  float4 w_pp[MAX_PART_NUM];  /* (sic) */
 
   Logistic::KISS* rnd;
 

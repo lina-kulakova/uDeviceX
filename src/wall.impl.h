@@ -1,5 +1,7 @@
 namespace wall {
-  int init(Particle *pp, int n, CellLists* cells) {
+  int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp) {
+    /* return a new number of particles and sets a numpber of wall
+       particles */
     setup_texture(k_wall::texWallParticles, float4);
     setup_texture(k_wall::texWallCellStart, int);
     setup_texture(k_wall::texWallCellCount, int);
@@ -94,6 +96,7 @@ namespace wall {
 		    H2D));
     }
 
+    int w_n;
     w_n = solid_local.size() + solid_remote.S;
 
     Particle *solid;
@@ -114,6 +117,8 @@ namespace wall {
     if (w_n > 0)
       k_wall::strip_solid4<<<k_cnf(w_n)>>>(solid, w_n, w_pp);
     CC(cudaFree(solid));
+
+    *pw_n = w_n; /* set a number of wall particles */
     return nsurvived;
   } /* end of ini */
 
@@ -121,7 +126,8 @@ namespace wall {
     if (n > 0) k_sdf::bounce<<<k_cnf(n)>>>((float2 *)p, n);
   }
 
-  void interactions(Particle *p, int n, CellLists* cells, Logistic::KISS* rnd,
+  void interactions(Particle *pp, float4* w_pp, int n, int w_n,
+		    CellLists* cells, Logistic::KISS* rnd,
 		    Force *acc) {
     // cellsstart and cellscount IGNORED for now
     if (n > 0 && w_n > 0) {
@@ -142,7 +148,7 @@ namespace wall {
 			 sizeof(int) * cells->ncells));
 
       k_wall::interactions_3tpp<<<k_cnf(3 * n)>>>
-	((float2 *)p, n, w_n, (float *)acc, rnd->get_float());
+	((float2 *)pp, n, w_n, (float *)acc, rnd->get_float());
       CC(cudaUnbindTexture(k_wall::texWallParticles));
       CC(cudaUnbindTexture(k_wall::texWallCellStart));
       CC(cudaUnbindTexture(k_wall::texWallCellCount));
