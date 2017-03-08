@@ -115,7 +115,7 @@ namespace wall {
     if (m::rank == 0) printf("consolidating wall particles...\n");
 
     if (w_n > 0)
-      k_sdf::strip_solid4<<<k_cnf(w_n)>>>(solid, w_n, w_pp);
+      k_wall::strip_solid4<<<k_cnf(w_n)>>>(solid, w_n, w_pp);
     CC(cudaFree(solid));
     return nsurvived;
   } /* end of ini */
