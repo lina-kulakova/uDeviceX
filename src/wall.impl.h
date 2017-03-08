@@ -109,9 +109,6 @@ namespace wall {
 		  D2D));
 
     if (w_n > 0) cells->build(solid, w_n, 0);
-
-    CC(cudaMalloc(&w_pp, sizeof(float4) * w_n));
-
     if (m::rank == 0) printf("consolidating wall particles...\n");
 
     if (w_n > 0)

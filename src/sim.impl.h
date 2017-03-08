@@ -198,10 +198,13 @@ void init() {
   if (rbcs)
       mpDeviceMalloc(&r_pp); mpDeviceMalloc(&r_ff);
 
+  rnd = new Logistic::KISS;
   sdstr::init();
   mpDeviceMalloc(&s_pp); mpDeviceMalloc(&s_pp0);
   mpDeviceMalloc(&s_ff);
   mpDeviceMalloc(&r_ff); mpDeviceMalloc(&r_ff);
+
+  mpDeviceMalloc(&w_pp);
 
   s_n = ic::gen(s_pp_hst);
   CC(cudaMemcpy(s_pp, s_pp_hst, sizeof(Particle) * s_n, H2D));
@@ -268,11 +271,14 @@ void close() {
 
   CC(cudaFree(s_zip0));
   CC(cudaFree(s_zip1));
-
   CC(cudaFree(r_host_av));
+
+  delete rnd;
 
   CC(cudaFree(r_pp )); CC(cudaFree(r_ff ));
   CC(cudaFree(s_pp )); CC(cudaFree(s_ff ));
   CC(cudaFree(s_pp0));
+
+  CC(cudaFree(w_pp));
 }
 }
