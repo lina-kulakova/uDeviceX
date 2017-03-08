@@ -1,11 +1,15 @@
 namespace wall {
-  int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp) {
-    /* return a new number of particles and sets a numpber of wall
-       particles */
+  void init_textrue() {
     setup_texture(k_wall::texWallParticles, float4);
     setup_texture(k_wall::texWallCellStart, int);
     setup_texture(k_wall::texWallCellCount, int);
     CC(cudaFuncSetCacheConfig(k_wall::interactions_3tpp, cudaFuncCachePreferL1));
+  }
+
+  int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp) {
+    /* return a new number of particles and sets a numpber of wall
+       particles */
+    init_textrue();
 
     thrust::device_vector<int> keys(n);
     k_sdf::fill_keys<<<k_cnf(n)>>>(pp, n, thrust::raw_pointer_cast(&keys[0]));
