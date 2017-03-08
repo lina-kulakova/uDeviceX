@@ -10,7 +10,7 @@ template <typename T> struct StaticDeviceBuffer1 {
 /* TODO: in-transition structure to static allocation */
 template <typename T> struct StaticDeviceBuffer0 {
   /* `D': data */
-  T *D; int S;
+  T *D;
   StaticDeviceBuffer0()  {mpDeviceMalloc(&D);}
   ~StaticDeviceBuffer0() {CC(cudaFree(D));}
 };

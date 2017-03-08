@@ -21,7 +21,7 @@ namespace wall {
       (thrust::device_ptr<Particle>(pp + nsurvived),
        thrust::device_ptr<Particle>(pp + nsurvived + nbelt));
 
-    DeviceBuffer<Particle> solid_remote;
+    StaticDeviceBuffer1<Particle> solid_remote;
     {
       thrust::host_vector<Particle> local = solid_local;
 
