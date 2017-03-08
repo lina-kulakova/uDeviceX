@@ -14,7 +14,7 @@ namespace sim {
 
   Particle *s_pp0; /* Solvent (temporal buffer) */
 
-  CellLists* cells;
+  CellLists *cells, *wall_cells;
 
   bool wall_created = false;
   float driving_force = 0;

@@ -1,5 +1,5 @@
 namespace wall {
-  int init(Particle *pp, int n) {
+  int init(Particle *pp, int n, CellLists* cells) {
     setup_texture(k_wall::texWallParticles, float4);
     setup_texture(k_wall::texWallCellStart, int);
     setup_texture(k_wall::texWallCellCount, int);
@@ -105,10 +105,7 @@ namespace wall {
 		  sizeof(Particle) * solid_remote.S,
 		  D2D));
 
-    wall_cells = new CellLists(XS + 2 * XMARGIN_WALL,
-			       YS + 2 * YMARGIN_WALL,
-			       ZS + 2 * ZMARGIN_WALL);
-    if (w_n > 0) wall_cells->build(solid, w_n, 0);
+    if (w_n > 0) cells->build(solid, w_n, 0);
 
     CC(cudaMalloc(&w_pp, sizeof(float4) * w_n));
 
@@ -124,8 +121,8 @@ namespace wall {
     if (n > 0) k_sdf::bounce<<<k_cnf(n)>>>((float2 *)p, n);
   }
 
-  void interactions(const Particle *const p, const int n,
-		    Force *const acc) {
+  void interactions(Particle *p, int n, CellLists* cells,
+		    Force *acc) {
     // cellsstart and cellscount IGNORED for now
     if (n > 0 && w_n > 0) {
       size_t textureoffset;
@@ -135,14 +132,14 @@ namespace wall {
 			 sizeof(float4) * w_n));
 
       CC(cudaBindTexture(&textureoffset,
-			 &k_wall::texWallCellStart, wall_cells->start,
+			 &k_wall::texWallCellStart, cells->start,
 			 &k_wall::texWallCellStart.channelDesc,
-			 sizeof(int) * wall_cells->ncells));
+			 sizeof(int) * cells->ncells));
 
       CC(cudaBindTexture(&textureoffset,
-			 &k_wall::texWallCellCount, wall_cells->count,
+			 &k_wall::texWallCellCount, cells->count,
 			 &k_wall::texWallCellCount.channelDesc,
-			 sizeof(int) * wall_cells->ncells));
+			 sizeof(int) * cells->ncells));
 
       k_wall::interactions_3tpp<<<k_cnf(3 * n)>>>
 	((float2 *)p, n, w_n, (float *)acc, trunk->get_float());
@@ -150,9 +147,5 @@ namespace wall {
       CC(cudaUnbindTexture(k_wall::texWallCellStart));
       CC(cudaUnbindTexture(k_wall::texWallCellCount));
     }
-  }
-
-  void close () {
-    delete wall_cells;
   }
 }

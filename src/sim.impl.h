@@ -45,7 +45,7 @@ static void update_helper_arrays() {
 void create_walls() {
   dSync();
   sdf::init();
-  s_n = wall::init(s_pp, s_n); /* number of survived particles */
+  s_n = wall::init(s_pp, s_n, wall_cells); /* number of survived particles */
   wall_created = true;
 
   k_sim::clear_velocity<<<k_cnf(s_n)>>>(s_pp, s_n);
@@ -74,8 +74,8 @@ void clear_forces(Force* ff, int n) {
 }
 
 void forces_wall() {
-  if (rbcs && wall_created) wall::interactions(r_pp, r_n, r_ff);
-  if (wall_created)         wall::interactions(s_pp, s_n, s_ff);
+  if (rbcs && wall_created) wall::interactions(r_pp, r_n, wall_cells, r_ff);
+  if (wall_created)         wall::interactions(s_pp, s_n, wall_cells, s_ff);
 }
 
 void forces_cnt(std::vector<ParticlesWrap> *w_r) {
@@ -187,7 +187,10 @@ void init() {
   if (hdf5part_dumps)
     dump_part_solvent = new H5PartDump("s.h5part");
 
-  cells   = new CellLists(XS, YS, ZS);
+  cells      = new CellLists(XS, YS, ZS);
+  wall_cells = new CellLists(XS + 2 * XMARGIN_WALL,
+			     YS + 2 * YMARGIN_WALL,
+			     ZS + 2 * ZMARGIN_WALL);
   mpDeviceMalloc(&s_zip0); mpDeviceMalloc(&s_zip1);
 
   if (rbcs)
@@ -256,6 +259,7 @@ void close() {
 
   cnt::close();
   delete cells;
+  delete wall_cells;
   rex::close();
   fsi::close();
   DPD::close();

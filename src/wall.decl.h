@@ -20,5 +20,4 @@ namespace wall {
 
   int w_n;
   float4 *w_pp;
-  CellLists *wall_cells;
 }
