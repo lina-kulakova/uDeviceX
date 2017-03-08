@@ -3,4 +3,6 @@ namespace m { /* MPI (man MPI_Cart_create) */
   extern int rank, coords[], dims[], periods[];
   extern const bool reorder;
   extern MPI_Comm cart;
+
+  void init(int argc, char **argv);
 }
