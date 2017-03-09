@@ -143,8 +143,8 @@ namespace wall {
 			 &k_wall::texWallCellCount.channelDesc,
 			 sizeof(int) * cells->ncells));
 
-      k_wall::interactions_3tpp<<<k_cnf(3 * n)>>>
-	((float2 *)pp, n, w_n, (float *)acc, rnd->get_float());
+      k_wall::interactions_3tpp<<<k_cnf(3*n)>>>
+	((float2*)pp, n, w_n, (float*)acc, rnd->get_float());
       CC(cudaUnbindTexture(k_wall::texWallParticles));
       CC(cudaUnbindTexture(k_wall::texWallCellStart));
       CC(cudaUnbindTexture(k_wall::texWallCellCount));
