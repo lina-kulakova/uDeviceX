@@ -237,8 +237,8 @@ void run0(bool wall_created, float driving_force, int it) {
   forces(wall_created);
   dumps_diags(it);
   body_force(driving_force);
-  if (wall_created) update();
-  bounce();
+  update();
+  if (wall_created) bounce();
 }
 
 void run_nowall(int nsteps) {
@@ -257,7 +257,7 @@ void run_wall(int nsteps) {
   
   create_walls(); wall_created = true;
   if (rbcs && r_n) k_sim::clear_velocity<<<k_cnf(r_n)>>>(r_pp, r_n);
-  if (pushtheflow) driving_force = hydrostatic_a;
+  driving_force = pushtheflow ? hydrostatic_a : 0;
 
   for (/* */; it < nsteps; ++it)
     run0(wall_created, driving_force, it);
