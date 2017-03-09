@@ -164,16 +164,15 @@ void body_force() {
 }
 
 void update() {
-  k_sim::update<<<k_cnf(s_n)>>> (false, s_pp, s_ff, s_n);
+  if (s_n)         k_sim::update<<<k_cnf(s_n)>>>(false, s_pp, s_ff, s_n);
+  if (rbcs && r_n) k_sim::update<<<k_cnf(r_n)>>>( true, r_pp, r_ff, r_n);
 
-  if (!rbcs || !r_n) return;
-  k_sim::update<<<k_cnf(r_n)>>> (true,  r_pp, r_ff, r_n);
 }
 
 void bounce() {
   if (!wall_created) return;
-  wall::bounce(s_pp, s_n);
-  if (rbcs) wall::bounce(r_pp, r_n);
+  if (s_n)         k_sdf::bounce<<<k_cnf(s_n)>>>((float2*)s_pp, s_n);
+  if (rbcs && r_n) k_sdf::bounce<<<k_cnf(r_n)>>>((float2*)r_pp, r_n);
 }
 
 void init() {

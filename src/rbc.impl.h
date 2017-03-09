@@ -104,8 +104,7 @@ void setup(int* faces) {
   CC(cudaFuncSetCacheConfig(k_rbc::fall_kernel, cudaFuncCachePreferL1));
 }
 
-void forces(int nc, Particle *pp,
-		    Forces   *ff, float* host_av) {
+void forces(int nc, Particle *pp, Force *ff, float* host_av) {
   if (nc == 0) return;
 
   size_t textureoffset;

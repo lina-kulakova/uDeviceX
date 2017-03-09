@@ -122,10 +122,6 @@ namespace wall {
     return nsurvived;
   } /* end of ini */
 
-  void bounce(Particle *const p, const int n) {
-    if (n > 0) k_sdf::bounce<<<k_cnf(n)>>>((float2 *)p, n);
-  }
-
   void interactions(Particle *pp, float4* w_pp, int n, int w_n,
 		    CellLists* cells, Logistic::KISS* rnd,
 		    Force *acc) {
