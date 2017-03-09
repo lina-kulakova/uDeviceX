@@ -57,8 +57,7 @@ void create_walls() {
 }
 
 void forces_rbc() {
-  if (rbcs) rbc::forces(r_nc, (float*)r_pp, (float*)r_ff,
-			r_host_av);
+  if (rbcs) rbc::forces(r_nc, r_pp, r_ff, r_host_av);
 }
 
 void forces_dpd() {

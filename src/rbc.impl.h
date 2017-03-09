@@ -104,13 +104,13 @@ void setup(int* faces) {
   CC(cudaFuncSetCacheConfig(k_rbc::fall_kernel, cudaFuncCachePreferL1));
 }
 
-void forces(int nc, float *device_xyzuvw,
-		   float *device_axayaz, float* host_av) {
+void forces(int nc, Particle *pp,
+		    Forces   *ff, float* host_av) {
   if (nc == 0) return;
 
   size_t textureoffset;
   CC(cudaBindTexture(&textureoffset, &k_rbc::texVertices,
-		     (float2 *)device_xyzuvw,
+		     (float2*)pp,
 		     &k_rbc::texVertices.channelDesc,
 		     nc * RBCnv * sizeof(float) * 6));
 
@@ -122,7 +122,7 @@ void forces(int nc, float *device_xyzuvw,
   CC(cudaPeekAtLastError());
 
   int degreemax = 7;
-  k_rbc::fall_kernel<<<k_cnf(nc*RBCnv*degreemax)>>>(nc, host_av, device_axayaz);
+  k_rbc::fall_kernel<<<k_cnf(nc*RBCnv*degreemax)>>>(nc, host_av, (float*)ff);
 }
 
 }

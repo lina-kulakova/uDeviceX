@@ -7,7 +7,7 @@ namespace wall {
   }
 
   int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp) {
-    /* return a new number of particles and sets a numpber of wall
+    /* return a new number of particles and sets a number of wall
        particles */
     init_textrue();
 
@@ -115,8 +115,7 @@ namespace wall {
     if (w_n > 0) cells->build(solid, w_n, 0);
     if (m::rank == 0) printf("consolidating wall particles...\n");
 
-    if (w_n > 0)
-      k_wall::strip_solid4<<<k_cnf(w_n)>>>(solid, w_n, w_pp);
+    if (w_n > 0) k_wall::strip_solid4<<<k_cnf(w_n)>>>(solid, w_n, w_pp);
     CC(cudaFree(solid));
 
     *pw_n = w_n; /* set a number of wall particles */
