@@ -4,14 +4,17 @@ namespace wall {
     /* return a new number of particles and sets a number of wall
        particles */
     thrust::device_vector<int> keys(n);
-    k_sdf::fill_keys<<<k_cnf(n)>>>(pp, n, thrust::raw_pointer_cast(&keys[0]));
-    thrust::sort_by_key(keys.begin(), keys.end(), thrust::device_ptr<Particle>(pp));
+    k_sdf::fill_keys<<<k_cnf(n)>>>(pp, n,
+				   thrust::raw_pointer_cast(&keys[0]));
+    thrust::sort_by_key(keys.begin(), keys.end(),
+			thrust::device_ptr<Particle>(pp));
 
-    int nsurvived = thrust::count(keys.begin(), keys.end(), 0);
-    int nbelt = thrust::count(keys.begin() + nsurvived, keys.end(), 1);
+    int ns = thrust::count(keys.begin(), keys.end(), 0); /* nsurvived */
+    int nb     = thrust::count(keys.begin() + ns, keys.end(), 1); /* nbelt */
+
     thrust::device_vector<Particle> solid_local
-      (thrust::device_ptr<Particle>(pp + nsurvived),
-       thrust::device_ptr<Particle>(pp + nsurvived + nbelt));
+      (thrust::device_ptr<Particle>(pp + ns),
+       thrust::device_ptr<Particle>(pp + ns + nb));
 
     StaticDeviceBuffer1<Particle> solid_remote;
     {
@@ -111,7 +114,7 @@ namespace wall {
     CC(cudaFree(solid));
 
     *pw_n = w_n; /* set a number of wall particles */
-    return nsurvived;
+    return ns;
   } /* end of ini */
 
   void init_textrue() {
