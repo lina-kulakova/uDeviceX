@@ -1,15 +1,8 @@
 namespace wall {
-  void init_textrue() {
-    setup_texture(k_wall::texWallParticles, float4);
-    setup_texture(k_wall::texWallCellStart, int);
-    setup_texture(k_wall::texWallCellCount, int);
-  }
 
   int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp) {
     /* return a new number of particles and sets a number of wall
        particles */
-    init_textrue();
-
     thrust::device_vector<int> keys(n);
     k_sdf::fill_keys<<<k_cnf(n)>>>(pp, n, thrust::raw_pointer_cast(&keys[0]));
     thrust::sort_by_key(keys.begin(), keys.end(), thrust::device_ptr<Particle>(pp));
@@ -121,10 +114,16 @@ namespace wall {
     return nsurvived;
   } /* end of ini */
 
+  void init_textrue() {
+    setup_texture(k_wall::texWallParticles, float4);
+    setup_texture(k_wall::texWallCellStart, int);
+    setup_texture(k_wall::texWallCellCount, int);
+  }
+
   void interactions(Particle *pp, float4* w_pp, int n, int w_n,
 		    CellLists* cells, Logistic::KISS* rnd,
 		    Force *acc) {
-    // cellsstart and cellscount IGNORED for now
+    init_textrue();
     if (n > 0 && w_n > 0) {
       size_t textureoffset;
       CC(cudaBindTexture(&textureoffset,
