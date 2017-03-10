@@ -26,9 +26,9 @@ namespace sdf {
 	spacing[c] = N[c] * (L[c] + 2 * MARGIN[c]) /
 	  (float)(m::dims[c] * L[c]) / (float)TEXTURESIZE[c];
       }
-      float amplitude_rescaling = (XS /*+ 2 * XMARGIN_WALL*/) /
+      float ampl = (XS /*+ 2 * XMARGIN_WALL*/) /
 	(extent[0] / m::dims[0]);
-      field::sample(start, spacing, TEXTURESIZE, N, amplitude_rescaling, grid_data,
+      field::sample(start, spacing, TEXTURESIZE, N, ampl, grid_data,
 		    field);
     }
 
