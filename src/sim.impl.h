@@ -37,7 +37,6 @@ void remove_bodies_from_wall() {
 }
 
 static void update_helper_arrays() {
-  CC(cudaFuncSetCacheConfig(k_sim::make_texture, cudaFuncCachePreferShared));
   k_sim::make_texture<<<(s_n + 1023) / 1024, 1024, 1024 * 6 * sizeof(float)>>>
     (s_zip0, s_zip1, (float*)s_pp, s_n);
 }

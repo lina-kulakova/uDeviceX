@@ -144,7 +144,6 @@ namespace k_fsi {
       texSolventParticles.mipmapFilterMode = cudaFilterModePoint;
       texSolventParticles.normalized = 0;
 
-      CC(cudaFuncSetCacheConfig(interactions_3tpp, cudaFuncCachePreferL1));
 
       firsttime = false;
     }

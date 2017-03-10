@@ -146,7 +146,6 @@ namespace BipsBatch {
 		    float *acc, int n) {
     if (firstcall) {
       CC(cudaEventCreate(&evhalodone, cudaEventDisableTiming));
-      CC(cudaFuncSetCacheConfig(interaction_kernel, cudaFuncCachePreferL1));
       firstcall = false;
     }
 

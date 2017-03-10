@@ -70,7 +70,6 @@ namespace sdstr {
 
     CC(cudaEventCreate(&evpacking, cudaEventDisableTiming));
     CC(cudaEventCreate(&evsizes, cudaEventDisableTiming));
-    CC(cudaFuncSetCacheConfig(k_sdstr::gather_particles, cudaFuncCachePreferL1));
   }
 
   void _post_recv() {

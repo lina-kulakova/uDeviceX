@@ -100,8 +100,6 @@ void setup(int* faces) {
   CC(cudaBindTexture(&textureoffset, &k_rbc::texTriangles4, devtrs4,
 		     &k_rbc::texTriangles4.channelDesc,
 		     RBCnt * 4 * sizeof(int)));
-
-  CC(cudaFuncSetCacheConfig(k_rbc::fall_kernel, cudaFuncCachePreferL1));
 }
 
 void forces(int nc, Particle *pp, Force *ff, float* host_av) {

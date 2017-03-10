@@ -42,9 +42,6 @@ void setup() {
   texCellEntries.filterMode = cudaFilterModePoint;
   texCellEntries.mipmapFilterMode = cudaFilterModePoint;
   texCellEntries.normalized = 0;
-
-  CC(cudaFuncSetCacheConfig(bulk_3tpp, cudaFuncCachePreferL1));
-  CC(cudaFuncSetCacheConfig(halo, cudaFuncCachePreferL1));
 }
 
 __global__ void populate(uchar4 *subindices,

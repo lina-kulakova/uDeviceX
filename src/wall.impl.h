@@ -3,7 +3,6 @@ namespace wall {
     setup_texture(k_wall::texWallParticles, float4);
     setup_texture(k_wall::texWallCellStart, int);
     setup_texture(k_wall::texWallCellCount, int);
-    CC(cudaFuncSetCacheConfig(k_wall::interactions_3tpp, cudaFuncCachePreferL1));
   }
 
   int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp) {
