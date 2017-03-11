@@ -82,8 +82,6 @@ namespace wall {
 		    H2D));
     }
 
-    CC(cudaMemcpy(w_pp, thrust::raw_pointer_cast(&solid_local[0]),
-		  sizeof(Particle) * (*w_n), D2D));
     CC(cudaMemcpy(w_pp + (*w_n), solid_remote.D,
 		  sizeof(Particle) * solid_remote.S, D2D));
     *w_n = solid_local.size() + solid_remote.S;
