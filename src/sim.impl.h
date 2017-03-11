@@ -290,6 +290,6 @@ void close() {
   CC(cudaFree(s_pp )); CC(cudaFree(s_ff ));
   CC(cudaFree(s_pp0));
 
-  CC(cudaFree(w_pp4)); CC(cudaFree(w_pp));
+  CC(cudaFree(w_pp4)); /* CC(cudaFree(w_pp)); */
 }
 }
