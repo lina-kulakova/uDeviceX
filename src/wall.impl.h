@@ -1,6 +1,5 @@
 namespace wall {
-  void init(Particle *w_pp, int* w_n, /* storage */ Particle *w_pp_hst) {
-    std::vector<Particle> selected;
+  void init(Particle *w_pp, int* w_n, Particle *w_pp_hst) {
     {
       int dstranks[26], remsizes[26], recv_tags[26];
       for (int i = 0; i < 26; ++i) {
@@ -66,14 +65,11 @@ namespace wall {
 	  for (int c = 0; c < 3; ++c)
 	    inside &=
 	      p.r[c] >= -L[c] / 2 - MARGIN[c] && p.r[c] < L[c] / 2 + MARGIN[c];
-	  if (inside) selected.push_back(p);
+	  if (inside) w_pp_hst[(*w_n)++] = p;
 	}
       }
     }
-
-    CC(cudaMemcpy(w_pp + (*w_n), selected.data(),
-		  sizeof(Particle) * selected.size(), H2D));
-    *w_n += selected.size();
+    CC(cudaMemcpy(w_pp, w_pp_hst, sizeof(Particle)*(*w_n), H2D));
   } /* end of ini */
 
   void init_textrue() {
