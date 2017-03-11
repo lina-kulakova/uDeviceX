@@ -1,5 +1,5 @@
 namespace wall {
-  void init(Particle *w_pp_hst, int* w_n) {
+  void exch(Particle *w_pp_hst, int* w_n) {
       int dstranks[26], remsizes[26], recv_tags[26];
       for (int i = 0; i < 26; ++i) {
 	int d[3] = {(i + 2) % 3 - 1, (i / 3 + 2) % 3 - 1, (i / 9 + 2) % 3 - 1};
@@ -51,20 +51,25 @@ namespace wall {
       }
       MPI_Barrier(m::cart);
 
-      // select particles within my region [-L / 2 - MARGIN, +L / 2 + MARGIN]
       int L[3] = {XS, YS, ZS};
       int MARGIN[3] = {XMARGIN_WALL, YMARGIN_WALL, ZMARGIN_WALL};
+      float lo[3], hi[3];
+      int c, i, j;
+      for (c = 0; c < 3; c ++) {
+	lo[c] = -0.5*L[c] - MARGIN[c];
+	hi[c] =  0.5*L[c] + MARGIN[c];
+      }
 
-      for (int i = 0; i < 26; ++i) {
+      for (i = 0; i < 26; ++i) {
 	int d[3] = {(i + 2) % 3 - 1, (i / 3 + 2) % 3 - 1, (i / 9 + 2) % 3 - 1};
-	for (int j = 0; j < remote[i].size(); ++j) {
+	for (j = 0; j < remote[i].size(); ++j) {
 	  Particle p = remote[i][j];
-	  for (int c = 0; c < 3; ++c) p.r[c] += d[c] * L[c];
-	  bool inside = true;
-	  for (int c = 0; c < 3; ++c)
-	    inside &=
-	      p.r[c] >= -L[c] / 2 - MARGIN[c] && p.r[c] < L[c] / 2 + MARGIN[c];
-	  if (inside) w_pp_hst[(*w_n)++] = p;
+	  for (c = 0; c < 3; ++c) {
+	    p.r[c] += d[c] * L[c];
+	    if (p.r[c] < lo[c] || p.r[c] >= hi[c]) goto next;
+	  }
+	  w_pp_hst[(*w_n)++] = p;
+	next: ;
 	}
       }
   } /* end of ini */
