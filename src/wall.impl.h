@@ -1,6 +1,6 @@
 namespace wall {
   void init(Particle *w_pp, int* w_n, /* storage */ Particle *w_pp_hst) {
-    StaticDeviceBuffer1<Particle> solid_remote;
+    std::vector<Particle> selected;
     {
       int dstranks[26], remsizes[26], recv_tags[26];
       for (int i = 0; i < 26; ++i) {
@@ -51,9 +51,9 @@ namespace wall {
 	MC(MPI_Waitall(26, reqrecv, statuses));
 	MC(MPI_Waitall(26, reqsend, statuses));
       }
+      MPI_Barrier(m::cart);
 
       // select particles within my region [-L / 2 - MARGIN, +L / 2 + MARGIN]
-      std::vector<Particle> selected;
       int L[3] = {XS, YS, ZS};
       int MARGIN[3] = {XMARGIN_WALL, YMARGIN_WALL, ZMARGIN_WALL};
 
@@ -69,17 +69,11 @@ namespace wall {
 	  if (inside) selected.push_back(p);
 	}
       }
-
-      solid_remote.resize(selected.size());
-      CC(cudaMemcpy(solid_remote.D, selected.data(),
-		    sizeof(Particle) * solid_remote.S,
-		    H2D));
-      MPI_Barrier(m::cart);
     }
 
-    CC(cudaMemcpy(w_pp + (*w_n), solid_remote.D,
-		  sizeof(Particle) * solid_remote.S, D2D));
-    *w_n += solid_remote.S;
+    CC(cudaMemcpy(w_pp + (*w_n), selected.data(),
+		  sizeof(Particle) * selected.size(), H2D));
+    *w_n += selected.size();
   } /* end of ini */
 
   void init_textrue() {
