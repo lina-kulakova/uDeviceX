@@ -1,9 +1,9 @@
 namespace wall {
 
-  void init(Particle **w_pp, int* w_n) {
+  void init(Particle *w_pp, int* w_n) {
     thrust::device_vector<Particle> solid_local
-      (thrust::device_ptr<Particle>(*w_pp       ),
-       thrust::device_ptr<Particle>(*w_pp + *w_n));
+      (thrust::device_ptr<Particle>(w_pp       ),
+       thrust::device_ptr<Particle>(w_pp + *w_n));
 
     StaticDeviceBuffer1<Particle> solid_remote;
     {
@@ -85,10 +85,10 @@ namespace wall {
     }
 
     *w_n = solid_local.size() + solid_remote.S;
-    CC(cudaMemcpy(*w_pp, thrust::raw_pointer_cast(&solid_local[0]),
+    CC(cudaMemcpy(w_pp, thrust::raw_pointer_cast(&solid_local[0]),
 		  sizeof(Particle) * solid_local.size(),
 		  D2D));
-    CC(cudaMemcpy(*w_pp + solid_local.size(), solid_remote.D,
+    CC(cudaMemcpy(w_pp + solid_local.size(), solid_remote.D,
 		  sizeof(Particle) * solid_remote.S,
 		  D2D));
   } /* end of ini */
