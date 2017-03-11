@@ -99,29 +99,29 @@ namespace wall {
     setup_texture(k_wall::texWallCellCount, int);
   }
 
-  void interactions(Particle *s_pp, float4* w_pp4, int n, int w_n,
+  void interactions(Particle *s_pp, float4* w_pp4, int s_n, int w_n,
 		    CellLists* cells, Logistic::KISS* rnd,
-		    Force *acc) {
+		    Force *ff) {
     init_textrue();
-    if (n > 0 && w_n > 0) {
-      size_t textureoffset;
-      CC(cudaBindTexture(&textureoffset,
+    if (s_n && w_n) {
+      size_t offset;
+      CC(cudaBindTexture(&offset,
 			 &k_wall::texWallParticles, w_pp4,
 			 &k_wall::texWallParticles.channelDesc,
 			 sizeof(float4) * w_n));
 
-      CC(cudaBindTexture(&textureoffset,
+      CC(cudaBindTexture(&offset,
 			 &k_wall::texWallCellStart, cells->start,
 			 &k_wall::texWallCellStart.channelDesc,
 			 sizeof(int) * cells->ncells));
 
-      CC(cudaBindTexture(&textureoffset,
+      CC(cudaBindTexture(&offset,
 			 &k_wall::texWallCellCount, cells->count,
 			 &k_wall::texWallCellCount.channelDesc,
 			 sizeof(int) * cells->ncells));
 
-      k_wall::interactions_3tpp<<<k_cnf(3*n)>>>
-	((float2*)s_pp, n, w_n, (float*)acc, rnd->get_float());
+      k_wall::interactions_3tpp<<<k_cnf(3*s_n)>>>
+	((float2*)s_pp, s_n, w_n, (float*)ff, rnd->get_float());
 
       CC(cudaUnbindTexture(k_wall::texWallParticles));
       CC(cudaUnbindTexture(k_wall::texWallCellStart));
