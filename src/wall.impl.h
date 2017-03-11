@@ -1,11 +1,10 @@
 namespace wall {
 
-  void init(CellLists* cells,
-	    Particle **w_pp, int* w_n, float4* w_pp4) {
+  void init(CellLists* cells, Particle *w_pp, float4* w_pp4, int* w_n) {
 
     thrust::device_vector<Particle> solid_local
-      (thrust::device_ptr<Particle>(*w_pp       ),
-       thrust::device_ptr<Particle>(*w_pp + *w_n));
+      (thrust::device_ptr<Particle>(w_pp       ),
+       thrust::device_ptr<Particle>(w_pp + *w_n));
 
     StaticDeviceBuffer1<Particle> solid_remote;
     {

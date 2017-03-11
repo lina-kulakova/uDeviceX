@@ -45,8 +45,9 @@ void create_walls() {
   dSync();
   sdf::init();
 
-  sdf::bulk_wall(s_pp, &s_n, &w_pp, &w_n);
-  wall::init(wall_cells, &w_pp, &w_n, w_pp4);
+  Particle* w_pp;
+  sdf::bulk_wall(/**/ s_pp, &s_n, &w_pp, &w_n);
+  wall::init(wall_cells, w_pp, /**/ w_pp4, &w_n);
 
   k_sim::clear_velocity<<<k_cnf(s_n)>>>(s_pp, s_n);
   cells->build(s_pp, s_n, NULL, NULL);
@@ -199,7 +200,7 @@ void init() {
   mpDeviceMalloc(&s_ff);
   mpDeviceMalloc(&r_ff); mpDeviceMalloc(&r_ff);
 
-  mpDeviceMalloc(&w_pp4); mpDeviceMalloc(&w_pp);
+  mpDeviceMalloc(&w_pp4);
 
   s_n = ic::gen(s_pp_hst);
   CC(cudaMemcpy(s_pp, s_pp_hst, sizeof(Particle) * s_n, H2D));
@@ -290,6 +291,6 @@ void close() {
   CC(cudaFree(s_pp )); CC(cudaFree(s_ff ));
   CC(cudaFree(s_pp0));
 
-  CC(cudaFree(w_pp4)); /* CC(cudaFree(w_pp)); */
+  CC(cudaFree(w_pp4));
 }
 }
