@@ -1,6 +1,5 @@
 namespace wall {
-  void init(Particle *w_pp, int* w_n, Particle *w_pp_hst) {
-    {
+  void init(Particle *w_pp_hst, int* w_n) {
       int dstranks[26], remsizes[26], recv_tags[26];
       for (int i = 0; i < 26; ++i) {
 	int d[3] = {(i + 2) % 3 - 1, (i / 3 + 2) % 3 - 1, (i / 9 + 2) % 3 - 1};
@@ -68,8 +67,6 @@ namespace wall {
 	  if (inside) w_pp_hst[(*w_n)++] = p;
 	}
       }
-    }
-    CC(cudaMemcpy(w_pp, w_pp_hst, sizeof(Particle)*(*w_n), H2D));
   } /* end of ini */
 
   void init_textrue() {
