@@ -1,11 +1,7 @@
 namespace wall {
 
   void init(CellLists* cells,
-	    Particle *s_pp, Particle **w_pp,
-	    int *s_n, int* w_n, float4* w_pp4) {
-    /* return a new number of particles and sets a number of wall
-       particles */
-    sdf::bulk_wall(s_pp, s_n, w_pp, w_n);
+	    Particle **w_pp, int* w_n, float4* w_pp4) {
 
     thrust::device_vector<Particle> solid_local
       (thrust::device_ptr<Particle>(*w_pp       ),
