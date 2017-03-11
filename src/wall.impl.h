@@ -1,12 +1,9 @@
 namespace wall {
   void init(Particle *w_pp, int* w_n) {
-    thrust::device_vector<Particle> solid_local
-      (thrust::device_ptr<Particle>(w_pp       ),
-       thrust::device_ptr<Particle>(w_pp + *w_n));
-
     StaticDeviceBuffer1<Particle> solid_remote;
     {
-      thrust::host_vector<Particle> local = solid_local;
+      thrust::host_vector<Particle> local(thrust::device_ptr<Particle>(w_pp       ),
+					  thrust::device_ptr<Particle>(w_pp + *w_n));
 
       int dstranks[26], remsizes[26], recv_tags[26];
       for (int i = 0; i < 26; ++i) {
