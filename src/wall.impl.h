@@ -1,14 +1,15 @@
 namespace wall {
 
-  int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp) {
+  int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp4) {
     /* return a new number of particles and sets a number of wall
        particles */
-    int ns, nb;
-    sdf::bulk_wall(pp, n, &ns, &nb);
+    Particle *w_pp;
+    int w_n, ns;
+    sdf::bulk_wall(pp, n, &w_pp, &w_n, &ns);
 
     thrust::device_vector<Particle> solid_local
-      (thrust::device_ptr<Particle>(pp + ns),
-       thrust::device_ptr<Particle>(pp + ns + nb));
+      (thrust::device_ptr<Particle>(w_pp      ),
+       thrust::device_ptr<Particle>(w_pp + w_n));
 
     StaticDeviceBuffer1<Particle> solid_remote;
     {
@@ -89,7 +90,6 @@ namespace wall {
 		    H2D));
     }
 
-    int w_n;
     w_n = solid_local.size() + solid_remote.S;
 
     Particle *solid;
@@ -104,7 +104,7 @@ namespace wall {
     if (w_n > 0) cells->build(solid, w_n, 0);
     if (m::rank == 0) printf("consolidating wall particles...\n");
 
-    if (w_n > 0) k_wall::strip_solid4<<<k_cnf(w_n)>>>(solid, w_n, w_pp);
+    if (w_n > 0) k_wall::strip_solid4<<<k_cnf(w_n)>>>(solid, w_n, w_pp4);
     CC(cudaFree(solid));
 
     *pw_n = w_n; /* set a number of wall particles */
@@ -117,14 +117,14 @@ namespace wall {
     setup_texture(k_wall::texWallCellCount, int);
   }
 
-  void interactions(Particle *pp, float4* w_pp, int n, int w_n,
+  void interactions(Particle *pp, float4* w_pp4, int n, int w_n,
 		    CellLists* cells, Logistic::KISS* rnd,
 		    Force *acc) {
     init_textrue();
     if (n > 0 && w_n > 0) {
       size_t textureoffset;
       CC(cudaBindTexture(&textureoffset,
-			 &k_wall::texWallParticles, w_pp,
+			 &k_wall::texWallParticles, w_pp4,
 			 &k_wall::texWallParticles.channelDesc,
 			 sizeof(float4) * w_n));
 
