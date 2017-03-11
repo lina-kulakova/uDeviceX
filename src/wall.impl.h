@@ -74,6 +74,7 @@ namespace wall {
       CC(cudaMemcpy(solid_remote.D, selected.data(),
 		    sizeof(Particle) * solid_remote.S,
 		    H2D));
+      MPI_Barrier(m::cart);
     }
 
     CC(cudaMemcpy(w_pp + (*w_n), solid_remote.D,
