@@ -3,14 +3,8 @@ namespace wall {
   int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp) {
     /* return a new number of particles and sets a number of wall
        particles */
-    thrust::device_vector<int> keys(n);
-    k_sdf::fill_keys<<<k_cnf(n)>>>(pp, n,
-				   thrust::raw_pointer_cast(&keys[0]));
-    thrust::sort_by_key(keys.begin(), keys.end(),
-			thrust::device_ptr<Particle>(pp));
-
-    int ns = thrust::count(keys.begin(), keys.end(), 0); /* nsurvived */
-    int nb     = thrust::count(keys.begin() + ns, keys.end(), 1); /* nbelt */
+    int ns, nb;
+    sdf::bulk_wall(pp, n, &ns, &nb);
 
     thrust::device_vector<Particle> solid_local
       (thrust::device_ptr<Particle>(pp + ns),

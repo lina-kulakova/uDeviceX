@@ -52,6 +52,17 @@ namespace sdf {
     CC(cudaBindTextureToArray(k_sdf::texSDF, arrSDF, fmt));
   }
 
+  void bulk_wall(Particle *pp, int n, int *ns, int *nb) {
+    thrust::device_vector<int> keys(n);
+    k_sdf::fill_keys<<<k_cnf(n)>>>(pp, n,
+				   thrust::raw_pointer_cast(&keys[0]));
+    thrust::sort_by_key(keys.begin(), keys.end(),
+			thrust::device_ptr<Particle>(pp));
+
+    *ns = thrust::count(keys.begin()      , keys.end(), 0); /* nsurvived */
+    *nb = thrust::count(keys.begin() + *ns, keys.end(), 1); /* nbelt */
+  }
+
   void close() {
     CC(cudaUnbindTexture(k_sdf::texSDF));
     CC(cudaFreeArray(arrSDF));
