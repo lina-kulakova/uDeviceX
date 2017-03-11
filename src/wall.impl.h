@@ -1,5 +1,4 @@
 namespace wall {
-
   void init(Particle *w_pp, int* w_n) {
     thrust::device_vector<Particle> solid_local
       (thrust::device_ptr<Particle>(w_pp       ),
@@ -30,10 +29,9 @@ namespace wall {
 	  MC(MPI_Irecv(remsizes + i, 1, MPI_INTEGER, dstranks[i],
 		       123 + recv_tags[i], m::cart, reqrecv + i));
 
-	int localsize = local.size();
 	MPI_Request reqsend[26];
 	for (int i = 0; i < 26; ++i)
-	  MC(MPI_Isend(&localsize, 1, MPI_INTEGER, dstranks[i], 123 + i,
+	  MC(MPI_Isend(w_n, 1, MPI_INTEGER, dstranks[i], 123 + i,
 		       m::cart, reqsend + i));
 	MPI_Status statuses[26];
 	MC(MPI_Waitall(26, reqrecv, statuses));
@@ -52,7 +50,7 @@ namespace wall {
 		       reqrecv + i));
 	MPI_Request reqsend[26];
 	for (int i = 0; i < 26; ++i)
-	  MC(MPI_Isend(local.data(), local.size() * 6, MPI_FLOAT,
+	  MC(MPI_Isend(local.data(), (*w_n) * 6, MPI_FLOAT,
 		       dstranks[i], 321 + i, m::cart, reqsend + i));
 
 	MPI_Status statuses[26];
@@ -84,13 +82,11 @@ namespace wall {
 		    H2D));
     }
 
-    *w_n = solid_local.size() + solid_remote.S;
     CC(cudaMemcpy(w_pp, thrust::raw_pointer_cast(&solid_local[0]),
-		  sizeof(Particle) * solid_local.size(),
-		  D2D));
-    CC(cudaMemcpy(w_pp + solid_local.size(), solid_remote.D,
-		  sizeof(Particle) * solid_remote.S,
-		  D2D));
+		  sizeof(Particle) * (*w_n), D2D));
+    CC(cudaMemcpy(w_pp + (*w_n), solid_remote.D,
+		  sizeof(Particle) * solid_remote.S, D2D));
+    *w_n = solid_local.size() + solid_remote.S;
   } /* end of ini */
 
   void init_textrue() {
