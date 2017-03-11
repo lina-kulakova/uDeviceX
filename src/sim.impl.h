@@ -47,7 +47,8 @@ void create_walls() {
 
   Particle* w_pp;
   sdf::bulk_wall(/**/ s_pp, &s_n, &w_pp, &w_n);
-  wall::init(/**/ w_pp, &w_n);
+  CC(cudaMemcpy(w_pp_hst, w_pp, sizeof(Particle)*w_n, D2H));
+  wall::init(/**/ w_pp, &w_n, /*s*/ w_pp_hst);
   if (w_n) {
     wall_cells->build(w_pp, w_n, 0);
     k_wall::strip<<<k_cnf(w_n)>>>(w_pp, w_n, w_pp4);

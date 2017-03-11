@@ -1,10 +1,7 @@
 namespace wall {
-  void init(Particle *w_pp, int* w_n) {
+  void init(Particle *w_pp, int* w_n, /* storage */ Particle *w_pp_hst) {
     StaticDeviceBuffer1<Particle> solid_remote;
     {
-      thrust::host_vector<Particle> w_pp_hst(thrust::device_ptr<Particle>(w_pp       ),
-					     thrust::device_ptr<Particle>(w_pp + *w_n));
-
       int dstranks[26], remsizes[26], recv_tags[26];
       for (int i = 0; i < 26; ++i) {
 	int d[3] = {(i + 2) % 3 - 1, (i / 3 + 2) % 3 - 1, (i / 9 + 2) % 3 - 1};
@@ -47,7 +44,7 @@ namespace wall {
 		       reqrecv + i));
 	MPI_Request reqsend[26];
 	for (int i = 0; i < 26; ++i)
-	  MC(MPI_Isend(w_pp_hst.data(), (*w_n) * 6, MPI_FLOAT,
+	  MC(MPI_Isend(w_pp_hst, (*w_n) * 6, MPI_FLOAT,
 		       dstranks[i], 321 + i, m::cart, reqsend + i));
 
 	MPI_Status statuses[26];
