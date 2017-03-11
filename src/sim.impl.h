@@ -46,7 +46,7 @@ void create_walls() {
   sdf::init();
 
   /* returns number of survived particles; sets the wall particles */
-  s_n = wall::init(s_pp, s_n, wall_cells, &w_n, w_pp);
+  s_n = wall::init(s_pp, &w_pp, s_n, wall_cells, &w_n, w_pp4);
 
   k_sim::clear_velocity<<<k_cnf(s_n)>>>(s_pp, s_n);
   cells->build(s_pp, s_n, NULL, NULL);
@@ -73,8 +73,8 @@ void clear_forces(Force* ff, int n) {
 }
 
 void forces_wall() {
-  if (rbcs) wall::interactions(r_pp, w_pp, r_n, w_n, wall_cells, rnd, r_ff);
-  wall::interactions(s_pp, w_pp, s_n, w_n, wall_cells, rnd, s_ff);
+  if (rbcs) wall::interactions(r_pp, w_pp4, r_n, w_n, wall_cells, rnd, r_ff);
+  wall::interactions(s_pp, w_pp4, s_n, w_n, wall_cells, rnd, s_ff);
 }
 
 void forces_cnt(std::vector<ParticlesWrap> *w_r) {
@@ -199,7 +199,7 @@ void init() {
   mpDeviceMalloc(&s_ff);
   mpDeviceMalloc(&r_ff); mpDeviceMalloc(&r_ff);
 
-  mpDeviceMalloc(&w_pp);
+  mpDeviceMalloc(&w_pp4); mpDeviceMalloc(&w_pp);
 
   s_n = ic::gen(s_pp_hst);
   CC(cudaMemcpy(s_pp, s_pp_hst, sizeof(Particle) * s_n, H2D));
@@ -290,6 +290,6 @@ void close() {
   CC(cudaFree(s_pp )); CC(cudaFree(s_ff ));
   CC(cudaFree(s_pp0));
 
-  CC(cudaFree(w_pp));
+  CC(cudaFree(w_pp4)); CC(cudaFree(w_pp));
 }
 }

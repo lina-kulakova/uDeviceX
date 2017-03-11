@@ -1,15 +1,15 @@
 namespace wall {
 
-  int init(Particle *pp, int n, CellLists* cells, int* pw_n, float4* w_pp4) {
+  int init(Particle *pp, Particle **w_pp,
+	   int n, CellLists* cells, int* pw_n, float4* w_pp4) {
     /* return a new number of particles and sets a number of wall
        particles */
-    Particle *w_pp;
     int w_n, ns;
-    sdf::bulk_wall(pp, n, &w_pp, &w_n, &ns);
+    sdf::bulk_wall(pp, n, w_pp, &w_n, &ns);
 
     thrust::device_vector<Particle> solid_local
-      (thrust::device_ptr<Particle>(w_pp      ),
-       thrust::device_ptr<Particle>(w_pp + w_n));
+      (thrust::device_ptr<Particle>(*w_pp      ),
+       thrust::device_ptr<Particle>(*w_pp + w_n));
 
     StaticDeviceBuffer1<Particle> solid_remote;
     {
