@@ -47,7 +47,7 @@ void create_walls() {
 
   Particle* w_pp;
   sdf::bulk_wall(/**/ s_pp, &s_n, &w_pp, &w_n);
-  wall::init(wall_cells, &w_pp, /**/ w_pp4, &w_n);
+  wall::init(wall_cells, /**/ &w_pp, w_pp4, &w_n);
 
   k_sim::clear_velocity<<<k_cnf(s_n)>>>(s_pp, s_n);
   cells->build(s_pp, s_n, NULL, NULL);

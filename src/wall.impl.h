@@ -87,20 +87,17 @@ namespace wall {
 
     *w_n = solid_local.size() + solid_remote.S;
 
-    Particle *solid;
-    CC(cudaMalloc(&solid, sizeof(Particle) * (*w_n)));
-    CC(cudaMemcpy(solid, thrust::raw_pointer_cast(&solid_local[0]),
+    CC(cudaMemcpy(*w_pp, thrust::raw_pointer_cast(&solid_local[0]),
 		  sizeof(Particle) * solid_local.size(),
 		  D2D));
-    CC(cudaMemcpy(solid + solid_local.size(), solid_remote.D,
+    CC(cudaMemcpy(*w_pp + solid_local.size(), solid_remote.D,
 		  sizeof(Particle) * solid_remote.S,
 		  D2D));
 
-    if (*w_n > 0) cells->build(solid, *w_n, 0);
+    if (*w_n > 0) cells->build(*w_pp, *w_n, 0);
     if (m::rank == 0) printf("consolidating wall particles...\n");
 
-    if (*w_n > 0) k_wall::strip_solid4<<<k_cnf(*w_n)>>>(solid, *w_n, w_pp4);
-    CC(cudaFree(solid));
+    if (*w_n > 0) k_wall::strip_solid4<<<k_cnf(*w_n)>>>(*w_pp, *w_n, w_pp4);
   } /* end of ini */
 
   void init_textrue() {
