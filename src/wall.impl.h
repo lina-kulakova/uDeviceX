@@ -84,7 +84,7 @@ namespace wall {
 
     CC(cudaMemcpy(w_pp + (*w_n), solid_remote.D,
 		  sizeof(Particle) * solid_remote.S, D2D));
-    *w_n = solid_local.size() + solid_remote.S;
+    *w_n += solid_remote.S;
   } /* end of ini */
 
   void init_textrue() {
