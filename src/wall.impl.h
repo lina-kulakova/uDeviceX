@@ -1,15 +1,15 @@
 namespace wall {
 
-  int init(Particle *pp, Particle **w_pp,
-	   int n, CellLists* cells, int* pw_n, float4* w_pp4) {
+  void init(CellLists* cells,
+	    Particle *s_pp, Particle **w_pp,
+	    int *s_n, int* w_n, float4* w_pp4) {
     /* return a new number of particles and sets a number of wall
        particles */
-    int w_n, ns;
-    sdf::bulk_wall(pp, n, w_pp, &w_n, &ns);
+    sdf::bulk_wall(s_pp, s_n, w_pp, w_n);
 
     thrust::device_vector<Particle> solid_local
-      (thrust::device_ptr<Particle>(*w_pp      ),
-       thrust::device_ptr<Particle>(*w_pp + w_n));
+      (thrust::device_ptr<Particle>(*w_pp       ),
+       thrust::device_ptr<Particle>(*w_pp + *w_n));
 
     StaticDeviceBuffer1<Particle> solid_remote;
     {
@@ -90,10 +90,10 @@ namespace wall {
 		    H2D));
     }
 
-    w_n = solid_local.size() + solid_remote.S;
+    *w_n = solid_local.size() + solid_remote.S;
 
     Particle *solid;
-    CC(cudaMalloc(&solid, sizeof(Particle) * w_n));
+    CC(cudaMalloc(&solid, sizeof(Particle) * (*w_n)));
     CC(cudaMemcpy(solid, thrust::raw_pointer_cast(&solid_local[0]),
 		  sizeof(Particle) * solid_local.size(),
 		  D2D));
@@ -101,14 +101,11 @@ namespace wall {
 		  sizeof(Particle) * solid_remote.S,
 		  D2D));
 
-    if (w_n > 0) cells->build(solid, w_n, 0);
+    if (*w_n > 0) cells->build(solid, *w_n, 0);
     if (m::rank == 0) printf("consolidating wall particles...\n");
 
-    if (w_n > 0) k_wall::strip_solid4<<<k_cnf(w_n)>>>(solid, w_n, w_pp4);
+    if (*w_n > 0) k_wall::strip_solid4<<<k_cnf(*w_n)>>>(solid, *w_n, w_pp4);
     CC(cudaFree(solid));
-
-    *pw_n = w_n; /* set a number of wall particles */
-    return ns;
   } /* end of ini */
 
   void init_textrue() {
@@ -117,7 +114,7 @@ namespace wall {
     setup_texture(k_wall::texWallCellCount, int);
   }
 
-  void interactions(Particle *pp, float4* w_pp4, int n, int w_n,
+  void interactions(Particle *s_pp, float4* w_pp4, int n, int w_n,
 		    CellLists* cells, Logistic::KISS* rnd,
 		    Force *acc) {
     init_textrue();
@@ -139,7 +136,8 @@ namespace wall {
 			 sizeof(int) * cells->ncells));
 
       k_wall::interactions_3tpp<<<k_cnf(3*n)>>>
-	((float2*)pp, n, w_n, (float*)acc, rnd->get_float());
+	((float2*)s_pp, n, w_n, (float*)acc, rnd->get_float());
+
       CC(cudaUnbindTexture(k_wall::texWallParticles));
       CC(cudaUnbindTexture(k_wall::texWallCellStart));
       CC(cudaUnbindTexture(k_wall::texWallCellCount));

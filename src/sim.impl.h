@@ -46,7 +46,7 @@ void create_walls() {
   sdf::init();
 
   /* returns number of survived particles; sets the wall particles */
-  s_n = wall::init(s_pp, &w_pp, s_n, wall_cells, &w_n, w_pp4);
+  wall::init(wall_cells, s_pp, &w_pp, &s_n, &w_n, w_pp4);
 
   k_sim::clear_velocity<<<k_cnf(s_n)>>>(s_pp, s_n);
   cells->build(s_pp, s_n, NULL, NULL);
