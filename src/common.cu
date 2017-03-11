@@ -12,7 +12,7 @@
 bool Particle::initialized = false;
 MPI_Datatype Particle::mytype;
 
-void CellLists::build(Particle * const p, const int n, int * const order, const Particle * const src) {
+void CellLists::build(Particle * const p, int n, int * const order, const Particle * const src) {
     if (n > 0)
       build_clists_vanilla((float * )p, n, 1,
 			   LX, LY, LZ,

@@ -1,10 +1,10 @@
 namespace k_wall {
   texture<float4, 1, cudaReadModeElementType> texWallParticles;
-  texture<int, 1, cudaReadModeElementType> texWallCellStart, texWallCellCount;
+  texture<int   , 1, cudaReadModeElementType> texWallCellStart, texWallCellCount;
 
-  __global__ void interactions_3tpp(const float2 *const pp, const int np,
-				    const int nsolid, float *const acc,
-				    const float seed) {
+  __global__ void interactions_3tpp(float2 *pp, int np,
+				    int nsolid, float *acc,
+				    float seed) {
     int gid = threadIdx.x + blockDim.x * blockIdx.x;
     int pid = gid / 3;
     int zplane = gid % 3;
@@ -102,7 +102,7 @@ namespace k_wall {
     atomicAdd(acc + 3 * pid + 2, zforce);
   }
 
-  __global__ void strip_solid4(Particle *const src, const int n, float4 *dst) {
+  __global__ void strip(Particle *src, int n, float4 *dst) {
     int pid = threadIdx.x + blockDim.x * blockIdx.x;
     if (pid >= n) return;
     Particle p = src[pid];
