@@ -5,7 +5,7 @@
 #include "cuda-dpd.h"
 #include "dpd-rng.h"
 #include "../src/dpd-forces.h"
-#include "../last-bit/last-bit.h"
+#include "../src/last-bit/last-bit.h"
 
 struct InfoDPD {
     int3 ncells;

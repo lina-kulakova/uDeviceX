@@ -1,5 +1,5 @@
 #include "dpd-rng.h"
-#include "../last-bit/last-bit.h"
+#include "../src/last-bit/last-bit.h"
 #include "hacks.h"
 #include "../src/dpd-forces.h"
 
