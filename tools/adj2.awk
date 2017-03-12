@@ -1,8 +1,12 @@
 #!/usr/bin/awk -f
 
 # Generate the adjVert and adjVert2 from off file
+# cTEST: adj2.t1
+#  ./adj2.awk ../src/rbc.off
+# cat a[12].txt > a.out.txt
 
 function init() {
+    md = 7
     fn = ARGC < 2 ? "-" : ARGV[1]
 }
 
@@ -36,7 +40,7 @@ function read_off() {
 
 function init_a(   i) {
     for (i = 0; i < nv*md; i++)
-	a1[i] = a2[i] = -1
+	hx[i] = hy[i] = a1[i] = a2[i] = -1
 }
 
 function write_a(   i) {
@@ -47,13 +51,10 @@ function write_a(   i) {
     close("a1.txt"); close("a2.txt");
 }
 
-function reg_edg(a, b, c,   seen) {
-    nxt[a,b] = c
-
-    ee0[ne] = a; ee1[ne] = b; ne++
-
-    seen = (b, a) in nxt
-    if (!seen) {deg[a]++; deg[b]++} # degree of a vertice
+function reg_edg(i, x, y) {
+    i *= md
+    while (hx[i] != -1) i++
+    hx[i] = x; hy[i] = y
 }
 
 function init_edg(   ifa) {
@@ -62,53 +63,48 @@ function init_edg(   ifa) {
 	f0 = ff0[ifa]; f1 = ff1[ifa]; f2 = ff2[ifa]
 	reg_edg(f0, f1, f2);
 	reg_edg(f1, f2, f0);
-	reg_edg(f2, f0, f1);
-	
+	reg_edg(f2, f0, f1);	
     }
 }
 
-function max_deg(   iv, e0, e1) {
-    md = 0
-    for (iv = 0; iv < nv; iv++)
-	if (deg[iv] > md) md = deg[iv]
-    return md
+function nxt(i, x) {
+    i *= md
+    while (hx[i] != x) i++;
+    return hy[i]
 }
 
-function gen_a10(e0, e1,   i, c) {
-    c = min = e1
+function gen_a10(i0,   c, fst) {
+    c = min = fst = hx[i0*md]
     do {
-	c = nxt[e0, c]
+	c = nxt(i0, c)
 	if (c < min) min = c
-    } while (c != e1)
-    
-    i = e0 * md; c = min # current
+    }  while (c != fst)
+
+    i = i0 * md; c = min
     do {
-	a1[i] = c
-	c0 = c; c = nxt[e0, c]
-	a2[i] = nxt[c, c0]
+	c0 = c; c = nxt(i0, c)
+	a1[i] = c0
+	a2[i] = nxt(c, c0)
 	i++
-    } while (c != min)
+    }  while (c != min)
+    
 }
 
-function gen_a1(   ie, e1) {
-    for (ifa = 0; ifa < nf; ifa++) {
-	f0 = ff0[ifa]; f1 = ff1[ifa]; f2 = ff2[ifa]
-	gen_a10(f0, f1)
-	gen_a10(f1, f2)
-	gen_a10(f2, f0)
-    }
+function gen_a1() {
+    for (i0 = 0; i0 < nv; i0++)
+	gen_a10(i0)
 }
 
 BEGIN {
     init()
     read_off()
 
-    init_edg()
-    max_deg()
+#    max_deg()
     init_a()
+    init_edg()
 
+    print "preved:", nxt(1, 53)
     gen_a1()
 
     write_a()
-    print "md", md
 }
