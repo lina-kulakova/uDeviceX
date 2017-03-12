@@ -1,7 +1,7 @@
 #!/usr/bin/awk -f
 
 # Generate the adjVert and adjVert2 from off file
-# cTEST: adj2.t1
+# TEST: adj2.t1
 #  ./adj2.awk ../src/rbc.off
 # cat a[12].txt > a.out.txt
 
@@ -40,7 +40,7 @@ function read_off() {
 
 function init_a(   i) {
     for (i = 0; i < nv*md; i++)
-	hx[i] = hy[i] = a1[i] = a2[i] = -1
+	hx[i] = a1[i] = a2[i] = -1
 }
 
 function write_a(   i) {
@@ -58,7 +58,6 @@ function reg_edg(i, x, y) {
 }
 
 function init_edg(   ifa) {
-    ne = 0 # number of edges
     for (ifa = 0; ifa < nf; ifa++) {
 	f0 = ff0[ifa]; f1 = ff1[ifa]; f2 = ff2[ifa]
 	reg_edg(f0, f1, f2);
@@ -74,19 +73,18 @@ function nxt(i, x) {
 }
 
 function gen_a10(i0,   c, fst) {
-    c = min = fst = hx[i0*md]
-    do {
-	c = nxt(i0, c)
-	if (c < min) min = c
-    }  while (c != fst)
+    lo = i0*md; hi = lo + md;
+    mi = hx[lo]
+    for (i = lo + 1; i < hi && hx[i] != -1; i++)
+	if (hx[i] < mi) mi = hx[i]
 
-    i = i0 * md; c = min
+    i = lo; c = mi
     do {
-	c0 = c; c = nxt(i0, c)
+	c = nxt(i0, c0 = c)
 	a1[i] = c0
 	a2[i] = nxt(c, c0)
 	i++
-    }  while (c != min)
+    }  while (c != mi)
     
 }
 
@@ -99,11 +97,9 @@ BEGIN {
     init()
     read_off()
 
-#    max_deg()
     init_a()
     init_edg()
 
-    print "preved:", nxt(1, 53)
     gen_a1()
 
     write_a()
