@@ -95,12 +95,12 @@ namespace k_sdf {
     return make_float3(gx, gy, gz);
   }
 
-  __global__ void fill_keys(const Particle *const pp, const int n,
-			    int *const key) {
+  __global__ void fill_keys(Particle *pp, int n, int *key) {
     int pid = threadIdx.x + blockDim.x * blockIdx.x;
     if (pid >= n) return;
-    Particle p = pp[pid];
-    float sdf0 = sdf(p.r[0], p.r[1], p.r[2]);
+    float sdf0, *r = pp[pid].r;
+    sdf0 = sdf(r[0], r[1], r[2]);
+
     key[pid] = (int)(sdf0 >= 0) + (int)(sdf0 > 2);
   }
 
@@ -189,4 +189,3 @@ namespace k_sdf {
     }
   }
 } /* namespace k_sdf */
-

@@ -10,6 +10,12 @@ const int   numberdensity = _numberdensity * (rc * rc * rc);
 #define MAX_FACE_NUM 50000
 #define MAX_VERT_NUM 10000
 
+enum {  /* used in sorting of bulk particle when wall is created */
+  W_BULK,  /* remains in bulk */
+  W_WALL,  /* becomes wall particle */
+  W_DEEP   /* deep inside the wall */
+};
+
 /* used in field */
 #define MAX_SUBDOMAIN_VOLUME 100*100*100
 
