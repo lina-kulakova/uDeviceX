@@ -28,7 +28,7 @@ void remove_bodies_from_wall() {
   for (int i = 0; i < r_nc; ++i) {
     bool valid = true;
     for (int j = 0; j < r_nv && valid; ++j)
-      valid &= 0 == tmp[j + r_nv * i];
+      valid &= (tmp[j + r_nv * i] == W_BULK);
     if (!valid) tokill.push_back(i);
   }
 

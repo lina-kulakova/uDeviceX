@@ -101,7 +101,10 @@ namespace k_sdf {
     float sdf0, *r = pp[pid].r;
     sdf0 = sdf(r[0], r[1], r[2]);
 
-    key[pid] = (int)(sdf0 >= 0) + (int)(sdf0 > 2);
+    key[pid] = \
+      sdf0  > 2 ? W_DEEP :
+      sdf0 >= 0 ? W_WALL :
+		  W_BULK;
   }
 
   __device__ void handle_collision(float currsdf,

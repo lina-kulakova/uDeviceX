@@ -60,8 +60,8 @@ namespace sdf {
     thrust::sort_by_key(keys.begin(), keys.end(),
 			thrust::device_ptr<Particle>(pp));
 
-    *s_n = thrust::count(keys.begin()         , keys.end(), 0); /* nsurvived */
-    *w_n = thrust::count(keys.begin() + (*s_n), keys.end(), 1); /* nbelt */
+    *s_n = thrust::count(keys.begin()         , keys.end(), (int)W_BULK);
+    *w_n = thrust::count(keys.begin() + (*s_n), keys.end(), (int)W_WALL);
 
     *w_pp = pp + (*s_n);
   }
