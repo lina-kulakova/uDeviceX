@@ -16,8 +16,8 @@ namespace sim {
 
   CellLists *cells, *wall_cells;
 
-  H5PartDump *dump_part_solvent;
-  H5FieldDump *dump_field;
+  H5PartDump  *s_dump; /* solvent dump */
+  H5FieldDump *f_dump; /* field dump */
 
   Particle      s_pp_hst[MAX_PART_NUM]; /* solvent on host */
   Particle      r_pp_hst[MAX_PART_NUM]; /* RBC on host */
@@ -27,6 +27,11 @@ namespace sim {
 
   int w_n; /* Wall particles */
   float4 *w_pp4;  /* (sic) */
+
+  Particle* w_pp;
+
+  int    *w_key;
+  int     w_key_hst[MAX_PART_NUM];
 
   Logistic::KISS* rnd;
 

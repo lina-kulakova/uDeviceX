@@ -52,18 +52,24 @@ namespace sdf {
     CC(cudaBindTextureToArray(k_sdf::texSDF, arrSDF, fmt));
   }
 
-  void bulk_wall(Particle *pp, int* s_n, Particle **w_pp, int *w_n) {
+  void bulk_wall(Particle *s_pp, int* s_n, Particle *w_pp_hst, int *w_n,
+		 int* w_key, int* w_key_hst) {
+    /* sort particle into remaining in solvent and turning into wall */
     int n = *s_n;
-    thrust::device_vector<int> keys(n);
-    k_sdf::fill_keys<<<k_cnf(n)>>>(pp, n,
-				   thrust::raw_pointer_cast(&keys[0]));
-    thrust::sort_by_key(keys.begin(), keys.end(),
-			thrust::device_ptr<Particle>(pp));
 
-    *s_n = thrust::count(keys.begin()         , keys.end(), (int)W_BULK);
-    *w_n = thrust::count(keys.begin() + (*s_n), keys.end(), (int)W_WALL);
+    k_sdf::fill_keys<<<k_cnf(n)>>>(s_pp, n, w_key);
+    CC(cudaMemcpy(w_key_hst, w_key, sizeof(int)*n, D2H));
 
-    *w_pp = pp + (*s_n);
+    int k;
+    int ia = 0, ib = 0, iw = 0; /* all, bulk, wall particles */
+    for (/* */ ; ia < n; ia++) {
+      k = w_key_hst[ia];
+      if      (k == W_BULK)
+	CC(cudaMemcpy(    &s_pp[ib++], &s_pp[ia], sizeof(Particle), D2D));
+      else if (k == W_WALL)
+	CC(cudaMemcpy(&w_pp_hst[iw++], &s_pp[ia], sizeof(Particle), D2H));
+    }
+    *s_n = ib; *w_n = iw;
   }
 
   void close() {

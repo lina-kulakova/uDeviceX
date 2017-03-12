@@ -41,13 +41,17 @@ static void update_helper_arrays() {
     (s_zip0, s_zip1, (float*)s_pp, s_n);
 }
 
-void create_walls() {
+void create_wall() {
   dSync();
   sdf::init();
 
-  Particle* w_pp;
-  sdf::bulk_wall(s_pp, &s_n, &w_pp, &w_n);
-  CC(cudaMemcpy(w_pp_hst, w_pp, sizeof(Particle)*w_n, D2H));
+  sdf::bulk_wall(s_pp, /*o*/ &s_n, w_pp_hst, &w_n, /*s*/ w_key, w_key_hst);
+
+  if (hdf5part_dumps) {
+    H5PartDump w_dump("w.h5part"); /* wall dump */
+    w_dump.dump(w_pp_hst, w_n);
+  }
+
   wall::exch(w_pp_hst, &w_n);
   if (w_n) {
     CC(cudaMemcpy(w_pp, w_pp_hst, sizeof(Particle)*w_n, H2D));
@@ -140,7 +144,7 @@ void dump_part() {
   if (!hdf5part_dumps) return;
   dev2hst(); /* TODO: do not need `r' */
   int n = s_n + r_n;
-  dump_part_solvent->dump(sr_pp, n);
+  s_dump->dump(sr_pp, n);
 }
 
 void dump_rbcs() {
@@ -153,7 +157,7 @@ void dump_rbcs() {
 void dump_grid() {
   if (!hdf5field_dumps) return;
   dev2hst();  /* TODO: do not need `r' */
-  dump_field->dump(sr_pp, s_n);
+  f_dump->dump(sr_pp, s_n);
 }
 
 void diag(int it) {
@@ -189,7 +193,7 @@ void init() {
   rex::init();
   cnt::init();
   if (hdf5part_dumps)
-    dump_part_solvent = new H5PartDump("s.h5part");
+    s_dump = new H5PartDump("s.h5part");
 
   cells      = new CellLists(XS, YS, ZS);
   wall_cells = new CellLists(XS + 2 * XMARGIN_WALL,
@@ -206,7 +210,8 @@ void init() {
   mpDeviceMalloc(&s_ff);
   mpDeviceMalloc(&r_ff); mpDeviceMalloc(&r_ff);
 
-  mpDeviceMalloc(&w_pp4);
+  mpDeviceMalloc(&w_pp);
+  mpDeviceMalloc(&w_pp4); mpDeviceMalloc(&w_key);
 
   s_n = ic::gen(s_pp_hst);
   CC(cudaMemcpy(s_pp, s_pp_hst, sizeof(Particle) * s_n, H2D));
@@ -225,7 +230,7 @@ void init() {
 #endif
   }
 
-  dump_field = new H5FieldDump;
+  f_dump = new H5FieldDump;
   MC(MPI_Barrier(m::cart));
 }
 
@@ -260,8 +265,8 @@ void run_wall(int nsteps) {
   int it = 0;
   for (/* */; it < wall_creation_stepid; ++it)
     run0(wall_created, driving_force, it);
-  
-  create_walls(); wall_created = true;
+
+  create_wall(); wall_created = true;
   if (rbcs && r_n) k_sim::clear_velocity<<<k_cnf(r_n)>>>(r_pp, r_n);
   driving_force = pushtheflow ? hydrostatic_a : 0;
 
@@ -275,8 +280,9 @@ void run() {
 }
 
 void close() {
-  delete dump_field;
-  delete dump_part_solvent;
+  delete s_dump;
+  delete f_dump;
+
   sdstr::redist_part_close();
 
   cnt::close();
@@ -297,6 +303,7 @@ void close() {
   CC(cudaFree(s_pp )); CC(cudaFree(s_ff ));
   CC(cudaFree(s_pp0));
 
-  CC(cudaFree(w_pp4));
+  CC(cudaFree(w_pp4)); CC(cudaFree(w_key));
+  CC(cudaFree(w_pp));
 }
 }
