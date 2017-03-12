@@ -1,9 +1,11 @@
 #include <cuda-dpd.h>
 #include <sys/stat.h>
-#include <map>
 
 #include "helper_math.h"
+
+#include <map>
 #include <algorithm> /* sort in rbc.impl.h */
+
 #include <string>
 #include <vector>
 #include <dpd-rng.h>

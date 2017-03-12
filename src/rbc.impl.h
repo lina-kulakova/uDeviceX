@@ -57,8 +57,8 @@ void setup(int* faces) {
   std::vector<int> adjVert(RBCnv * degreemax, -1);
   for (int v = 0; v < RBCnv; ++v) {
     std::map<int, int> l = adjacentPairs[v];
-    adjVert[0 + degreemax * v] = l.begin()->first;
-    int last = adjVert[1 + degreemax * v] = l.begin()->second;
+                adjVert[0 + degreemax * v] = l.begin()->first;
+    int last =  adjVert[1 + degreemax * v] = l.begin()->second;
     for (int i = 2; i < l.size(); ++i) {
       int tmp = adjVert[i + degreemax * v] = l.find(last)->second;
       last = tmp;
