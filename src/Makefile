@@ -35,17 +35,19 @@ udx:   $(OBJS) libcuda-dpd liblast-bit
 		-L../cuda-dpd -L../last-bit $(OBJS) $(LIBS) -o gpuCode.o
 	$(LINK)  $(LDFLAGS) gpuCode.o $(OBJS) $(LIBS) -o $@
 
-# a rule for the most of *.cu files
-.cu.o:;   $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
-
+common.o:     common.cu;     $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
+io.o:         io.cu;         $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
+main.o:       main.cu;       $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
+minmax.o:     minmax.cu;     $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
+m.o     :      m.cu;         $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
 
 # some files must be compiled in diferent way (with `-dc' flag) See
 # "Separate Compilation and Linking of CUDA C++ Device Code"
 # http://devblogs.nvidia.com/parallelforall/separate-compilation-linking-cuda-device-code
-fsi.o:            fsi.cu;        $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
-dpd-forces.o:     dpd-forces.cu; $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
-bund.o:           bund.cu;       $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
-glb.o:            glb.cu;        $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
+fsi.o:        fsi.cu;        $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
+dpd-forces.o: dpd-forces.cu; $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
+bund.o:       bund.cu;       $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
+glb.o:        glb.cu;        $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
 include    Makefile.dep # dependencies
 
 libcuda-dpd:; make -C ../cuda-dpd \
