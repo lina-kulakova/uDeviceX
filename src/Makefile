@@ -30,9 +30,8 @@ OBJS = 	common.o io.o main.o minmax.o m.o    bund.o glb.o dpd-forces.o \
 
 # I have some device code in OBJS. I have to link it separatly
 udx: $(OBJS)
-	$(NVCC) $(NVCCFLAGS) $(OPT) -dlink \
-		-L../cuda-dpd -L../last-bit $(OBJS)         -o gpuCode.o
-	$(LINK)  $(LDFLAGS) gpuCode.o       $(OBJS) $(LIBS) -o $@
+	$(NVCC) $(NVCCFLAGS) $(OPT) -dlink -L../cuda-dpd $(OBJS)         -o gpuCode.o
+	$(LINK)  $(LDFLAGS) gpuCode.o                    $(OBJS) $(LIBS) -o $@
 
 common.o:            common.cu;            $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
 io.o:                io.cu;                $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
