@@ -36,7 +36,8 @@ udx:   $(OBJS) libcuda-dpd liblast-bit
 	$(LINK)  $(LDFLAGS) gpuCode.o $(OBJS) $(LIBS) -o $@
 
 # a rule for the most of *.cu files
-%.o:              %.cu;              $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
+.cu.o:;   $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
+
 
 # some files must be compiled in diferent way (with `-dc' flag) See
 # "Separate Compilation and Linking of CUDA C++ Device Code"
