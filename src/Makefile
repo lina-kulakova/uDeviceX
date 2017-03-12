@@ -48,8 +48,9 @@ glb.o:               glb.cu;               $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c
 dpd-forces.o:        dpd-forces.cu;        $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
 last-bit/last-bit.o: last-bit/last-bit.cu; $(NVCC) $(NVCCFLAGS) $(OPT) -dc $< -c -o $@
 
-
 include    Makefile.dep # dependencies
+
+# TODO:
 last-bit/last-bit.o: last-bit/last-bit.h
 
 ../cuda-dpd/libcuda-dpd.a:; make -C ../cuda-dpd \
