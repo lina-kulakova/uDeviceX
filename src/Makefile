@@ -39,7 +39,7 @@ common.o:     common.cu;     $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
 io.o:         io.cu;         $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
 main.o:       main.cu;       $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
 minmax.o:     minmax.cu;     $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
-m.o     :      m.cu;         $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
+m.o:          m.cu;         $(NVCC) $(NVCCFLAGS) $(OPT)     $< -c -o $@
 
 # some files must be compiled in diferent way (with `-dc' flag) See
 # "Separate Compilation and Linking of CUDA C++ Device Code"
