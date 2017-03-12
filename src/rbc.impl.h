@@ -1,8 +1,9 @@
 namespace rbc {
 
 #define MAX_CELLS_NUM 100000
+#define degreemax 7
 
-std::vector<int> extract_neighbors(std::vector<int> adjVert, int degreemax, int v) {
+std::vector<int> extract_neighbors(std::vector<int> adjVert, int v) {
   std::vector<int> myneighbors;
   for (int c = 0; c < degreemax; ++c) {
     int val = adjVert[c + degreemax * v];
@@ -48,11 +49,6 @@ void setup(int* faces) {
     adjacentPairs[f1][f2] = f0;
   }
 
-  int degreemax = 0;
-  for (int i = 0; i < RBCnv; i++) {
-    int d = adjacentPairs[i].size();
-    if (d > degreemax) degreemax = d;
-  }
 
   std::vector<int> adjVert(RBCnv * degreemax, -1);
   for (int v = 0; v < RBCnv; ++v) {
@@ -67,13 +63,13 @@ void setup(int* faces) {
 
   std::vector<int> adjVert2(degreemax * RBCnv, -1);
   for (int v = 0; v < RBCnv; ++v) {
-    std::vector<int> myneighbors = extract_neighbors(adjVert, degreemax, v);
+    std::vector<int> myneighbors = extract_neighbors(adjVert, v);
     for (int i = 0; i < myneighbors.size(); ++i) {
       std::vector<int> s1 =
-	  extract_neighbors(adjVert, degreemax, myneighbors[i]);
+	  extract_neighbors(adjVert, myneighbors[i]);
       std::sort(s1.begin(), s1.end());
       std::vector<int> s2 = extract_neighbors(
-	  adjVert, degreemax, myneighbors[(i + 1) % myneighbors.size()]);
+	  adjVert, myneighbors[(i + 1) % myneighbors.size()]);
       std::sort(s2.begin(), s2.end());
       std::vector<int> result(s1.size() + s2.size());
       int nterms = set_intersection(s1.begin(), s1.end(), s2.begin(),
@@ -118,7 +114,6 @@ void forces(int nc, Particle *pp, Force *ff, float* host_av) {
   k_rbc::areaAndVolumeKernel<<<avBlocks, avThreads>>>(host_av);
   CC(cudaPeekAtLastError());
 
-  int degreemax = 7;
   k_rbc::fall_kernel<<<k_cnf(nc*RBCnv*degreemax)>>>(nc, host_av, (float*)ff);
 }
 
