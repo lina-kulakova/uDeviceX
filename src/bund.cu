@@ -3,13 +3,9 @@
 
 #include "helper_math.h"
 
-#include <map>
-#include <algorithm> /* sort in rbc.impl.h */
-
 #include <string>
 #include <vector>
 #include <dpd-rng.h>
-#include <cstdio>
 #include <mpi.h>
 #include ".conf.h" /* configuration file (copy from .conf.test.h) */
 #include "m.h"     /* MPI */

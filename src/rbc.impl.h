@@ -1,16 +1,34 @@
 namespace rbc {
 
 #define MAX_CELLS_NUM 100000
-#define degreemax 7
+#define md 7
 
-std::vector<int> extract_neighbors(std::vector<int> adjVert, int v) {
-  std::vector<int> myneighbors;
-  for (int c = 0; c < degreemax; ++c) {
-    int val = adjVert[c + degreemax * v];
-    if (val == -1) break;
-    myneighbors.push_back(val);
-  }
-  return myneighbors;
+void reg_edg(int f, int x, int y,  int* hx, int* hy) {
+    int j = f*md;
+    while (hx[j] != -1) j++;
+    hx[j] = x; hy[j] = y;
+}
+
+int nxt(int i, int x,   int* hx, int* hy) {
+  i *= md;
+  while (hx[i] != x) i++;
+  return hy[i];
+}
+
+void gen_a12(int i0, int* hx, int* hy, /**/ int* a1, int* a2) {
+  int lo = i0*md, hi = lo + md, mi = hx[lo];
+  int i;
+  for (i = lo + 1; (i < hi) && (hx[i] != -1); i++)
+    if (hx[i] < mi) mi = hx[i]; /* minimum */
+
+  int c = mi, c0;
+  i = lo;
+  do {
+    c     = nxt(i0, c0 = c, hx, hy);
+    a1[i] = c0;
+    a2[i] = nxt(c, c0, hx, hy);
+    i++;
+  }  while (c != mi);
 }
 
 void setup_support(int *data, int *data2, int nentries) {
@@ -40,54 +58,27 @@ void setup(int* faces) {
   CC(cudaMemcpy( devtrs4, trs4, RBCnt * 4 * sizeof(int), H2D));
   delete[] trs4;
 
-  std::vector<std::map<int, int> > adjacentPairs(RBCnv);
+  int hx[RBCnv*md], hy[RBCnv*md], a1[RBCnv*md], a2[RBCnv*md];
+  int i;
+  for (i = 0; i < RBCnv*md; i++) hx[i] = a1[i] = a2[i] = -1;
+
   for (int ifa = 0; ifa < RBCnt; ifa++) {
-    int ib = 3*ifa;
-    int f0 = faces[ib++], f1 = faces[ib++], f2 = faces[ib++];
-    adjacentPairs[f0][f1] = f2;
-    adjacentPairs[f2][f0] = f1;
-    adjacentPairs[f1][f2] = f0;
+    i = 3*ifa;
+    int f0 = faces[i++], f1 = faces[i++], f2 = faces[i++];
+    reg_edg(f0, f1, f2,   hx, hy); /* register an edge */
+    reg_edg(f1, f2, f0,   hx, hy);
+    reg_edg(f2, f0, f1,   hx, hy);
   }
+  for (i = 0; i < RBCnv; i++) gen_a12(i, hx, hy, /**/ a1, a2);
 
-
-  std::vector<int> adjVert(RBCnv * degreemax, -1);
-  for (int v = 0; v < RBCnv; ++v) {
-    std::map<int, int> l = adjacentPairs[v];
-                adjVert[0 + degreemax * v] = l.begin()->first;
-    int last =  adjVert[1 + degreemax * v] = l.begin()->second;
-    for (int i = 2; i < l.size(); ++i) {
-      int tmp = adjVert[i + degreemax * v] = l.find(last)->second;
-      last = tmp;
-    }
-  }
-
-  std::vector<int> adjVert2(degreemax * RBCnv, -1);
-  for (int v = 0; v < RBCnv; ++v) {
-    std::vector<int> myneighbors = extract_neighbors(adjVert, v);
-    for (int i = 0; i < myneighbors.size(); ++i) {
-      std::vector<int> s1 =
-	  extract_neighbors(adjVert, myneighbors[i]);
-      std::sort(s1.begin(), s1.end());
-      std::vector<int> s2 = extract_neighbors(
-	  adjVert, myneighbors[(i + 1) % myneighbors.size()]);
-      std::sort(s2.begin(), s2.end());
-      std::vector<int> result(s1.size() + s2.size());
-      int nterms = set_intersection(s1.begin(), s1.end(), s2.begin(),
-				    s2.end(), result.begin()) - result.begin();
-      int myguy = result[0] == v;
-      adjVert2[i + degreemax * v] = result[myguy];
-    }
-  }
-
-  int nentries = adjVert.size();
   int *ptr, *ptr2;
-  CC(cudaMalloc(&ptr, sizeof(int) * nentries));
-  CC(cudaMemcpy(ptr, &adjVert.front(), sizeof(int) * nentries, H2D));
+  CC(cudaMalloc(&ptr, sizeof(int) * RBCnv*md));
+  CC(cudaMemcpy(ptr, a1, sizeof(int) * RBCnv*md, H2D));
 
-  CC(cudaMalloc(&ptr2, sizeof(int) * nentries));
-  CC(cudaMemcpy(ptr2, &adjVert2.front(), sizeof(int) * nentries, H2D));
+  CC(cudaMalloc(&ptr2, sizeof(int) * RBCnv*md));
+  CC(cudaMemcpy(ptr2, a2, sizeof(int) * RBCnv*md, H2D));
 
-  setup_support(ptr, ptr2, nentries);
+  setup_support(ptr, ptr2, RBCnv*md);
 
   setup_texture(k_rbc::texTriangles4, int4);
   setup_texture(k_rbc::texVertices, float2);
@@ -114,7 +105,7 @@ void forces(int nc, Particle *pp, Force *ff, float* host_av) {
   k_rbc::areaAndVolumeKernel<<<avBlocks, avThreads>>>(host_av);
   CC(cudaPeekAtLastError());
 
-  k_rbc::fall_kernel<<<k_cnf(nc*RBCnv*degreemax)>>>(nc, host_av, (float*)ff);
+  k_rbc::fall_kernel<<<k_cnf(nc*RBCnv*md)>>>(nc, host_av, (float*)ff);
 }
 
 }
