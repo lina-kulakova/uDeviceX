@@ -45,11 +45,12 @@ void create_wall() {
   dSync();
   field::ini("sdf.dat", i_N, i_extent, i_data);
   if (hdf5field_dumps) field::dump(i_N, i_extent, i_data);
-
-  sdf::init(i_data, i_N, i_extent);
-
+  sdf::i2f(i_N, i_extent, TEXTURESIZE, /**/ start, spacing, &ampl);
+  field::sample(start, spacing, TEXTURESIZE, i_N, ampl, i_data,
+		field);
+  sdf::init(field);
+  
   sdf::bulk_wall(s_pp, /*o*/ &s_n, w_pp_hst, &w_n, /*s*/ w_key, w_key_hst);
-
   if (hdf5part_dumps) {
     H5PartDump w_dump("w.h5part"); /* wall dump */
     w_dump.dump(w_pp_hst, w_n);

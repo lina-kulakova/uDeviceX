@@ -37,6 +37,11 @@ namespace sim {
   int   i_N[3];
   float i_extent[3];
 
+  float start[3], spacing[3];
+  float ampl;
+  float field[XTEXTURESIZE * YTEXTURESIZE * ZTEXTURESIZE];
+  int TEXTURESIZE[3] = {XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE};
+
   Logistic::KISS* rnd;
 
 #ifdef GWRP

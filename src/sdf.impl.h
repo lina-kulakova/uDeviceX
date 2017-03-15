@@ -7,28 +7,23 @@ namespace sdf {
     k_sdf::texSDF.addressMode[1] = cudaAddressModeWrap;
     k_sdf::texSDF.addressMode[2] = cudaAddressModeWrap;
   }
-  
-  void init(float* i_data, int* i_N, float* i_extent) {
-    float *field = new float[XTEXTURESIZE * YTEXTURESIZE * ZTEXTURESIZE];
+
+  /* go from spacing for the input grid in sdf file to spacing for the
+     field used in simulation (input to field) */  
+  void i2f(int * i_N, float* i_extent, int *TEXTURESIZE, /**/
+	   float* start, float* spacing, float* ampl) {
     int L[3] = {XS, YS, ZS};
     int MARGIN[3] = {XMARGIN_WALL, YMARGIN_WALL, ZMARGIN_WALL};
-    int TEXTURESIZE[3] = {XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE};
-    if (m::rank == 0) printf("sampling the geometry file...\n");
-    {
-      float start[3], spacing[3];
-      for (int c = 0; c < 3; ++c) {
-	start[c] = i_N[c] * (m::coords[c] * L[c] - MARGIN[c]) /
-	  (float)(m::dims[c] * L[c]);
-	spacing[c] = i_N[c] * (L[c] + 2 * MARGIN[c]) /
-	  (float)(m::dims[c] * L[c]) / (float)TEXTURESIZE[c];
-      }
-      float ampl = (XS /*+ 2 * XMARGIN_WALL*/) /
-	(i_extent[0] / m::dims[0]);
-      field::sample(start, spacing, TEXTURESIZE, i_N, ampl, i_data,
-		    field);
+    for (int c = 0; c < 3; ++c) {
+      start[c] = i_N[c] * (m::coords[c] * L[c] - MARGIN[c]) /
+	(float)(m::dims[c] * L[c]);
+      spacing[c] = i_N[c] * (L[c] + 2 * MARGIN[c]) /
+	(float)(m::dims[c] * L[c]) / (float)TEXTURESIZE[c];
     }
-
-      
+    *ampl = XS / (i_extent[0] / m::dims[0]);
+  }
+  
+  void init(/**/ float* field) {
     cudaChannelFormatDesc fmt = cudaCreateChannelDesc<float>();
     CC(cudaMalloc3DArray
        (&arrSDF, &fmt, make_cudaExtent(XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE)));
@@ -41,7 +36,6 @@ namespace sdf {
     copyParams.extent = make_cudaExtent(XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE);
     copyParams.kind = H2D;
     CC(cudaMemcpy3D(&copyParams));
-    delete[] field;
     
     setup();
     CC(cudaBindTextureToArray(k_sdf::texSDF, arrSDF, fmt));

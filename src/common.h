@@ -79,7 +79,6 @@ enum {
   ZTEXTURESIZE = 16 * ((_ZTEXTURESIZE + 15) / 16),
 };
 
-
 // AoS is the currency for dpd simulations (because of the spatial locality).
 // AoS - SoA conversion might be performed within the hpc kernels.
 struct Particle {
