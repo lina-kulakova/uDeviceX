@@ -8,12 +8,8 @@ namespace sdf {
     k_sdf::texSDF.addressMode[2] = cudaAddressModeWrap;
   }
   
-  void init() {
-    float grid_data[MAX_SUBDOMAIN_VOLUME];
+  void init(float* i_data, int* i_N, float* i_extent) {
     float *field = new float[XTEXTURESIZE * YTEXTURESIZE * ZTEXTURESIZE];
-    int N[3];
-    float extent[3];
-    field::ini("sdf.dat", N, extent, grid_data);
     int L[3] = {XS, YS, ZS};
     int MARGIN[3] = {XMARGIN_WALL, YMARGIN_WALL, ZMARGIN_WALL};
     int TEXTURESIZE[3] = {XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE};
@@ -21,18 +17,17 @@ namespace sdf {
     {
       float start[3], spacing[3];
       for (int c = 0; c < 3; ++c) {
-	start[c] = N[c] * (m::coords[c] * L[c] - MARGIN[c]) /
+	start[c] = i_N[c] * (m::coords[c] * L[c] - MARGIN[c]) /
 	  (float)(m::dims[c] * L[c]);
-	spacing[c] = N[c] * (L[c] + 2 * MARGIN[c]) /
+	spacing[c] = i_N[c] * (L[c] + 2 * MARGIN[c]) /
 	  (float)(m::dims[c] * L[c]) / (float)TEXTURESIZE[c];
       }
       float ampl = (XS /*+ 2 * XMARGIN_WALL*/) /
-	(extent[0] / m::dims[0]);
-      field::sample(start, spacing, TEXTURESIZE, N, ampl, grid_data,
+	(i_extent[0] / m::dims[0]);
+      field::sample(start, spacing, TEXTURESIZE, i_N, ampl, i_data,
 		    field);
     }
 
-    if (hdf5field_dumps) field::dump(N, extent, grid_data);
       
     cudaChannelFormatDesc fmt = cudaCreateChannelDesc<float>();
     CC(cudaMalloc3DArray

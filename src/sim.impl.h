@@ -43,7 +43,10 @@ static void update_helper_arrays() {
 
 void create_wall() {
   dSync();
-  sdf::init();
+  field::ini("sdf.dat", i_N, i_extent, i_data);
+  if (hdf5field_dumps) field::dump(i_N, i_extent, i_data);
+
+  sdf::init(i_data, i_N, i_extent);
 
   sdf::bulk_wall(s_pp, /*o*/ &s_n, w_pp_hst, &w_n, /*s*/ w_key, w_key_hst);
 

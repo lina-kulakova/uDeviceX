@@ -33,6 +33,10 @@ namespace sim {
   int    *w_key;
   int     w_key_hst[MAX_PART_NUM];
 
+  float i_data[MAX_SUBDOMAIN_VOLUME]; /* grid from sdf file (input) */
+  int   i_N[3];
+  float i_extent[3];
+
   Logistic::KISS* rnd;
 
 #ifdef GWRP
