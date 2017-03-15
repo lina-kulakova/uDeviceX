@@ -9,7 +9,7 @@ namespace sdf {
   }
 
   /* go from spacing for the input grid in sdf file to spacing for the
-     field used in simulation (input to field) */  
+     field used in simulation ("input to field", i2f) */
   void i2f(int * i_N, float* i_extent, int *TEXTURESIZE, /**/
 	   float* start, float* spacing, float* ampl) {
     int L[3] = {XS, YS, ZS};
@@ -21,7 +21,7 @@ namespace sdf {
     }
     *ampl = XS/(i_extent[0]/m::dims[0]);
   }
-  
+
   void init(/**/ float* field) {
     cudaChannelFormatDesc fmt = cudaCreateChannelDesc<float>();
     CC(cudaMalloc3DArray
@@ -35,7 +35,7 @@ namespace sdf {
     copyParams.extent = make_cudaExtent(XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE);
     copyParams.kind = H2D;
     CC(cudaMemcpy3D(&copyParams));
-    
+
     setup();
     CC(cudaBindTextureToArray(k_sdf::texSDF, arrSDF, fmt));
   }
