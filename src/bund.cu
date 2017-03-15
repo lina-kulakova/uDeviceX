@@ -44,9 +44,11 @@
 #include "field.decl.h"
 #include "field.impl.h"
 
+
 #include "k/wvel.h" /* wall velocity used by sdf and wall */
 
 #include "k/sdf.h"
+#include "k/bb.h"   /* boucne-back */
 #include "sdf.decl.h"
 #include "sdf.impl.h"
 
