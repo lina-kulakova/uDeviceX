@@ -9,7 +9,7 @@ evl(k, i, x):= if k = 1 then I[i,i+1] else
 e: evl(4, 0, x);
 e: format(e, %poly(I[0,1], I[1,2], I[2,3], I[3, 4]));
 
-foo(i):=float(horner(coeff(e, i)));
+foo(i):=horner(coeff(e, i));
 
 for i thru 4 do grind([i-1, i, foo(I[i-1, i])])$
 
