@@ -1,4 +1,14 @@
 namespace field {
+  float spl(float x) { /* b-spline */
+      return \
+	x <= 0 ? 0.0 :
+	x <= 1 ? x*x*x/6 :
+	x <= 2 ? (x*((12-3*x)*x-12)+4)/6 :
+	x <= 3 ? (x*(x*(3*x-24)+60)-44)/6 :
+	x <= 4 ? (x*((12-x)*x-48)+64)/6 :
+	0.0;
+  }
+
   void ini(const char *path, int N[3], float extent[3], float* grid_data) { /* read sdf file */
       FILE *fh = fopen(path, "r");
       char line[2048];
@@ -25,7 +35,6 @@ namespace field {
 #define i2y(i)    i2r(i,Y)
 #define i2z(i)    i2r(i,Z)
     enum {X, Y, Z};
-    Bspline<4> bsp;
     int iz, iy, ix, i, c, sx, sy, sz;
     float s;
     for (iz = 0; iz < nsize[Z]; ++iz)
@@ -39,7 +48,7 @@ namespace field {
 	  float w[3][4];
 	  for (c = 0; c < 3; ++c)
 	    for (i = 0; i < 4; ++i)
-	      w[c][i] = bsp.eval<0>(r[c] - (anchor[c] - 1 + i) + 2);
+	      w[c][i] = spl(r[c] - (anchor[c] - 1 + i) + 2);
 
 	  float tmp[4][4];
 	  for (sz = 0; sz < 4; ++sz)
@@ -83,7 +92,7 @@ namespace field {
     H5FieldDump dump;
     dump.dump_scalarfield(walldata, "wall");
   }
-  
+
 
 
 } /* namespace field */
