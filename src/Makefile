@@ -52,7 +52,7 @@ include    Makefile.dep # dependencies
 # TODO:
 last-bit/last-bit.o: last-bit/last-bit.h
 
-../cuda-dpd/libcuda-dpd.a:; make -C ../cuda-dpd \
+../cuda-dpd/libcuda-dpd.a:; make -j -C ../cuda-dpd \
 	NVCC="$(NVCC)" NVCCFLAGS="$(NVCCFLAGS)" OPT="$(OPT)"
 
 clean:  ; rm -f udx $(OBJS)
