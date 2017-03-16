@@ -200,9 +200,9 @@ void init() {
     s_dump = new H5PartDump("s.h5part");
 
   cells      = new CellLists(XS, YS, ZS);
-  wall_cells = new CellLists(XS + 2 * XMARGIN_WALL,
-			     YS + 2 * YMARGIN_WALL,
-			     ZS + 2 * ZMARGIN_WALL);
+  wall_cells = new CellLists(XS + 2 * XWM,
+			     YS + 2 * YWM,
+			     ZS + 2 * ZWM);
   mpDeviceMalloc(&s_zip0); mpDeviceMalloc(&s_zip1);
 
   if (rbcs)

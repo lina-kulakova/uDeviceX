@@ -1,3 +1,12 @@
+* Notation
+
+XS, YS, ZS   : subdomain size
+XWM, YWM, ZWM: wall margins
+XE, YE, ZE   : extended subdomain size XS + 2*XWM
+XT, YT, ZT : "texture size", sdf grid from a file is mapped to a new grid XT, YT, ZT
+
+* Rest
+
 bipsbatch: biparty batch
 
 nv: number of vertices

@@ -13,7 +13,7 @@ namespace sdf {
   void i2f(int * i_N, float* i_extent, int *TEXTURESIZE, /**/
 	   float* start, float* spacing, float* ampl) {
     int L[3] = {XS, YS, ZS};
-    int M[3] = {XMARGIN_WALL, YMARGIN_WALL, ZMARGIN_WALL};
+    int M[3] = {XWM, YWM, ZWM};
     for (int c = 0; c < 3; ++c) {
       float sc   = i_N[c]/(float)(m::dims[c] * L[c]);
       start[c]   = sc * (m::coords[c] * L[c] - M[c]);
