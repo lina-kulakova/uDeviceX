@@ -1,0 +1,12 @@
+/* XT : 256; */
+
+XW: 2*XM + XS;
+YW: 2*YM + YS;
+
+nu: ('YW * XT + 'XW - 1);
+nu: expand(nu);
+de: 'XW;
+_YT : nu/de;
+
+YT = 16 * ((_YT + 15) / 16);
+
