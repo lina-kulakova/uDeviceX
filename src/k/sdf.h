@@ -4,7 +4,7 @@ namespace k_sdf {
   __device__ float sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS};
     int MARGIN[3] = {XWM, YWM, ZWM};
-    int TEXSIZES[3] = {XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE};
+    int TEXSIZES[3] = {XTE, YTE, ZTE};
 
     float tc[3], lmbd[3], r[3] = {x, y, z};
     for (int c = 0; c < 3; ++c) {
@@ -38,7 +38,7 @@ namespace k_sdf {
   __device__ float cheap_sdf(float x, float y, float z)  {
     int L[3] = {XS, YS, ZS};
     int MARGIN[3] = {XWM, YWM, ZWM};
-    int TEXSIZES[3] = {XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE};
+    int TEXSIZES[3] = {XTE, YTE, ZTE};
 
     float tc[3], r[3] = {x, y, z};;
     for (int c = 0; c < 3; ++c)
@@ -52,7 +52,7 @@ namespace k_sdf {
   __device__ float3 ugrad_sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS};
     int MARGIN[3] = {XWM, YWM, ZWM};
-    int TEXSIZES[3] = {XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE};
+    int TEXSIZES[3] = {XTE, YTE, ZTE};
 
     float tc[3], fcts[3], r[3] = {x, y, z};
     for (int c = 0; c < 3; ++c)
@@ -73,7 +73,7 @@ namespace k_sdf {
   __device__ float3 grad_sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS};
     int MARGIN[3] = {XWM, YWM, ZWM};
-    int TEXSIZES[3] = {XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE};
+    int TEXSIZES[3] = {XTE, YTE, ZTE};
 
     float tc[3], r[3] = {x, y, z};
     for (int c = 0; c < 3; ++c)

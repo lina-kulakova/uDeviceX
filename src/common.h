@@ -67,16 +67,16 @@ enum {
   YE = 2 * YWM + YS,
   ZE = 2 * ZWM + ZS,
 
-  XTEXTURESIZE = 256,
-  _YTEXTURESIZE = ((YS + 2 * YWM) * XTEXTURESIZE +
+  XTE = 256,
+  _YTE = ((YS + 2 * YWM) * XTE +
 		   XS + 2 * XWM - 1) /
   (XS + 2 * XWM),
 
-  YTEXTURESIZE = 16 * ((_YTEXTURESIZE + 15) / 16),
-  _ZTEXTURESIZE = ((ZS + 2 * ZWM) * XTEXTURESIZE +
+  YTE = 16 * ((_YTE + 15) / 16),
+  _ZTE = ((ZS + 2 * ZWM) * XTE +
 		   XS + 2 * XWM - 1) /
   (XS + 2 * XWM),
-  ZTEXTURESIZE = 16 * ((_ZTEXTURESIZE + 15) / 16),
+  ZTE = 16 * ((_ZTE + 15) / 16),
 };
 
 // AoS is the currency for dpd simulations (because of the spatial locality).

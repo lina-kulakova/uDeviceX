@@ -39,8 +39,8 @@ namespace sim {
 
   float start[3], spacing[3];
   float ampl;
-  float field[XTEXTURESIZE * YTEXTURESIZE * ZTEXTURESIZE];
-  int TEXTURESIZE[3] = {XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE};
+  float field[XTE * YTE * ZTE];
+  int TEXTURESIZE[3] = {XTE, YTE, ZTE};
 
   Logistic::KISS* rnd;
 

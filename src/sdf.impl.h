@@ -25,14 +25,14 @@ namespace sdf {
   void init(/**/ float* field) {
     cudaChannelFormatDesc fmt = cudaCreateChannelDesc<float>();
     CC(cudaMalloc3DArray
-       (&arrSDF, &fmt, make_cudaExtent(XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE)));
+       (&arrSDF, &fmt, make_cudaExtent(XTE, YTE, ZTE)));
 
     cudaMemcpy3DParms copyParams = {0};
     copyParams.srcPtr = make_cudaPitchedPtr
-      ((void *)field, XTEXTURESIZE * sizeof(float), XTEXTURESIZE, YTEXTURESIZE);
+      ((void *)field, XTE * sizeof(float), XTE, YTE);
 
     copyParams.dstArray = arrSDF;
-    copyParams.extent = make_cudaExtent(XTEXTURESIZE, YTEXTURESIZE, ZTEXTURESIZE);
+    copyParams.extent = make_cudaExtent(XTE, YTE, ZTE);
     copyParams.kind = H2D;
     CC(cudaMemcpy3D(&copyParams));
 
