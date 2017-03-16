@@ -21,8 +21,12 @@ enum {  /* used in sorting of bulk particle when wall is created */
 
 #define dSync() CC(cudaDeviceSynchronize())
 
+/* ceiling `m' to `n' (returns the smalles `A' such n*A is not less
+   than `m') */
+#define ceiln(m, n) ((m) + (n) - 1)/(n)
+
 /* a common kernel execution configuration */
-#define k_cnf(n) ((n) + 127)/128, 128
+#define k_cnf(n) ceiln(n, 128), 128
 
 /* a common textrue setup */
 #define setup_texture(T, TYPE) do {		     \
