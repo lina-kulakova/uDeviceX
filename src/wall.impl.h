@@ -52,12 +52,12 @@ namespace wall {
       MPI_Barrier(m::cart);
 
       int L[3] = {XS, YS, ZS};
-      int MARGIN[3] = {XWM, YWM, ZWM};
+      int WM[3] = {XWM, YWM, ZWM};
       float lo[3], hi[3];
       int c, i, j;
       for (c = 0; c < 3; c ++) {
-	lo[c] = -0.5*L[c] - MARGIN[c];
-	hi[c] =  0.5*L[c] + MARGIN[c];
+	lo[c] = -0.5*L[c] - WM[c];
+	hi[c] =  0.5*L[c] + WM[c];
       }
 
       for (i = 0; i < 26; ++i) {

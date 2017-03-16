@@ -3,13 +3,13 @@ namespace k_sdf {
 
   __device__ float sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS};
-    int MARGIN[3] = {XWM, YWM, ZWM};
+    int WM[3] = {XWM, YWM, ZWM};
     int TEXSIZES[3] = {XTE, YTE, ZTE};
 
     float tc[3], lmbd[3], r[3] = {x, y, z};
     for (int c = 0; c < 3; ++c) {
       float t =
-	TEXSIZES[c] * (r[c] + L[c] / 2 + MARGIN[c]) / (L[c] + 2 * MARGIN[c]);
+	TEXSIZES[c] * (r[c] + L[c] / 2 + WM[c]) / (L[c] + 2 * WM[c]);
 
       lmbd[c] = t - (int)t;
       tc[c] = (int)t + 0.5;
@@ -37,13 +37,13 @@ namespace k_sdf {
   /* within the rescaled texel width error */
   __device__ float cheap_sdf(float x, float y, float z)  {
     int L[3] = {XS, YS, ZS};
-    int MARGIN[3] = {XWM, YWM, ZWM};
+    int WM[3] = {XWM, YWM, ZWM};
     int TEXSIZES[3] = {XTE, YTE, ZTE};
 
     float tc[3], r[3] = {x, y, z};;
     for (int c = 0; c < 3; ++c)
-      tc[c] = 0.5001f + (int)(TEXSIZES[c] * (r[c] + L[c] / 2 + MARGIN[c]) /
-			      (L[c] + 2 * MARGIN[c]));
+      tc[c] = 0.5001f + (int)(TEXSIZES[c] * (r[c] + L[c] / 2 + WM[c]) /
+			      (L[c] + 2 * WM[c]));
 #define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
     return tex0(0, 0, 0);
 #undef  tex0
@@ -51,14 +51,14 @@ namespace k_sdf {
 
   __device__ float3 ugrad_sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS};
-    int MARGIN[3] = {XWM, YWM, ZWM};
+    int WM[3] = {XWM, YWM, ZWM};
     int TEXSIZES[3] = {XTE, YTE, ZTE};
 
     float tc[3], fcts[3], r[3] = {x, y, z};
     for (int c = 0; c < 3; ++c)
-      tc[c] = 0.5001f + (int)(TEXSIZES[c] * (r[c] + L[c] / 2 + MARGIN[c]) /
-			      (L[c] + 2 * MARGIN[c]));
-    for (int c = 0; c < 3; ++c) fcts[c] = TEXSIZES[c] / (2 * MARGIN[c] + L[c]);
+      tc[c] = 0.5001f + (int)(TEXSIZES[c] * (r[c] + L[c] / 2 + WM[c]) /
+			      (L[c] + 2 * WM[c]));
+    for (int c = 0; c < 3; ++c) fcts[c] = TEXSIZES[c] / (2 * WM[c] + L[c]);
 
 #define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
     float myval = tex0(0, 0, 0);
@@ -72,13 +72,13 @@ namespace k_sdf {
 
   __device__ float3 grad_sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS};
-    int MARGIN[3] = {XWM, YWM, ZWM};
+    int WM[3] = {XWM, YWM, ZWM};
     int TEXSIZES[3] = {XTE, YTE, ZTE};
 
     float tc[3], r[3] = {x, y, z};
     for (int c = 0; c < 3; ++c)
       tc[c] =
-	TEXSIZES[c] * (r[c] + L[c] / 2 + MARGIN[c]) / (L[c] + 2 * MARGIN[c]);
+	TEXSIZES[c] * (r[c] + L[c] / 2 + WM[c]) / (L[c] + 2 * WM[c]);
 
     float gx, gy, gz;
 #define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
