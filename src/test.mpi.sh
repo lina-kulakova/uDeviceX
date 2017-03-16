@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #### RBC in a periodic box (mpi on falcon)
-# sTEST: mpi.t1
+# TEST: mpi.t1
 # set -x
 # export PATH=../tools:$PATH
 # export PATH=/usr/lib64/mpich/bin:$PATH
@@ -28,7 +28,7 @@
 # avg_h52.m h5/flowfields-0013.h5 | fround.awk -v tol=2 > h5.out.txt
 
 ####
-# sTEST: mpi.t3
+# TEST: mpi.t3
 # export PATH=../tools:$PATH
 # export PATH=/usr/lib64/mpich/bin:$PATH
 # rm -rf ply h5 diag.txt
