@@ -1,16 +1,21 @@
 namespace k_sdf {
   texture<float, 3, cudaReadModeElementType> texSDF;
+  __device__ void  r2q(float* r, /**/ float* q) {
+    /* from subdomain coordinates to textrue coordinates */
+    int L[3] = {XS, YS, ZS}, WM[3] = {XWM, YWM, ZWM}, \
+			     TE[3] = {XTE, YTE, ZTE};
+    for (int c = 0; c < 3; c++)
+      q[c] = TE[c] * (r[c] + L[c] / 2 + WM[c]) / (L[c] + 2 * WM[c]);
+  }
 
   __device__ float sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS};
     int WM[3] = {XWM, YWM, ZWM};
     int TE[3] = {XTE, YTE, ZTE};
 
-    float tc[3], lmbd[3], r[3] = {x, y, z};
+    float t, tc[3], lmbd[3], r[3] = {x, y, z};
     for (int c = 0; c < 3; ++c) {
-      float t =
-	TE[c] * (r[c] + L[c] / 2 + WM[c]) / (L[c] + 2 * WM[c]);
-
+      t = TE[c] * (r[c] + L[c] / 2 + WM[c]) / (L[c] + 2 * WM[c]);
       lmbd[c] = t - (int)t;
       tc[c] = (int)t + 0.5;
     }
@@ -34,13 +39,12 @@ namespace k_sdf {
     return szyx;
   }
 
-  /* within the rescaled texel width error */
   __device__ float cheap_sdf(float x, float y, float z)  {
     int L[3] = {XS, YS, ZS};
     int WM[3] = {XWM, YWM, ZWM};
     int TE[3] = {XTE, YTE, ZTE};
 
-    float tc[3], r[3] = {x, y, z};;
+    float tc[3], r[3] = {x, y, z};
     for (int c = 0; c < 3; ++c)
       tc[c] = 0.5001f + (int)(TE[c] * (r[c] + L[c] / 2 + WM[c]) /
 			      (L[c] + 2 * WM[c]));
