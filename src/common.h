@@ -63,20 +63,15 @@ inline void mpiAssert(int code, const char *file, int line) {
 
 /* wired constants from wall.impl */
 enum {
-  XE = XS + 2*XWM,
-  YE = YS + 2*YWM,
-  ZE = ZS + 2*ZWM,
+  XE = XS + 2*XWM, YE = YS + 2*YWM, ZE = ZS + 2*ZWM,
 
-  XTE = 256,
-  _YTE = ((YE) * XTE +
-		   XE - 1) /
-  (XE),
+  XTE  = 256,
 
-  YTE = 16 * ((_YTE + 15) / 16),
-  _ZTE = ((ZE) * XTE +
-		   XE - 1) /
-  (XE),
-  ZTE = 16 * ((_ZTE + 15) / 16),
+  _YTE = (YE*XTE + XE - 1)/XE,
+  YTE  = 16*((_YTE + 15)/16),
+
+  _ZTE = (ZE*XTE + XE - 1)/XE,
+  ZTE  = 16*((_ZTE + 15)/16)
 };
 
 // AoS is the currency for dpd simulations (because of the spatial locality).
