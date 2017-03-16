@@ -63,19 +63,19 @@ inline void mpiAssert(int code, const char *file, int line) {
 
 /* wired constants from wall.impl */
 enum {
-  XE = 2 * XWM + XS,
-  YE = 2 * YWM + YS,
-  ZE = 2 * ZWM + ZS,
+  XE = XS + 2*XWM,
+  YE = YS + 2*YWM,
+  ZE = ZS + 2*ZWM,
 
   XTE = 256,
-  _YTE = ((YS + 2 * YWM) * XTE +
-		   XS + 2 * XWM - 1) /
-  (XS + 2 * XWM),
+  _YTE = ((YS + 2*YWM) * XTE +
+		   XS + 2*XWM - 1) /
+  (XS + 2*XWM),
 
   YTE = 16 * ((_YTE + 15) / 16),
-  _ZTE = ((ZS + 2 * ZWM) * XTE +
-		   XS + 2 * XWM - 1) /
-  (XS + 2 * XWM),
+  _ZTE = ((ZS + 2*ZWM) * XTE +
+		   XS + 2*XWM - 1) /
+  (XS + 2*XWM),
   ZTE = 16 * ((_ZTE + 15) / 16),
 };
 
