@@ -1,21 +1,18 @@
 namespace k_sdf {
   texture<float, 3, cudaReadModeElementType> texSDF;
   __device__ void  r2q(float* r, /**/ float* q) {
-    /* from subdomain coordinates to textrue coordinates */
+    /* from subdomain to textrue coordinates */
     int L[3] = {XS, YS, ZS}, WM[3] = {XWM, YWM, ZWM}, \
 			     TE[3] = {XTE, YTE, ZTE};
     for (int c = 0; c < 3; c++)
-      q[c] = TE[c] * (r[c] + L[c] / 2 + WM[c]) / (L[c] + 2 * WM[c]);
+      q[c] = TE[c] * (r[c] + 0.5*L[c] + WM[c]) / (float)(L[c] + 2 * WM[c]);
   }
 
   __device__ float sdf(float x, float y, float z) {
-    int L[3] = {XS, YS, ZS};
-    int WM[3] = {XWM, YWM, ZWM};
-    int TE[3] = {XTE, YTE, ZTE};
-
-    float t, tc[3], lmbd[3], r[3] = {x, y, z};
+    float tc[3], lmbd[3], q[3], r[3] = {x, y, z};
+    r2q(r, /**/ q);
     for (int c = 0; c < 3; ++c) {
-      t = TE[c] * (r[c] + L[c] / 2 + WM[c]) / (L[c] + 2 * WM[c]);
+      float t = q[c];
       lmbd[c] = t - (int)t;
       tc[c] = (int)t + 0.5;
     }
@@ -40,52 +37,41 @@ namespace k_sdf {
   }
 
   __device__ float cheap_sdf(float x, float y, float z)  {
-    int L[3] = {XS, YS, ZS};
-    int WM[3] = {XWM, YWM, ZWM};
-    int TE[3] = {XTE, YTE, ZTE};
-
-    float tc[3], r[3] = {x, y, z};
-    for (int c = 0; c < 3; ++c)
-      tc[c] = 0.5001f + (int)(TE[c] * (r[c] + L[c] / 2 + WM[c]) /
-			      (L[c] + 2 * WM[c]));
+    float tc[3], q[3], r[3] = {x, y, z};
+    int c;
+    r2q(r, /**/ q);
+    for (c = 0; c < 3; ++c) tc[c] = 0.5001f + (int)q[c];
 #define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
     return tex0(0, 0, 0);
 #undef  tex0
   }
 
   __device__ float3 ugrad_sdf(float x, float y, float z) {
-    int L[3] = {XS, YS, ZS};
-    int WM[3] = {XWM, YWM, ZWM};
-    int TE[3] = {XTE, YTE, ZTE};
-
-    float tc[3], fcts[3], r[3] = {x, y, z};
-    for (int c = 0; c < 3; ++c)
-      tc[c] = 0.5001f + (int)(TE[c] * (r[c] + L[c] / 2 + WM[c]) /
-			      (L[c] + 2 * WM[c]));
-    for (int c = 0; c < 3; ++c) fcts[c] = TE[c] / (2 * WM[c] + L[c]);
+    int L[3] = {XS, YS, ZS}, WM[3] = {XWM, YWM, ZWM}, \
+			     TE[3] = {XTE, YTE, ZTE};
+    float tc[3], fcts[3], q[3], r[3] = {x, y, z};
+    int c;
+    r2q(r, /**/ q);
+    for (c = 0; c < 3; ++c) tc[c] = 0.5001f + (int)q[c];
+    for (c = 0; c < 3; ++c) fcts[c] = TE[c]/(float)(2*WM[c] + L[c]);
 
 #define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
-    float myval = tex0(0, 0, 0);
-    float gx = fcts[0] * (tex0(1, 0, 0) - myval);
-    float gy = fcts[1] * (tex0(0, 1, 0) - myval);
-    float gz = fcts[2] * (tex0(0, 0, 1) - myval);
+    float gx, gy, gz, sdf0 = tex0(0, 0, 0);
+    gx = fcts[0] * (tex0(1, 0, 0) - sdf0);
+    gy = fcts[1] * (tex0(0, 1, 0) - sdf0);
+    gz = fcts[2] * (tex0(0, 0, 1) - sdf0);
 #undef tex0
-
     return make_float3(gx, gy, gz);
   }
 
   __device__ float3 grad_sdf(float x, float y, float z) {
-    int L[3] = {XS, YS, ZS};
-    int WM[3] = {XWM, YWM, ZWM};
-    int TE[3] = {XTE, YTE, ZTE};
 
-    float tc[3], r[3] = {x, y, z};
-    for (int c = 0; c < 3; ++c)
-      tc[c] =
-	TE[c] * (r[c] + L[c] / 2 + WM[c]) / (L[c] + 2 * WM[c]);
+    float q[3], tc[3], r[3] = {x, y, z};
+    r2q(r, /**/ q);
+    for (int c = 0; c < 3; ++c) tc[c] = q[c];
 
-    float gx, gy, gz;
 #define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
+    float gx, gy, gz;
     gx = tex0(1, 0, 0) - tex0(-1,  0,  0);
     gy = tex0(0, 1, 0) - tex0( 0, -1,  0);
     gz = tex0(0, 0, 1) - tex0( 0,  0, -1);
