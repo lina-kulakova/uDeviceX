@@ -63,9 +63,9 @@ inline void mpiAssert(int code, const char *file, int line) {
 
 /* wired constants from wall.impl */
 enum {
-  XSIZE_WALLCELLS = 2 * XWM + XS,
-  YSIZE_WALLCELLS = 2 * YWM + YS,
-  ZSIZE_WALLCELLS = 2 * ZWM + ZS,
+  XE = 2 * XWM + XS,
+  YE = 2 * YWM + YS,
+  ZE = 2 * ZWM + ZS,
 
   XTEXTURESIZE = 256,
   _YTEXTURESIZE = ((YS + 2 * YWM) * XTEXTURESIZE +

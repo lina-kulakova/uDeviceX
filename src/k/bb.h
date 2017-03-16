@@ -65,7 +65,7 @@ namespace k_bb { /* bounce back */
       float mycheapsdf = k_sdf::cheap_sdf(data0.x, data0.y, data1.x);
 
       if (mycheapsdf >=
-	  -1.7320f * ((float)XSIZE_WALLCELLS / (float)XTEXTURESIZE)) {
+	  -1.7320f * ((float)XE / (float)XTEXTURESIZE)) {
 	float currsdf = k_sdf::sdf(data0.x, data0.y, data1.x);
 
 	float2 data2 = pp[pid * 3 + 2];
