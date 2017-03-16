@@ -68,14 +68,14 @@ enum {
   ZE = ZS + 2*ZWM,
 
   XTE = 256,
-  _YTE = ((YS + 2*YWM) * XTE +
-		   XS + 2*XWM - 1) /
-  (XS + 2*XWM),
+  _YTE = ((YE) * XTE +
+		   XE - 1) /
+  (XE),
 
   YTE = 16 * ((_YTE + 15) / 16),
-  _ZTE = ((ZS + 2*ZWM) * XTE +
-		   XS + 2*XWM - 1) /
-  (XS + 2*XWM),
+  _ZTE = ((ZE) * XTE +
+		   XE - 1) /
+  (XE),
   ZTE = 16 * ((_ZTE + 15) / 16),
 };
 
