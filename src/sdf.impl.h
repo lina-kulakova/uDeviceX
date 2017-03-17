@@ -10,14 +10,13 @@ namespace sdf {
 
   /* go from spacing for the input grid in sdf file to spacing for the
      field used in simulation ("input to field", i2f) */
-  void i2f(int * i_N, float* i_extent, int *TEXTURESIZE, /**/
+  void i2f(int * i_N, float* i_extent, int *TE, /**/
 	   float* start, float* spacing, float* ampl) {
-    int L[3] = {XS, YS, ZS};
-    int M[3] = {XWM, YWM, ZWM};
+    int L[3] = {XS, YS, ZS}, WM[3] = {XWM, YWM, ZWM};
     for (int c = 0; c < 3; ++c) {
       float sc   = i_N[c]/(float)(m::dims[c] * L[c]);
-      start[c]   = sc * (m::coords[c] * L[c] - M[c]);
-      spacing[c] = sc * (L[c] + 2 * M[c]) / TEXTURESIZE[c];
+      start[c]   = sc * (m::coords[c] * L[c] - WM[c]);
+      spacing[c] = sc * (L[c] + 2 * WM[c]) / TE[c];
     }
     *ampl = XS/(i_extent[0]/m::dims[0]);
   }
