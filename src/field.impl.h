@@ -23,7 +23,7 @@ namespace field {
       int np = N[0] * N[1] * N[2];
       fread(grid_data, sizeof(float), np, fh);
       fclose(fh);
-      MPI_Barrier(m::cart);
+      MC(MPI_Barrier(m::cart));
   }
 
   void sample(float rlo[3], float dr[3], int nsize[3], int N[3], float ampl,
