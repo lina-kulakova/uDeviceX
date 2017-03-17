@@ -44,7 +44,7 @@ static void update_helper_arrays() {
 void create_wall() {
   dSync();
   field::ini("sdf.dat", i_N, i_extent, i_data);
-  if (hdf5field_dumps) field::dump(i_N, i_extent, i_data);
+  if (hdf5field_dumps) io::wall_dump(i_N, i_extent, i_data);
   sdf::i2f(i_N, i_extent, TEXTURESIZE, /**/ start, spacing, &ampl);
   field::sample(start, spacing, TEXTURESIZE, i_N, ampl, i_data,
 		field);
