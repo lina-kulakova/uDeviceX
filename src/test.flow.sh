@@ -31,7 +31,7 @@
 #   -hdf5field_dumps -hdf5part_dumps -steps_per_hdf5dump=300 > .conf.h
 # make clean && make -j && make -C ../tools
 # ./udx
-# avg_h5.m h5/flowfields-0003.h5 | fround.awk -v tol=1 > h5.out.txt
+# avg_h5.m h5/flowfields-0006.h5 | fround.awk -v tol=1 > h5.out.txt
 
 ####
 # TEST: diag.t5
