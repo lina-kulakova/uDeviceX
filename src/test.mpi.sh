@@ -23,7 +23,7 @@
 #   -pushtheflow -doublepoiseuille   \
 #   -hdf5field_dumps -hdf5part_dumps \
 #   -steps_per_hdf5dump=300 -pushtheflow > .conf.h
-# make clean && make -j && make -C ../tools
+# make clean && make -j
 # mpirun -n 2 ./udx 2 1 1
 # avg_h52.m h5/flowfields-0013.h5 | fround.awk -v tol=2 > h5.out.txt
 
@@ -37,7 +37,7 @@
 # argp .conf.around.h \
 #    -rbcs -tend=4.0 -steps_per_dump=5000 -walls -wall_creation_stepid=1000 \
 #    -hdf5field_dumps -hdf5part_dumps -steps_per_hdf5dump=5000 -pushtheflow > .conf.h
-# make clean && make -j && make -C ../tools
+# make clean && make -j
 # mpirun -n 3 ./udx 1 1 3
 # mid_h5.m h5/flowfields-0001.h5 | fhash.awk -v tol=1 > h5.out.txt
 #
