@@ -17,13 +17,9 @@ namespace field {
       fgets(line, sizeof(line), fh);
       sscanf(line, "%d %d %d", &N[0], &N[1], &N[2]);
 
-      MC(MPI_Bcast(N, 3, MPI_INT, 0, m::cart));
-      MC(MPI_Bcast(extent, 3, MPI_FLOAT, 0, m::cart));
-
       int np = N[0] * N[1] * N[2];
       fread(grid_data, sizeof(float), np, fh);
       fclose(fh);
-      MC(MPI_Barrier(m::cart));
   }
 
   void sample(float rlo[3], float dr[3], int nsize[3], int N[3], float ampl,
