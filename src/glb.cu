@@ -5,12 +5,10 @@
 #include "glb.h"
 
 #define ndim 3
-#define X 0
-#define Y 1
-#define Z 2
 
 /* global variables visible for every kernel */
 namespace glb {
+  enum {X, Y, Z};
   __constant__ float r0[ndim];
   __constant__ float lg[ndim];
   float              LG[ndim];
@@ -37,22 +35,19 @@ namespace glb {
 	  coords[X]=0   coords[X]=1   coords[X]=2
      */
 
-    float r0_h[3]; /* the center of the domain in sub-domain
+    float r0_h[ndim]; /* the center of the domain in sub-domain
 		     coordinates; to go to domain coordinates (`rg')
 		     from sub-domain coordinates (`r'): rg = r - r0
 		   */
-    r0_h[X] = XS*(m::dims[X]-2*m::coords[X]-1)/2;
-    r0_h[Y] = YS*(m::dims[Y]-2*m::coords[Y]-1)/2;
-    r0_h[Z] = ZS*(m::dims[Z]-2*m::coords[Z]-1)/2;
+    r0_h[X] = XS*(m::dims[X]-2*m::coords[X]-1)*0.5;
+    r0_h[Y] = YS*(m::dims[Y]-2*m::coords[Y]-1)*0.5;
+    r0_h[Z] = ZS*(m::dims[Z]-2*m::coords[Z]-1)*0.5;
     cudaMemcpyToSymbol(r0, r0_h, ndim*sizeof(float));
 
-    LG[X] = m::dims[X] * XS;
-    LG[Y] = m::dims[Y] * YS;
-    LG[Z] = m::dims[Z] * ZS;
+    LG[X] = XS*m::dims[X];
+    LG[Y] = YS*m::dims[Y];
+    LG[Z] = ZS*m::dims[Z];
     cudaMemcpyToSymbol(lg, LG, ndim*sizeof(float));
   }
 }
-#undef X
-#undef Y
-#undef Z
 #undef ndim
