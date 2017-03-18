@@ -52,6 +52,7 @@
 # cp sdf/cyl1/cyl.dat sdf.dat
 # x=0.75 y=8 z=9; echo 1 0 0 $x  0 1 0 $y  0 0 1 $z  0 0 0 1 > rbcs-ic.txt
 # argp .conf.around.h \
+#    -acyl            \
 #    -rbcs -tend=3.0 -steps_per_dump=5000 -walls -wall_creation_stepid=1000 \
 #    -hdf5field_dumps -hdf5part_dumps -steps_per_hdf5dump=5000 -pushtheflow > .conf.h
 # make clean && make -j && make -C ../tools
@@ -66,6 +67,7 @@
 # x=0.75 y=13 z=9; echo 1 0 0 $x  0 1 0 $y  0 0 1 $z  0 0 0 1 >> rbcs-ic.txt
 # cp sdf/cyl1/cyl.dat sdf.dat
 # argp .conf.around.h  -rbcs -tend=3.0 -steps_per_dump=5000 \
+#        -acyl                             \
 #        -walls -wall_creation_stepid=1000 \
 #        -hdf5field_dumps -hdf5part_dumps  \
 #        -steps_per_hdf5dump=5000 -pushtheflow > .conf.h
@@ -81,6 +83,7 @@
 # x=0.75 y=3 z=9; echo 1 0 0 $x  0 1 0 $y  0 0 1 $z  0 0 0 1 >  rbcs-ic.txt
 # x=8    y=8 z=8; echo 1 0 0 $x  0 1 0 $y  0 0 1 $z  0 0 0 1 >> rbcs-ic.txt
 # argp .conf.around.h -rbcs -tend=3.0 -steps_per_dump=5000 \
+#      -acyl                            \
 #     -walls -wall_creation_stepid=1000 \
 #     -hdf5field_dumps -hdf5part_dumps  \
 #     -steps_per_hdf5dump=5000 -pushtheflow > .conf.h
