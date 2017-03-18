@@ -8,7 +8,7 @@
 # add crap from test_data/* to git
 
 #### Double poiseuille
-# TEST: double.poiseuille
+# sTEST: double.poiseuille
 # set -x
 # export PATH=../tools:$PATH
 # rm -rf ply h5 diag.txt
@@ -26,10 +26,12 @@
 # export PATH=../tools:$PATH
 # rm -rf ply h5 diag.txt
 # cp sdf/wall1/wall.dat sdf.dat
+# :
 # argp .conf.test.h  \
 #   -awall           \
 #   -tend=1.0 -steps_per_dump=300 -walls -wall_creation_stepid=100 \
 #   -hdf5field_dumps -hdf5part_dumps -steps_per_hdf5dump=300 > .conf.h
+# :
 # make clean && make -j
 # ./udx
 # avg_h5.m h5/flowfields-0006.h5 | fround.awk -v tol=1 > h5.out.txt
@@ -39,16 +41,18 @@
 # export PATH=../tools:$PATH
 # rm -rf ply h5 diag.txt
 # cp sdf/wall1/wall.dat sdf.dat
+# :
 # argp .conf.poiseuille.h \
 #   -awall                \
 #   -tend=2.0 -steps_per_dump=300 -walls -wall_creation_stepid=100 \
 #   -hdf5field_dumps -hdf5part_dumps -steps_per_hdf5dump=300 -pushtheflow > .conf.h
+# :
 # make clean && make -j
 # ./udx
 # avg_h5.m h5/flowfields-0013.h5 | fround.awk -v tol=2 > h5.out.txt
 
 ####
-# TEST: diag.t6
+# sTEST: diag.t6
 # export PATH=../tools:$PATH
 # rm -rf ply h5 diag.txt
 # cp sdf/cyl1/cyl.dat sdf.dat
@@ -59,3 +63,4 @@
 # make clean && make -j
 # ./udx
 # mid_h5.m h5/flowfields-0026.h5 | fhash.awk -v tol=2 > h5.out.txt
+#

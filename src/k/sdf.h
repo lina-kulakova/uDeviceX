@@ -19,8 +19,31 @@ namespace k_sdf {
     return sdf;
   }
 
+  __device__ float sdf_wall(float /* x */, float /* y */, float z) {
+    enum {X, Y, Z};
+    float sdf1, sdf2, sdf, p1 = 0.08, p2 = 0.92;
+    z -= glb::r0[Z];
+    z /= glb::lg[Z];
+    z += 0.5;
+
+    sdf1 = p1 -  z;
+    sdf2 = z  - p2;
+
+    sdf = max(sdf1, sdf2);
+    sdf *= glb::lg[X];
+
+    return sdf;
+  }
+
   __device__ float sdf(float x, float y, float z) {
-    if (acyl) return sdf_cyl(x, y, z);
+#ifdef acyl
+    return sdf_cyl (x, y, z);
+#endif
+
+#ifdef awall
+    return sdf_wall(x, y, z);
+#endif
+    //if (awall) return sdf_wall(x, y, z);
     float tc[3], lmbd[3], q[3], r[3] = {x, y, z};
     r2q(r, /**/ q);
     for (int c = 0; c < 3; ++c) {
