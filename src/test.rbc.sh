@@ -39,6 +39,7 @@
 # x=0.75 y=8 z=12; echo 1 0 0 $x  0 1 0 $y  0 0 1 $z  0 0 0 1 > rbcs-ic.txt
 # rm -rf ply h5 diag.txt
 # argp .conf.test.h \
+#   -awall          \
 #   -rbcs -tend=0.5 -steps_per_dump=300  -walls  -wall_creation_stepid=100 \
 #   -hdf5field_dumps -hdf5part_dumps -steps_per_hdf5dump=300 > .conf.h
 # make clean && make -j && make -C ../tools
