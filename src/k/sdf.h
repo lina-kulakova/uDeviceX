@@ -59,7 +59,8 @@ namespace k_sdf {
     int pid = threadIdx.x + blockDim.x * blockIdx.x;
     if (pid >= n) return;
     float sdf0, *r = pp[pid].r;
-    sdf0 = sdf(r[0], r[1], r[2]);
+    enum {X, Y, Z};
+    sdf0 = sdf(r[X], r[Y], r[Z]);
 
     key[pid] = \
       sdf0  > 2 ? W_DEEP :
