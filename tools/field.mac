@@ -1,49 +1,59 @@
-/* there are five coordinates systems
+kill(all) $
+
+/* define an inverse function of `f0'
+(%i1) f(x) := x - 42 $
+(%i2) idefine(g, f)  $
+(%o2)                      g(g16953) := g16953 + 42 */
+idefine(f, f0)::=buildq([f, f0, r: gensym(), r0: gensym()],
+  block([so, eq],
+    eq: r = f0(r0),
+    so: solve(r = f0(r0), r0),
+    so: rhs(first(so)),
+    so: fullratsimp(so),
+    define(f(r), so))) $
+
+/* there are four coordinates systems
 
 subdomain:
-     [ WM  ][-S/2 0 S/2][ WM ]
-
-domain:
-[0                                 LG]
-
-sdf file:
-[0                                N-1]
-
+     [  WM  ][-S/2  0    S/2][  WM  ]
 texture:
-     [0                    TE]
+     [1/2][0               TE-1][1/2]
+domain:
+[0                                         LG]
+sdf:
+[1/2][0                              N-1][1/2]
 
 */
 
-kill(all);
-sub2te(r):= (r + 'WM + 'S/2) / ('S + 2*'WM) * 'TE;
+te2sub(r):= (r - (TE-1)/2) / TE * (S + 2*WM);
+idefine(sub2te, te2sub);
+
 dom2sub(r):= r - 'coords*'S - 'S/2;
+idefine(sub2dom, dom2sub);
+
 dom2te(r):= sub2te(dom2sub(r));
+idefine(te2dom, dom2te);
 
-so: linsolve('r = dom2te('r0), 'r0);
-so: rhs(first(so));
-so: expand(so);
-define(te2do(r), so);
+sdf2dom(r):= (r + 1/2) / N * LG;
+idefine(dom2sdf, sdf2dom);
 
-LG: 'S*'dims;
-te2sdf(r):=te2do(r)/LG*'i_N;
+te2sdf(r):= dom2sdf(te2dom(r));
+sub2sdf(r):= dom2sdf(sub2dom(r));
+
 
 W : 2*WM + S;
-
-sc: 'i_N/('dims*'S);
-
+sc: N/LG;
 st: sc * (coords * S - WM);
-sp: sc * ('S + 2*'WM) / 'TE;
+sp: sc * (S + 2*WM) / 'TE;
 
 am: S / (ext / dims);
 
-q :  TE * (r + S/2 + WM) / (S + 2 * WM);
-
-st - te2sdf(0);
-expand(sp - (te2sdf(1) - te2sdf(0)));
+q :  TE * (r + S/2 + WM) / (S + 2 * WM) - 1/2;
 q  - sub2te(r);
+fullratsimp(q  - sub2te(r));
 
-ite: st + (i + 1/2) * sp - 1/2;
-ite: st + (i + 1/2) * sp;
+ite: st + (i + 1/2) * sp + 1/2;
 
-factor(ite);
-factor(te2sdf('i));
+factor(ite - te2sdf('i));
+
+sub2sdf(-S/2);
