@@ -5,7 +5,7 @@ namespace k_sdf {
     int L[3] = {XS, YS, ZS}, WM[3] = {XWM, YWM, ZWM}, \
 			     TE[3] = {XTE, YTE, ZTE};
     for (int c = 0; c < 3; c++)
-      q[c] = TE[c] * (r[c] + 0.5*L[c] + WM[c]) / (float)(L[c] + 2 * WM[c]);
+      q[c] = TE[c] * (r[c] + 0.5*L[c] + WM[c]) / (float)(L[c] + 2 * WM[c]) - 0.5;
   }
 
   __device__ float sdf(float x, float y, float z) {
