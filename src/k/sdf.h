@@ -8,7 +8,19 @@ namespace k_sdf {
       q[c] = TE[c] * (r[c] + 0.5*L[c] + WM[c]) / (float)(L[c] + 2 * WM[c]) - 0.5;
   }
 
+  __device__ float sdf_cyl(float x, float /* y */, float z) {
+    enum {X, Y, Z};
+    float sdf, rad, rsph = 0.25;
+    x -= glb::r0[X]; z -= glb::r0[Z];
+    x /= glb::lg[X]; z /= glb::lg[Z];
+    rad = sqrt(x*x + z*z);
+    sdf = rsph - rad;
+    sdf *= glb::lg[X];
+    return sdf;
+  }
+
   __device__ float sdf(float x, float y, float z) {
+    if (acyl) return sdf_cyl(x, y, z);
     float tc[3], lmbd[3], q[3], r[3] = {x, y, z};
     r2q(r, /**/ q);
     for (int c = 0; c < 3; ++c) {
