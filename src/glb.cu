@@ -13,6 +13,8 @@
 namespace glb {
   __constant__ float r0[ndim];
   __constant__ float lg[ndim];
+  float              LG[ndim];
+
   /* subdomain to domain coordinates */
   void sub2dom(float *r, /**/ float *q) {
     q[X] = r[X] + XS*(m::coords[X] + 0.5);
@@ -44,11 +46,10 @@ namespace glb {
     r0_h[Z] = ZS*(m::dims[Z]-2*m::coords[Z]-1)/2;
     cudaMemcpyToSymbol(r0, r0_h, ndim*sizeof(float));
 
-    float lg_h[3]; /* domain size */
-	lg_h[X] = m::dims[X] * XS;
-	lg_h[Y] = m::dims[Y] * YS;
-	lg_h[Z] = m::dims[Z] * ZS;
-    cudaMemcpyToSymbol(lg, lg_h, ndim*sizeof(float));
+    LG[X] = m::dims[X] * XS;
+    LG[Y] = m::dims[Y] * YS;
+    LG[Z] = m::dims[Z] * ZS;
+    cudaMemcpyToSymbol(lg, LG, ndim*sizeof(float));
   }
 }
 #undef X
