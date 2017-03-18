@@ -1,12 +1,49 @@
-/* XT : 256; */
+/* there are five coordinates systems
 
-XW: 2*XM + XS;
-YW: 2*YM + YS;
+subdomain:
+     [ WM  ][-S/2 0 S/2][ WM ]
 
-nu: ('YW * XT + 'XW - 1);
-nu: expand(nu);
-de: 'XW;
-_YT : nu/de;
+domain:
+[0                                 LG]
 
-YT = 16 * ((_YT + 15) / 16);
+sdf file:
+[0                                N-1]
 
+texture:
+     [0                    TE]
+
+*/
+
+kill(all);
+sub2te(r):= (r + 'WM + 'S/2) / ('S + 2*'WM) * 'TE;
+dom2sub(r):= r - 'coords*'S - 'S/2;
+dom2te(r):= sub2te(dom2sub(r));
+
+so: linsolve('r = dom2te('r0), 'r0);
+so: rhs(first(so));
+so: expand(so);
+define(te2do(r), so);
+
+LG: 'S*'dims;
+te2sdf(r):=te2do(r)/LG*'i_N;
+
+W : 2*WM + S;
+
+sc: 'i_N/('dims*'S);
+
+st: sc * (coords * S - WM);
+sp: sc * ('S + 2*'WM) / 'TE;
+
+am: S / (ext / dims);
+
+q :  TE * (r + S/2 + WM) / (S + 2 * WM);
+
+st - te2sdf(0);
+expand(sp - (te2sdf(1) - te2sdf(0)));
+q  - sub2te(r);
+
+ite: st + (i + 1/2) * sp - 1/2;
+ite: st + (i + 1/2) * sp;
+
+factor(ite);
+factor(te2sdf('i));
