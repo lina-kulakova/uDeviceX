@@ -8,7 +8,7 @@
 #define ZWM      6
 
 #define _numberdensity    3
-#define _kBT              0.1
+#define _kBT              10.0
 #define  dt               5e-4  /* timestep */
 #define  rbc_mass         0.5   /* ratio of RBC particle mass to solvent particle mass */
 #define _gamma_dot        0.0   /* shear rate */

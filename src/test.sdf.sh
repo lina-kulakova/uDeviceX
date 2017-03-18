@@ -11,7 +11,7 @@
 # mid_h5.m h5/flowfields-0026.h5 | fhash.awk -v tol=2 > h5.out.txt
 
 #### walls
-# TEST: sdf.t2
+# sTEST: sdf.t2
 # export PATH=../tools:$PATH
 # rm -rf ply h5 diag.txt
 # cp sdf/wall1/wall.dat sdf.dat

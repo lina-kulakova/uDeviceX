@@ -49,10 +49,11 @@ namespace k_sdf {
   __device__ float3 ugrad_sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS}, WM[3] = {XWM, YWM, ZWM}, \
 			     TE[3] = {XTE, YTE, ZTE};
-    float tc[3], fcts[3], q[3], r[3] = {x, y, z};
+    float fcts[3], q[3], r[3] = {x, y, z};
+    int   tc[3];
     int c;
     r2q(r, /**/ q);
-    for (c = 0; c < 3; ++c) tc[c] = 0.5001f + (int)q[c];
+    for (c = 0; c < 3; ++c) tc[c] = (int)q[c];
     for (c = 0; c < 3; ++c) fcts[c] = TE[c]/(float)(2*WM[c] + L[c]);
 
 #define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
