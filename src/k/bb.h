@@ -1,24 +1,8 @@
 namespace k_bb { /* bounce back */
     __device__ void handle_collision(float currsdf,
-				   float &x, float &y, float &z,
-				   float &vx, float &vy, float &vz) {
+				     float  &x, float  &y, float  &z,
+				     float &vx, float &vy, float &vz) {
     float x0 = x - vx*dt, y0 = y - vy*dt, z0 = z - vz*dt;
-    if (k_sdf::sdf(x0, y0, z0) >= 0) { /* this is the worst case - 0 position
-				   was bad already we need to search
-				   and rescue the particle */
-      float3 dsdf = k_sdf::grad_sdf(x, y, z); float sdf0 = currsdf;
-      x -= sdf0 * dsdf.x; y -= sdf0 * dsdf.y; z -= sdf0 * dsdf.z;
-      for (int l = 8; l >= 1; --l) {
-	if (k_sdf::sdf(x, y, z) < 0) {
-	  /* we are confused anyway! use particle position as wall
-	     position */
-	  k_wvel::bounce_vel(x, y, z, &vx, &vy, &vz); return;
-	}
-	float jump = 1.1f * sdf0 / (1 << l);
-	x -= jump * dsdf.x; y -= jump * dsdf.y; z -= jump * dsdf.z;
-      }
-    }
-
     /*
       Bounce back (stage I)
 
@@ -56,26 +40,17 @@ namespace k_bb { /* bounce back */
     if (k_sdf::sdf(x, y, z) >= 0) {x = x0; y = y0; z = z0;}
   }
 
-  __global__ void bounce(float2 *pp, int n) {
+  __global__ void bounce(Particle *pp, int n) {
     int pid = threadIdx.x + blockDim.x * blockIdx.x;
     if (pid >= n) return;
-    float2 data0 = pp[pid * 3];
-    float2 data1 = pp[pid * 3 + 1];
+    enum {X, Y, Z};
+    float *r = pp[pid].r, *v = pp[pid].v;
     if (pid < n) {
-      float mycheapsdf = k_sdf::cheap_sdf(data0.x, data0.y, data1.x);
-
-      if (mycheapsdf >=
-	  -1.7320f * ((float)XE / (float)XTE)) {
-	float currsdf = k_sdf::sdf(data0.x, data0.y, data1.x);
-	float2 data2 = pp[pid * 3 + 2];
-
-	if (currsdf >= 0) {
-	  handle_collision(currsdf, data0.x, data0.y, data1.x, data1.y, data2.x,
-			   data2.y);
-	  pp[3 * pid] = data0;
-	  pp[3 * pid + 1] = data1;
-	  pp[3 * pid + 2] = data2;
-	}
+      float mycheapsdf = k_sdf::cheap_sdf(r[X], r[Y], r[Z]);
+      if (mycheapsdf >= -1.7320f * (XE/(float)XTE)) {
+	float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
+	if (sdf0 >= 0)
+	  handle_collision(sdf0, r[X], r[Y], r[Z], v[X], v[Y], v[Z]);
       }
     }
   }

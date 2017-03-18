@@ -65,27 +65,6 @@ namespace k_sdf {
     return make_float3(gx, gy, gz);
   }
 
-  __device__ float3 grad_sdf(float x, float y, float z) {
-
-    float q[3], tc[3], r[3] = {x, y, z};
-    r2q(r, /**/ q);
-    for (int c = 0; c < 3; ++c) tc[c] = q[c];
-
-#define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
-    float gx, gy, gz;
-    gx = tex0(1, 0, 0) - tex0(-1,  0,  0);
-    gy = tex0(0, 1, 0) - tex0( 0, -1,  0);
-    gz = tex0(0, 0, 1) - tex0( 0,  0, -1);
-#undef tex0
-
-    float ggmag = sqrt(gx*gx + gy*gy + gz*gz);
-
-    if (ggmag > 1e-6) {
-      gx /= ggmag; gy /= ggmag; gz /= ggmag;
-    }
-    return make_float3(gx, gy, gz);
-  }
-
   __global__ void fill_keys(Particle *pp, int n, int *key) {
     int pid = threadIdx.x + blockDim.x * blockIdx.x;
     if (pid >= n) return;

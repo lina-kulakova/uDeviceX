@@ -185,8 +185,8 @@ void update() {
 }
 
 void bounce() {
-  if (s_n)         k_bb::bounce<<<k_cnf(s_n)>>>((float2*)s_pp, s_n);
-  if (rbcs && r_n) k_bb::bounce<<<k_cnf(r_n)>>>((float2*)r_pp, r_n);
+  if (s_n)         k_bb::bounce<<<k_cnf(s_n)>>>(s_pp, s_n);
+  if (rbcs && r_n) k_bb::bounce<<<k_cnf(r_n)>>>(r_pp, r_n);
 }
 
 void init() {
