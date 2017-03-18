@@ -52,8 +52,7 @@ q :  TE * (r + S/2 + WM) / (S + 2 * WM) - 1/2;
 q  - sub2te(r);
 fullratsimp(q  - sub2te(r));
 
-ite: st + (i + 1/2) * sp + 1/2;
-
+ite: st + (i + 1/2) * sp - 1/2;
 factor(ite - te2sdf('i));
 
 sub2sdf(-S/2);
