@@ -56,12 +56,12 @@ namespace k_bb { /* bounce back */
     if (k_sdf::sdf(x, y, z) >= 0) {x = x0; y = y0; z = z0;}
   }
 
-  __global__ void bounce(float2 *const pp, int nparticles) {
+  __global__ void bounce(float2 *pp, int n) {
     int pid = threadIdx.x + blockDim.x * blockIdx.x;
-    if (pid >= nparticles) return;
+    if (pid >= n) return;
     float2 data0 = pp[pid * 3];
     float2 data1 = pp[pid * 3 + 1];
-    if (pid < nparticles) {
+    if (pid < n) {
       float mycheapsdf = k_sdf::cheap_sdf(data0.x, data0.y, data1.x);
 
       if (mycheapsdf >=
