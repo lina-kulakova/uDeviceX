@@ -43,15 +43,13 @@ namespace k_bb { /* bounce back */
   __global__ void bounce(Particle *pp, int n) {
     int pid = threadIdx.x + blockDim.x * blockIdx.x;
     if (pid >= n) return;
-    enum {X, Y, Z};
     float *r = pp[pid].r, *v = pp[pid].v;
-    if (pid < n) {
-      float mycheapsdf = k_sdf::cheap_sdf(r[X], r[Y], r[Z]);
-      if (mycheapsdf >= -1.7320f * (XE/(float)XTE)) {
-	float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
-	if (sdf0 >= 0)
-	  handle_collision(sdf0, r[X], r[Y], r[Z], v[X], v[Y], v[Z]);
-      }
+    enum {X, Y, Z};
+    float mycheapsdf = k_sdf::cheap_sdf(r[X], r[Y], r[Z]);
+    if (mycheapsdf >= -1.7320f * (XE/(float)XTE)) {
+      float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
+      if (sdf0 >= 0)
+	handle_collision(sdf0, r[X], r[Y], r[Z], v[X], v[Y], v[Z]);
     }
   }
 }  /* namespace k_bb */
