@@ -25,7 +25,7 @@ namespace field {
   void sample(float rlo[3], float dr[3], int nsize[3], int N[3], float ampl,
 	      float* grid_data, /**/ float *out) {
 #define OOO(ix, iy, iz) (      out[ix + nsize[X] * (iy + nsize[Y] * iz)])
-#define DDD(ix, iy, iz) (grid_data [ix +     N[X] * (iy +     N[Y] * iz)])
+#define DDD(ix, iy, iz) (grid_data[ix +     N[X] * (iy +     N[Y] * iz)])
 #define i2r(i, d) (rlo[d] + (i + 0.5) * dr[d] - 0.5)
 #define i2x(i)    i2r(i,X)
 #define i2y(i)    i2r(i,Y)
