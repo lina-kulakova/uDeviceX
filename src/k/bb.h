@@ -67,15 +67,11 @@ namespace k_bb { /* bounce back */
       if (mycheapsdf >=
 	  -1.7320f * ((float)XE / (float)XTE)) {
 	float currsdf = k_sdf::sdf(data0.x, data0.y, data1.x);
-
 	float2 data2 = pp[pid * 3 + 2];
-
-	float3 v0 = make_float3(data1.y, data2.x, data2.y);
 
 	if (currsdf >= 0) {
 	  handle_collision(currsdf, data0.x, data0.y, data1.x, data1.y, data2.x,
 			   data2.y);
-
 	  pp[3 * pid] = data0;
 	  pp[3 * pid + 1] = data1;
 	  pp[3 * pid + 2] = data2;
