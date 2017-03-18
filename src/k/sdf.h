@@ -36,16 +36,6 @@ namespace k_sdf {
     return szyx;
   }
 
-  __device__ float cheap_sdf(float x, float y, float z)  {
-    float tc[3], q[3], r[3] = {x, y, z};
-    int c;
-    r2q(r, /**/ q);
-    for (c = 0; c < 3; ++c) tc[c] = 0.5001f + (int)q[c];
-#define tex0(ix, iy, iz) (tex3D(texSDF, tc[0] + ix, tc[1] + iy, tc[2] + iz))
-    return tex0(0, 0, 0);
-#undef  tex0
-  }
-
   __device__ float3 ugrad_sdf(float x, float y, float z) {
     int L[3] = {XS, YS, ZS}, WM[3] = {XWM, YWM, ZWM}, \
 			     TE[3] = {XTE, YTE, ZTE};

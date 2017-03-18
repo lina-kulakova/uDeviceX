@@ -45,11 +45,8 @@ namespace k_bb { /* bounce back */
     if (pid >= n) return;
     float *r = pp[pid].r, *v = pp[pid].v;
     enum {X, Y, Z};
-    float mycheapsdf = k_sdf::cheap_sdf(r[X], r[Y], r[Z]);
-    if (mycheapsdf >= -1.7320f * (XE/(float)XTE)) {
-      float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
-      if (sdf0 >= 0)
-	handle_collision(sdf0, r[X], r[Y], r[Z], v[X], v[Y], v[Z]);
-    }
+    float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
+    if (sdf0 >= 0)
+      handle_collision(sdf0, r[X], r[Y], r[Z], v[X], v[Y], v[Z]);
   }
 }  /* namespace k_bb */

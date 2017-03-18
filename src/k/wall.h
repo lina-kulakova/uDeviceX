@@ -17,7 +17,7 @@ namespace k_wall {
     float interacting_threshold =
       -1 - 1.7320f * ((float)XE / (float)XTE);
 
-    if (k_sdf::cheap_sdf(dst0.x, dst0.y, dst1.x) <= interacting_threshold) return;
+    if (k_sdf::sdf(dst0.x, dst0.y, dst1.x) <= interacting_threshold) return;
 
     float2 dst2 = pp[3 * pid + 2];
 
