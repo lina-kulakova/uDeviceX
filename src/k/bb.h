@@ -64,30 +64,35 @@ namespace k_bb { /* bounce back */
     k_wvel::bounce_vel(Rw[X], Rw[Y], Rw[Z], /**/ &V[X], &V[Y], &V[Z]);
   }
 
+  __device__ void bounce_cyl_brutal(float* R, float* V) {
+    float rmag0 = sqrt(R[X]*R[X] + R[Z]*R[Z]);
+    float vmag  = sqrt(V[X]*V[X] + V[Z]*V[Z]);
+    float dr = 1 - rmag0, rmag1 = 1 + dr, sc = rmag1/rmag0;
+
+    R[X] *= sc; R[Z] *= sc; /* scale to a new magnitude */
+
+    float vsc = vmag/rmag1; /* velocity out of the center */
+    V[X] = vsc*R[X]; V[Z] = vsc*R[Z];
+  }
+
   __device__ void bounce_cyl1(float *R1, float *V) {
     float R1x = R1[X], R1z = R1[Z], \
-           Vx =  V[X],  Vz =  V[Z];
+	   Vx =  V[X],  Vz =  V[Z];
 
-    float a, b, c, D, sqD, s, t, eps = 1e-16;
+    float a, bh, c, D, sqD, s, t, eps = 1e-16;
     a = pow(Vz,2)+pow(Vx,2);
-    if (fabs(a) < eps)  return;
+    if (fabs(a) < eps) return;
 
-    b = 2*(R1z*Vz+R1x*Vx);
+    bh = R1z*Vz+R1x*Vx; /* a half of `b' */
     c = pow(R1z,2)+pow(R1x,2)-1;
-    D = pow(b,2)-4*a*c;
-    if (D < 0)          return;
-
+    D = pow(bh,2)-a*c;
+    if (D < 0) return;
     sqD = sqrt(D);
-    s = (-b - sqD)/(2*a); t = s + dt;
-    if      (t > 0 && t < dt) {
+    s = (-bh - sqD)/a; t = s + dt;
+    if (t > 0 && t < dt) {
       bounce_cyl2(R1, V, t);
       return;
     }
-
-    s = (-b + sqD)/(2*a); t = s + dt;
-    if (t > 0 && t < dt)
-      bounce_cyl2(R1, V, t);
-
   }
 
   __device__ void bounce_cyl0(float *R1, float *V) {
@@ -102,6 +107,8 @@ namespace k_bb { /* bounce back */
     }
 
     bounce_cyl1(R1, V);
+    float x = R1[X], z = R1[Z];
+    if (x*x + z*z < 1) bounce_cyl_brutal(R1, V);
 
     for (c = 0; c < 3; c++) {
       r = rcyl*glb::lg[c];
@@ -124,7 +131,7 @@ namespace k_bb { /* bounce back */
     if (pid >= n) return;
     float *r = pp[pid].r, *v = pp[pid].v;
     float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
-    if (sdf0 >= 0)
-      bounce0(sdf0, r, v); /* dispatch */
+    if (sdf0 > 0)
+      bounce0(sdf0, r, v);
   }
 }  /* namespace k_bb */

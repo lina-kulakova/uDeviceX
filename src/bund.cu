@@ -1,4 +1,5 @@
 #include <cuda-dpd.h>
+#include <assert.h>
 #include <sys/stat.h>
 
 #include "helper_math.h"
