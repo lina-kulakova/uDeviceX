@@ -1,7 +1,7 @@
 namespace k_bb { /* bounce back */
-  __device__ void bounce0(float currsdf,
-                          float  *xp, float  *yp, float  *zp,
-                          float *vxp, float *vyp, float *vzp) {
+  __device__ void bounce_old(float currsdf,
+			     float  *xp, float  *yp, float  *zp,
+			     float *vxp, float *vyp, float *vzp) {
     float x = *xp,  y = *yp, z = *zp;
     float vx = *vxp, vy = *vyp, vz = *vzp;
 
@@ -51,6 +51,6 @@ namespace k_bb { /* bounce back */
     enum {X, Y, Z};
     float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
     if (sdf0 >= 0)
-      bounce0(sdf0, &r[X], &r[Y], &r[Z], &v[X], &v[Y], &v[Z]);
+      bounce_old(sdf0, &r[X], &r[Y], &r[Z], &v[X], &v[Y], &v[Z]);
   }
 }  /* namespace k_bb */
