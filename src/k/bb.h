@@ -1,7 +1,7 @@
 namespace k_bb { /* bounce back */
-    __device__ void bounce0(float currsdf,
-				     float  *xp, float  *yp, float  *zp,
-				     float *vxp, float *vyp, float *vzp) {
+  __device__ void bounce0(float currsdf,
+                          float  *xp, float  *yp, float  *zp,
+                          float *vxp, float *vyp, float *vzp) {
     float x = *xp,  y = *yp, z = *zp;
     float vx = *vxp, vy = *vyp, vz = *vzp;
 
@@ -38,7 +38,7 @@ namespace k_bb { /* bounce back */
     */
     float xw = x + t*vx, yw = y + t*vy, zw = z + t*vz; /* wall position */
     x += 2*t*vx; y += 2*t*vy; z += 2*t*vz; /* bouncing relatively to
-					      the wall */
+                                              the wall */
     k_wvel::bounce_vel(xw, yw, zw, /**/ vxp, vyp, vzp);
     if (k_sdf::sdf(x, y, z) >= 0) {*xp = x0; *yp = y0; *zp = z0;}
     else                          {*xp =  x; *yp =  y; *zp =  z;}
