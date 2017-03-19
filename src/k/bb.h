@@ -44,6 +44,12 @@ namespace k_bb { /* bounce back */
     else                          {*xp =  x; *yp =  y; *zp =  z;}
   }
 
+  __device__ void bounce_disp(float sdf0,
+			      float  *xp, float  *yp, float  *zp,
+			      float *vxp, float *vyp, float *vzp) {
+    bounce_old(sdf0, xp, yp, zp,  vxp, vyp, vzp);
+  }
+
   __global__ void bounce(Particle *pp, int n) {
     int pid = threadIdx.x + blockDim.x * blockIdx.x;
     if (pid >= n) return;
@@ -51,6 +57,6 @@ namespace k_bb { /* bounce back */
     enum {X, Y, Z};
     float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
     if (sdf0 >= 0)
-      bounce_old(sdf0, &r[X], &r[Y], &r[Z], &v[X], &v[Y], &v[Z]);
+      bounce_disp(sdf0, &r[X], &r[Y], &r[Z], &v[X], &v[Y], &v[Z]);
   }
 }  /* namespace k_bb */
