@@ -1,7 +1,10 @@
 namespace k_bb { /* bounce back */
     __device__ void handle_collision(float currsdf,
-				     float  &x, float  &y, float  &z,
-				     float &vx, float &vy, float &vz) {
+				     float  *xp, float  *yp, float  *zp,
+				     float *vxp, float *vyp, float *vzp) {
+    float x = *xp,  y = *yp, z = *zp;
+    float vx = *vxp, vy = *vyp, vz = *vzp;
+
     float x0 = x - vx*dt, y0 = y - vy*dt, z0 = z - vz*dt;
     /*
       Bounce back (stage I)
@@ -33,11 +36,12 @@ namespace k_bb { /* bounce back */
     /* Bounce back (stage II)
        change particle position and velocity
     */
-    float xw = x + t*vx, yw = y + t*vy, zw = z + t*vz; /* wall */
+    float xw = x + t*vx, yw = y + t*vy, zw = z + t*vz; /* wall position */
     x += 2*t*vx; y += 2*t*vy; z += 2*t*vz; /* bouncing relatively to
-					      wall */
-    k_wvel::bounce_vel(xw, yw, zw, &vx, &vy, &vz);
-    if (k_sdf::sdf(x, y, z) >= 0) {x = x0; y = y0; z = z0;}
+					      the wall */
+    k_wvel::bounce_vel(xw, yw, zw, /**/ vxp, vyp, vzp);
+    if (k_sdf::sdf(x, y, z) >= 0) {*xp = x0; *yp = y0; *zp = z0;}
+    else                          {*xp =  x; *yp =  y; *zp =  z;}
   }
 
   __global__ void bounce(Particle *pp, int n) {
@@ -47,6 +51,6 @@ namespace k_bb { /* bounce back */
     enum {X, Y, Z};
     float sdf0 = k_sdf::sdf(r[X], r[Y], r[Z]);
     if (sdf0 >= 0)
-      handle_collision(sdf0, r[X], r[Y], r[Z], v[X], v[Y], v[Z]);
+      handle_collision(sdf0, &r[X], &r[Y], &r[Z], &v[X], &v[Y], &v[Z]);
   }
 }  /* namespace k_bb */
