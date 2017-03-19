@@ -33,7 +33,7 @@
 # ply2punto ply/rbcs-00003.ply | fround.awk -v tol=1 > ply.out.txt
 
 #### RBC with wall
-# sTEST: diag.t3
+# TEST: diag.t3
 # export PATH=../tools:$PATH
 # cp sdf/wall1/wall.dat                               sdf.dat
 # x=0.75 y=8 z=12; echo 1 0 0 $x  0 1 0 $y  0 0 1 $z  0 0 0 1 > rbcs-ic.txt
