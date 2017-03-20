@@ -1,3 +1,11 @@
+* Analytic wall
+
+- r, v, f    ::  current position, velocity and force
+- rp, vp, fp :: previous ...
+- cheap test
+- r, rp -> t
+
+*
 * Notation
 
 XS, YS, ZS   : subdomain size
@@ -7,7 +15,7 @@ XTE, YTE, ZTE : "texture size", sdf grid from a file is mapped to a new grid XT,
 
 * Rest
 
-bipsbatch: biparty batch
+bipsbatch: bi-party batch
 
 nv: number of vertices
 nc: number of cells
