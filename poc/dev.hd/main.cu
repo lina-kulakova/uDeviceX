@@ -1,6 +1,6 @@
 #include "stdio.h"
 #include "assert.h"
-#include <hd2.h>
+#include <hd.h>
 
 __global__ void
 main_dev(float *a, float *b, float *ans) {
