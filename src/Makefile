@@ -55,7 +55,7 @@ last-bit/last-bit.o: last-bit/last-bit.h
 ../cuda-dpd/libcuda-dpd.a:; make -j -C ../cuda-dpd \
 	NVCC="$(NVCC)" NVCCFLAGS="$(NVCCFLAGS)" OPT="$(OPT)"
 
-clean:  ; rm -f udx $(OBJS)
+clean:  ; rm -f udx gpuCode.o $(OBJS)
 	make -C ../cuda-dpd clean
 
 .PHONY = clean libcuda-dpd
