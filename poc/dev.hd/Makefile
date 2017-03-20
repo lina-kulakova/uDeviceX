@@ -1,6 +1,6 @@
 CXXFLAGS+=-I../hd
 LOADLIBES+=-L../hd
-LDLIBS+=-lhd_hst
+LDLIBS+=-lhd_hst2
 
 main: main.o
 main.o: main.cpp
