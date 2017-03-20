@@ -1,4 +1,6 @@
-#include "stdio.h"
+#include <stdio.h>
+
+#include <hd.def.h>
 #include <hd.h>
 
 int main() {

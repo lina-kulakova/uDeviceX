@@ -1,5 +1,6 @@
-#include "stdio.h"
-#include "assert.h"
+#include <stdio.h>
+
+#include <hd.def.h>
 #include <hd.h>
 
 __global__ void

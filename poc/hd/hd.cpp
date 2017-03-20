@@ -1,3 +1,4 @@
+#include "hd.def.h"
 #include "hd.h"
 
 __HD__ void fun(float *a, float *b, /**/ float *ans) {
