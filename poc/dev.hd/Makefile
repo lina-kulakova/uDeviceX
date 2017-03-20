@@ -17,4 +17,4 @@ main: main.o
 
 main.o: main.cu; $(NVCC) $(NVCCFLAGS) -dc $< -c -o $@
 
-clean:; -rm -f main.o main
+clean:; -rm -f main.o main gpuCode.o
