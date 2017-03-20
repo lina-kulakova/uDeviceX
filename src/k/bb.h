@@ -79,16 +79,27 @@ namespace k_bb { /* bounce back */
     float R1x = R1[X], R1z = R1[Z], \
 	   Vx =  V[X],  Vz =  V[Z];
 
-    float a, bh, c, D, sqD, s, t, eps = 1e-16;
+    float a, bh, c, D, sqD, q, s, t, eps = 1e-16;
     a = pow(Vz,2)+pow(Vx,2);
     if (fabs(a) < eps) return;
 
     bh = R1z*Vz+R1x*Vx; /* a half of `b' */
-    c = pow(R1z,2)+pow(R1x,2)-1;
+    c = pow(R1z,2)+pow(R1x,2)-1; /* small */
     D = pow(bh,2)-a*c;
     if (D < 0) return;
     sqD = sqrt(D);
-    s = (-bh - sqD)/a; t = s + dt;
+
+    /* More stable root computation. Numerical Recipes in C (2nd ed.),
+       Section 5.6: "Quadratic and Cubic Equations" */
+    q = - (bh + copysign(sqD, bh)); /* `s1*a'*/
+
+    s  = c/q; t = s + dt; /* first root */
+    if (t > 0 && t < dt) {
+      bounce_cyl2(R1, V, t);
+      return;
+    }
+
+    s = q/a; t = s + dt; /* second root */
     if (t > 0 && t < dt) {
       bounce_cyl2(R1, V, t);
       return;
