@@ -1,11 +1,22 @@
 * Analytic wall
 
 - r, v, f    ::  current position, velocity and force
-- rp, vp, fp :: previous ...
-- cheap test
-- r, rp -> t
+- rp, vp     :: previous ...
 
-*
+- cheap test
+- r, vp -> t where 0 < t < dt
+
+- rw = rw(t)
+- vw = vw(rw)
+
+interact(); interact()
+
+interact:
+  inside()
+  intersect()
+  rescue()
+  vw = vw(rw)
+
 * Notation
 
 XS, YS, ZS   : subdomain size
