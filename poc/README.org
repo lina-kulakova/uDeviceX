@@ -1,1 +1,6 @@
 proof of concept (poc)
+
+* HD (host-device)
+- [[file:hd]] :: a prototype of library callable from device and for host
+- [[file:dev.hd]] :: device client for hd
+- [[file:hst.hd]] :: host client for hd
