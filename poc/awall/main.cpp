@@ -11,9 +11,10 @@
 #define dt 0.1
 
 int main() {
-  float a[3] = { 1,  2,  3};
-  float b[3] = {10, 20, 30};
-  float ans;
-  fun(a, b, /**/ &ans);
-  printf("ans: %g\n", ans);
+  float a = 1e-12, k = 2, c = 1e-6 + 1;
+  float x0, x1;
+  int n = solve_half_quadratic(a, k, c, &x0, &x1);
+
+  printf("n = %d\n", n);
+  printf("roots: %.4g %.4g\n", x0, x1);
 }

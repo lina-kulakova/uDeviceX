@@ -14,6 +14,7 @@ awall_dev.o: awall.cpp; $(NVCC) -x cu $(NVCCFLAGS) -dc $< -c -o $@
 awall_hst.o: awall.cpp; $(CXX) $(CXXFLAGS) $(CPPFLAGS) $< -c -o $@
 
 # a test client for the library
+LDLIBS+=-lm
 main: main.o libawall_hst.a
 main.o: main.cpp
 
