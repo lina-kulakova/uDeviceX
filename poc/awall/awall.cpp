@@ -1,20 +1,18 @@
 #include "hd.def.h"
 #include "awall.h"
 #include "math.h"
+#include "stdio.h"
 
-const float dt = 0.1;
+float dt = 0.1;
+float Rw[3];
 
 __HD__ void   cycle(int D, float* R) {
   if (D == Y) return;
   float R0[3] = {R[X], R[Y], R[Z]};
   if (D == X) { /* ZXY  = XYZ */
-    R[Z] = R0[X];
-    R[X] = R0[Y];
-    R[Y] = R0[Z];
+    R[Z] = R0[X]; R[X] = R0[Y]; R[Y] = R0[Z];
   } else {      /* YZX  = XYZ */
-    R[Y] = R0[X];
-    R[Z] = R0[Y];
-    R[X] = R0[Z];
+    R[Y] = R0[X]; R[Z] = R0[Y]; R[X] = R0[Z];
   }
 }
 
@@ -22,13 +20,9 @@ __HD__ void uncycle(int D, float* R) {
   if (D == Y) return;
   float R0[3] = {R[X], R[Y], R[Z]};
   if (D == X) { /* XYZ = ZXY */
-    R[X] = R0[Z];
-    R[Y] = R0[X];
-    R[Z] = R0[Y];
+    R[X] = R0[Z]; R[Y] = R0[X]; R[Z] = R0[Y];
   } else {      /* XYZ = YZX */
-    R[X] = R0[Y];
-    R[Y] = R0[Z];
-    R[Z] = R0[X];
+    R[X] = R0[Y]; R[Y] = R0[Z]; R[Z] = R0[X];
   }
 }
 
@@ -37,7 +31,8 @@ __HD__ bool inside_sc(float *R) {
 }
 
 __HD__ void vwall_sc(float *R, /**/ float *V) {
-  V[X] = V[Y] = V[Z] = 0;
+  float om = 0;
+  V[X] = -om*R[Z]; V[Y] = 0; V[Z] = om*R[X];
 }
 
 __HD__ int solve_half_quadratic0(float k, float c, float *x0, float *x1) {
@@ -89,7 +84,7 @@ __HD__ void bb_pos(float *Rw, float *Vn, float h, /**/ float *Rn) {
 }
 
 __HD__ int rescue(float *R, float* V) {
-  float rmag, rnew, sc, Rw[3], Vw[3], Vn[3];
+  float rmag, rnew, sc, /* Rw[3], */ Vw[3], Vn[3];
   rmag = sqrt(R[X]*R[X] + R[Z]*R[Z]);
   Rw[X] = R[X]/rmag; Rw[Y] = R[Y]; Rw[Z] = R[Z]/rmag;
   vwall_sc(Rw, /**/ Vw);
@@ -103,7 +98,7 @@ __HD__ int rescue(float *R, float* V) {
 
 __HD__ int bb1(float *R0, float *V0, float h,
 	       float *R1, float *V1) {
-  float Rw[3], Vw[3], Rn[3], Vn[3]; /* wall position, new position,
+  float /* Rw[3], */ Vw[3], Rn[3], Vn[3]; /* wall position, new position,
 				      new velocity */
   wavg(R0, R1, h, /**/ Rw);
   vwall_sc(Rw, /**/ Vw);
@@ -140,36 +135,38 @@ __HD__ int bb0(float *R0, float *V0,
   return rescue(R1, V0);
 }
 
-__HD__ int bb(float *R0_, float *V0_,
-	      float *Rc , float rcyl, int D, /* center, radius, axis
-						(X, Y, Z) of a
-						cylinder */
-	      float *R1_, float *V1_) { /*in-out*/
+__HD__ int bb(float *Rc , float rcyl, int D, 
+	      float *R0_, float *V0_,
+	      /*inout*/
+	      float *R1_, float *V1_) {
   float R0[3], V0[3], R1[3], V1[3];
   int c;
 
   for (c = 0; c < 3; c++) { /* copy, shif, scale */
-    #define  cy(R) cycle(D, (R))
-    R1[c] = R1_[c]; R1[c] -= Rc[c]; R1[c] /= rcyl; cy(R0);
+    R1[c] = R1_[c]; R1[c] -= Rc[c]; R1[c] /= rcyl;
+    R0[c] = R0_[c]; R0[c] -= Rc[c]; R0[c] /= rcyl;
   }
+  #define  cy(R) cycle(D, (R))
+  cy(R1); cy(R0);
 
   // TODO: check sdf
   if (!inside_sc(R1)) return BB_NO;
+  if ( inside_sc(R0)) return BB_RO_INSIDE;
 
   for (c = 0; c < 3; c++) {
-    R0[c] = R0_[c]; R0[c] -= Rc[c]; R0[c] /= rcyl; cy(R0);
-    V0[c] = V0_[c]; V0[c] /= rcyl; cy(V0);
-    V1[c] = V1_[c]; V1[c] /= rcyl; cy(V0);
+    V0[c] = V0_[c]; V0[c] /= rcyl;
+    V1[c] = V1_[c]; V1[c] /= rcyl;
   }
+  cy(V0); cy(V1);
 
-  int rc = bb0(R0, V0, /*io*/ R1, V1);
+  int rc = bb0(R0, V0, /**/ R1, V1);
   if (rc == BB_NO) return BB_NO;
 
+  #define ucy(R) uncycle(D, (R))
+  ucy(R1); ucy(V1);
   for (c = 0; c < 3; c++) { /* unscale, unshift and copy */
-    #define ucy(R) uncycle(D, (R))
-    ucy(R1); R1[c] *= rcyl; R1[c] += Rc[c]; R1_[c] = R1[c];
-    ucy(V1); V1[c] *= rcyl;               ; V1_[c] = V1[c];
+    R1[c] *= rcyl; R1[c] += Rc[c]; R1_[c] = R1[c];
+    V1[c] *= rcyl;               ; V1_[c] = V1[c];
   }
-
-  return 0;
+  return rc;
 }

@@ -1,6 +1,8 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 #include "hd.def.h"
 #include "awall.h"
-#include <stdio.h>
 
 /*
  in   :  R0, V0, vwall(R)
@@ -8,13 +10,24 @@
  out  :  dP, dL
 */
 
-#define dt 0.1
 
-int main() {
-  float a = 1e-12, k = 2, c = 1e-6 + 1;
-  float x0, x1;
-  int n = solve_half_quadratic(a, k, c, &x0, &x1);
+int main(int argc, char* argv[]) {
+  int c;
+  float Rc[3] = {0, 0, 0};
+  float rcyl  = 1.5;
+  int      D  = X;
 
-  printf("n = %d\n", n);
-  printf("roots: %.4g %.4g\n", x0, x1);
+  float R0[3], V0[3];
+  for (c = 0; c < 3; c++) R0[c] = atof(*(++argv));
+  for (c = 0; c < 3; c++) V0[c] = atof(*(++argv));  
+
+  float R1[3], V1[3];
+  for (c = 0; c < 3; c++) R1[c] = R0[c] + V0[c]*dt;
+  for (c = 0; c < 3; c++) V1[c] = V0[c];
+
+  printf( "%g %g %g ", R0[X], R0[Y], R0[Z]);
+  printf( "%g %g %g ", R1[X], R1[Y], R1[Z]);
+  int code = bb(Rc, rcyl, D, R0, V0, /**/ R1, V1);
+  printf("%g %g %g ", R1[X], R1[Y], R1[Z]);
+  printf("%d\n"     , code);
 }

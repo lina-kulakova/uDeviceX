@@ -1,4 +1,4 @@
-all: libawall_hst.a libawall_dev.a main
+all: main libawall_hst.a # libawall_dev.a 
 
 NVCC_DIR = /usr/local/cuda-8.0
 NVCC_BIN = $(NVCC_DIR)/bin/nvcc
