@@ -138,14 +138,10 @@ __HD__ int bb0(float *R0, float *V0,
 __HD__ int bb(float *Rc , float rcyl, int D,
 	      float *R0_, float *V0_,
 	      /*inout*/
-	      float *R1_, float *V1_,
-	      /*wrk*/
-	      float *wrk) {
-  int c, iv = 0;
-  float *R0 = &wrk[3*(iv++)], *V0 = &wrk[3*(iv++)],
-	*R1 = &wrk[3*(iv++)], *V1 = &wrk[3*(iv++)];
-  assert(3*iv == SZ_WRK);
-
+	      float *R1_, float *V1_) {
+  int c;
+  float R0[3], V0[3], R1[3], V1[3];
+  
   for (c = 0; c < 3; c++) { /* copy, shif, scale */
     R1[c] = R1_[c]; R1[c] -= Rc[c]; R1[c] /= rcyl;
     R0[c] = R0_[c]; R0[c] -= Rc[c]; R0[c] /= rcyl;

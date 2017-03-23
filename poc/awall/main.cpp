@@ -13,7 +13,6 @@
 
 int main(int argc, char* argv[]) {
   int c;
-  float wrk[SZ_WRK];
   float Rc[3] = {0, 0, 0};
   float rcyl  = 1.5;
   int      D  = Z;
@@ -28,7 +27,7 @@ int main(int argc, char* argv[]) {
 
   printf( "%g %g %g ", R0[X], R0[Y], R0[Z]);
   printf( "%g %g %g ", R1[X], R1[Y], R1[Z]);
-  int code = bb(Rc, rcyl, D, R0, V0, /**/ R1, V1, wrk);
+  int code = bb(Rc, rcyl, D, R0, V0, /**/ R1, V1);
   printf("%g %g %g ", R1[X], R1[Y], R1[Z]);
   printf("%d\n"     , code);
 }
