@@ -16,7 +16,7 @@ int main(int argc, char* argv[]) {
   float wrk[SZ_WRK];
   float Rc[3] = {0, 0, 0};
   float rcyl  = 1.5;
-  int      D  = X;
+  int      D  = Z;
 
   float R0[3], V0[3];
   for (c = 0; c < 3; c++) R0[c] = atof(*(++argv));
