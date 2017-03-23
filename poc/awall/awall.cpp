@@ -2,8 +2,8 @@
 #include "awall.h"
 #include "math.h"
 #include "stdio.h"
+#include "assert.h"
 
-float dt = 0.1;
 float Rw[3];
 
 __HD__ void   cycle(int D, float* R) {
@@ -135,12 +135,16 @@ __HD__ int bb0(float *R0, float *V0,
   return rescue(R1, V0);
 }
 
-__HD__ int bb(float *Rc , float rcyl, int D, 
+__HD__ int bb(float *Rc , float rcyl, int D,
 	      float *R0_, float *V0_,
 	      /*inout*/
-	      float *R1_, float *V1_) {
-  float R0[3], V0[3], R1[3], V1[3];
-  int c;
+	      float *R1_, float *V1_,
+	      /*wrk*/
+	      float *wrk) {
+  int c, iv = 0;
+  float *R0 = &wrk[3*(iv++)], *V0 = &wrk[3*(iv++)],
+	*R1 = &wrk[3*(iv++)], *V1 = &wrk[3*(iv++)];
+  assert(3*iv == SZ_WRK);
 
   for (c = 0; c < 3; c++) { /* copy, shif, scale */
     R1[c] = R1_[c]; R1[c] -= Rc[c]; R1[c] /= rcyl;
