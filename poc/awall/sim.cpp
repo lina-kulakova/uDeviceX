@@ -1,30 +1,33 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <string.h> /* memcpy */
+
 #define dir "3d"     /* output directory and file name */
 #define fmt "%03ld.3D"
 #define bbox "bbox.vtk" /* output simulation domain */
 
 /* MAX number of particles */
 #define MAX_N 300
-float rr0[3*MAX_N], rr1[3*MAX_N];
-float vv0[3*MAX_N], vv1[3*MAX_N];
+float rr0[3*MAX_N], rr1[3*MAX_N], vv0[3*MAX_N], vv1[3*MAX_N];
 long type[MAX_N];
 
-long n;
+long n; /* number of particles */
 
 float xl, yl, zl; /* domain */
 float xh, yh, zh;
 float Lx, Ly, Lz;
 float  xc, yc, zc; /* center */
 
-float vx0, vy0, vz0;
+float vx0, vy0, vz0; /* initial velocity */
 long  type0;
 
 long  ts, ns;
 float dt;
 
 enum {X, Y, Z};
+
+#define copy(A, B) memcpy((A), (B), 3*n*sizeof(B[0]));
 
 void init_vars() {
   n  = 300; /* number of particles */
@@ -41,7 +44,6 @@ void init_vars() {
 
   system("mkdir -p " dir);
 }
-
 
 float rnd(float lo, float hi) {
   return drand48()*(hi - lo) + lo;
@@ -120,39 +122,27 @@ float wrp(float r, float c, float L) { /* wrap back to the domain */
 
 void pbc() { /* periodic boundary conditions */
     for (long ip = 0; ip < n; ip++) {
-      float *r0 = &rr0[3*ip];
-      r0[X] = wrp(r0[X], xc, Lx);
-      r0[Y] = wrp(r0[Y], yc, Ly);
-      r0[Z] = wrp(r0[Z], zc, Lz);
+      float *r1 = &rr1[3*ip];
+      r1[X] = wrp(r1[X], xc, Lx);
+      r1[Y] = wrp(r1[Y], yc, Ly);
+      r1[Z] = wrp(r1[Z], zc, Lz);
     }
 }
 
 void bounce() {
     for (long ip = 0; ip < n; ip ++) {
-      
-    }
-}
 
-void upd_vel() { /* new to old */
-    for (long ip = 0; ip < n; ip ++) {
-      float *v0 = &vv0[3*ip], *v1 = &vv1[3*ip];
-      v0[X] = v1[X]; v0[Y] = v1[Y]; v0[Z] = v1[Z];
-    }
-}
-
-void upd_pos() { /* new to old */
-    for (long ip = 0; ip < n; ip ++) {
-      float *r0 = &rr0[3*ip], *r1 = &rr1[3*ip];
-      r0[X] = r1[X]; r0[Y] = r1[Y]; r0[Z] = r1[Z];
     }
 }
 
 void step() { /* simulation step */
-  new_pos(); /* get new position in `[xyz]n' */
-  bounce(); /* bouncing back */
-  upd_pos(); /* [xyz] = [xyz]n */
+  new_pos();
+  new_vel();
+
+  bounce();  /* bouncing back */
   pbc();     /* periodic BC */
-  upd_vel(); /* get new velocity */
+
+  copy(rr0, rr1); copy(vv0, vv1);
   ts += 1; /* update timestep */
 }
 
