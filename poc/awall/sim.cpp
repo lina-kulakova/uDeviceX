@@ -4,7 +4,7 @@
 #include <string.h> /* memcpy */
 
 #define dir "3d"     /* output directory and file name format */
-#define file_fmt "%03ld.3D"
+#define file_fmt "%05ld.3D"
 
 #define fmt      "%+.12e"
 #define bbox "bbox.vtk" /* output a file with simulation domain */
@@ -25,7 +25,7 @@ float  xc, yc, zc; /* center */
 float vx0, vy0, vz0;
 long  type0;
 
-long  ts, ns;
+long  ts, ns, dfrq;
 float dt;
 
 /* Langevin equation parameter: dissipation and temperature */
@@ -45,8 +45,10 @@ void init_vars() {
 
   vx0 = 0; vy0 = 0; vz0 = 0; /* initial velocity */
   type0 = 0;                  /* initial type  */
-  ts = 0;    /* current time frame (0, 1, 2, ...) */
-  ns =  10;   /* number of time steps to make */
+  ts = 0;     /* current time frame (0, 1, 2, ...) */
+  ns =  1000;   /* number of time steps to make */
+  dfrq = 10;  /* dump every `dfrq' time steps */
+
   dt = 0.1;
 
   system("mkdir -p " dir);
@@ -89,7 +91,7 @@ void print_bbox() {
 }
 
 void print_part0(FILE* fd) {
-  #define s " "  
+  #define s " "
   fprintf(fd, "x y z type\n");
   for (long ip = 0; ip < n; ip++) {
     float *r0 = &rr0[3*ip];
@@ -172,8 +174,8 @@ void init() {
 
 int main() {
   init();
-  while (ts < ns) {
-    print_part();
+  while (ts <= ns) {
+    if (ts % dfrq == 0) print_part();
     step();
   }
 }
