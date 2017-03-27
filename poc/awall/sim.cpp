@@ -3,9 +3,11 @@
 
 #include <string.h> /* memcpy */
 
-#define dir "3d"     /* output directory and file name */
-#define fmt "%03ld.3D"
-#define bbox "bbox.vtk" /* output simulation domain */
+#define dir "3d"     /* output directory and file name format */
+#define file_fmt "%03ld.3D"
+
+#define fmt      "%+.12e"
+#define bbox "bbox.vtk" /* output a file with simulation domain */
 
 /* MAX number of particles */
 #define MAX_N 300
@@ -19,11 +21,16 @@ float xh, yh, zh;
 float Lx, Ly, Lz;
 float  xc, yc, zc; /* center */
 
-float vx0, vy0, vz0; /* initial velocity */
+ /* initial velocity */
+float vx0, vy0, vz0;
 long  type0;
 
 long  ts, ns;
 float dt;
+
+/* Langevin equation parameter: dissipation and temperature */
+#define la 0.1
+#define  T 1.0
 
 enum {X, Y, Z};
 
@@ -36,7 +43,7 @@ void init_vars() {
   Lx = xh - xl; Ly = yh - yl; Lz = zh - zl;
   xc = 0.5*(xh + xl); yc = 0.5*(yh + yl); zc = 0.5*(zh + zl);
 
-  vx0 = -2; vy0 = 0; vz0 = 0; /* initial velocity */
+  vx0 = 0; vy0 = 0; vz0 = 0; /* initial velocity */
   type0 = 0;                  /* initial type  */
   ts = 0;    /* current time frame (0, 1, 2, ...) */
   ns =  10;   /* number of time steps to make */
@@ -82,16 +89,18 @@ void print_bbox() {
 }
 
 void print_part0(FILE* fd) {
+  #define s " "  
   fprintf(fd, "x y z type\n");
   for (long ip = 0; ip < n; ip++) {
     float *r0 = &rr0[3*ip];
-    fprintf(fd, "%g %g %g %ld\n", r0[X], r0[Y], r0[Z], type[ip]);
+    fprintf(fd, fmt s fmt s fmt s "%ld\n", r0[X], r0[Y], r0[Z], type[ip]);
   }
+  #undef s
 }
 
 void print_part() { /* sets and manage file name */
   char fn[BUFSIZ];
-  sprintf(fn, dir "/" fmt, ts);
+  sprintf(fn, dir "/" file_fmt, ts);
   FILE* fd = fopen(fn, "w");
   print_part0(fd);
   fclose(fd);
@@ -106,10 +115,16 @@ void new_pos() {
     }
 }
 
+float lang(float v) { /* Langevin equation RHS */
+  v -= dt * la * v;
+  v += dt * rnd(-T, T);
+  return v;
+}
+
 void new_vel() {
   for (long ip = 0; ip < n; ip++) {
     float *v0 = &vv0[3*ip], *v1 = &vv1[3*ip];
-    v1[X] = v0[X]; v1[Y] = v0[Y]; v1[Z] = v0[Z];
+    v1[X] = lang(v0[X]); v1[Y] = lang(v0[Y]); v1[Z] = lang(v0[Z]);
   }
 }
 
