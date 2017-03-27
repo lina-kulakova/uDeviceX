@@ -8,7 +8,8 @@
 
 /* number of particles */
 #define n 300
-float rr0[3*n], rr1[3*n], vv[3*n];
+float rr0[3*n], rr1[3*n];
+float vv0[3*n], vv1[3*n];
 long type[n];
 
 float xl, yl, zl; /* domain */
@@ -57,8 +58,8 @@ void init_type() {
 
 void init_vel() {
     for (long ip = 0; ip < n; ip++) {
-      auto v = &vv[3*ip];
-      v[X] = vx0; v[Y] = vy0; v[Z] = vz0;
+      auto v0 = &vv0[3*ip];
+      v0[X] = vx0; v0[Y] = vy0; v0[Z] = vz0;
     }
 }
 
@@ -94,15 +95,18 @@ void print_part() { /* sets and manage file name */
 
 void new_pos() {
     for (long ip = 0; ip < n; ip++) {
-      auto r0 = &rr0[3*ip], r1 = &rr1[3*ip], v = &vv[3*ip];
-      r1[X] = r0[X] + dt*v[X];
-      r1[Y] = r0[Y] + dt*v[Y];
-      r1[Z] = r0[Z] + dt*v[Z];
+      auto r0 = &rr0[3*ip], r1 = &rr1[3*ip], v0 = &vv0[3*ip];
+      r1[X] = r0[X] + dt*v0[X];
+      r1[Y] = r0[Y] + dt*v0[Y];
+      r1[Z] = r0[Z] + dt*v0[Z];
     }
 }
 
-void upd_vel() {
-  /*  do nothing: keep constant velocity */
+void new_vel() {
+  for (long ip = 0; ip < n; ip++) {
+    auto v0 = &vv0[3*ip], v1 = &vv1[3*ip];
+    v1[X] = v0[X]; v1[Y] = v0[Y]; v1[Z] = v0[Z];
+  }
 }
 
 float wrp(float r, float c, float L) { /* wrap back to the domain */
@@ -124,6 +128,13 @@ void pbc() { /* periodic boundary conditions */
 void bounce() {
     for (long ip = 0; ip < n; ip ++) {
       
+    }
+}
+
+void upd_vel() { /* new to old */
+    for (long ip = 0; ip < n; ip ++) {
+      auto v0 = &vv0[3*ip], v1 = &vv1[3*ip];
+      v0[X] = v1[X]; v0[Y] = v1[Y]; v0[Z] = v1[Z];
     }
 }
 
