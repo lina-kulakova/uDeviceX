@@ -1,12 +1,26 @@
 #include "hd.def.h"
-#include "awall.h"
 #include "math.h"
 #include "stdio.h"
-#include "assert.h"
+
+#include "awall.h"
+
+#undef  X
+//#define X 0
+
+#define X 0
+#define Y 1
+#define Z 2
+
+#define D X
+#define dt 0.1
+#define Rcx 0
+#define Rcy 0
+#define Rcz 0
+#define rcyl 1.5
 
 float Rw[3]; /* make it global so caller can check it */
 
-__HD__ void   cycle(int D, float* R) {
+__HD__ void   cycle(float* R) {
   if (D == Y) return;
   float R0[3] = {R[X], R[Y], R[Z]};
   if (D == X) { /* ZXY  = XYZ */
@@ -16,7 +30,7 @@ __HD__ void   cycle(int D, float* R) {
   }
 }
 
-__HD__ void uncycle(int D, float* R) {
+__HD__ void uncycle(float* R) {
   if (D == Y) return;
   float R0[3] = {R[X], R[Y], R[Z]};
   if (D == X) { /* XYZ = ZXY */
@@ -37,20 +51,20 @@ __HD__ void vwall_sc(float *R, /**/ float *V) {
 
 __HD__ int solve_half_quadratic0(float k, float c, float *x0, float *x1) {
   /* solve x^2 + 2*k*x + c = 0 */
-  float D = k*k - c;
-  if (D > 0) {
+  float DD = k*k - c;
+  if (DD > 0) {
     if (k == 0) {
       float r = sqrtf(-c);
       *x0 = -r; *x1 = r; return 2;
     } else {
       float sgnk = k > 0 ? 1 : -1;
-      float r1 = -(k + sgnk*sqrt(D));
+      float r1 = -(k + sgnk*sqrt(DD));
       float r2 = c/r1;
       if (r1 < r2) {*x0 = r1; *x1 = r2;}
       else         {*x0 = r2; *x1 = r1;}
       return 2;
     }
-  } else if (D == 0) {
+  } else if (DD == 0) {
     *x0 = *x1 = -k; return 2;
   } else {
     return 0;
@@ -135,18 +149,25 @@ __HD__ int bb0(float *R0, float *V0,
   return rescue(R1, V0);
 }
 
-__HD__ int bb(float *Rc , float rcyl, int D,
-	      float *R0_, float *V0_,
+__HD__ void g2l(float *rg, /**/ float *rl) { /* global to local */
+  
+}
+
+__HD__ void l2g(float *rl, /**/ float *rg) { /* local to global */
+  
+}
+
+__HD__ int bb(float *R0_, float *V0_,
 	      /*inout*/
 	      float *R1_, float *V1_) {
   int c;
-  float R0[3], V0[3], R1[3], V1[3];
+  float R0[3], V0[3], R1[3], V1[3], Rc[3] = {Rcx, Rcy, Rcz};
   
   for (c = 0; c < 3; c++) { /* copy, shif, scale */
     R1[c] = R1_[c]; R1[c] -= Rc[c]; R1[c] /= rcyl;
     R0[c] = R0_[c]; R0[c] -= Rc[c]; R0[c] /= rcyl;
   }
-  #define  cy(R) cycle(D, (R))
+  #define  cy(R) cycle(R)
   cy(R1); cy(R0);
 
   // TODO: check sdf
@@ -162,7 +183,7 @@ __HD__ int bb(float *Rc , float rcyl, int D,
   int rc = bb0(R0, V0, /**/ R1, V1);
   if (rc == BB_NO) return BB_NO;
 
-  #define ucy(R) uncycle(D, (R))
+  #define ucy(R) uncycle(R)
   ucy(R1); ucy(V1);
   for (c = 0; c < 3; c++) { /* unscale, unshift and copy */
     R1[c] *= rcyl; R1[c] += Rc[c]; R1_[c] = R1[c];

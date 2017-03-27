@@ -11,6 +11,7 @@ CXXFLAGS = -Wall -Wextra -O0 -g
 libawall_dev.a: awall_dev.o; ar rv $@ $<
 libawall_hst.a: awall_hst.o; ar rv $@ $<
 
+awall.o    : awall.h
 awall_dev.o: awall.cpp; $(NVCC) -x cu $(NVCCFLAGS) -dc $< -c -o $@
 awall_hst.o: awall.cpp; $(CXX) $(CXXFLAGS) $< -c -o $@
 
