@@ -1,16 +1,17 @@
 #include <stdio.h>
-#include <random>
+#include <stdlib.h>
 
 #define dir "3d"     /* output directory and file name */
 #define fmt "%03ld.3D"
+#define bbox "bbox.vtk" /* output simulation domain */
 
-#define bbox "bbox.vtk" /* simulation domain */
+/* MAX number of particles */
+#define MAX_N 300
+float rr0[3*MAX_N], rr1[3*MAX_N];
+float vv0[3*MAX_N], vv1[3*MAX_N];
+long type[MAX_N];
 
-/* number of particles */
-#define n 300
-float rr0[3*n], rr1[3*n];
-float vv0[3*n], vv1[3*n];
-long type[n];
+long n;
 
 float xl, yl, zl; /* domain */
 float xh, yh, zh;
@@ -18,7 +19,7 @@ float Lx, Ly, Lz;
 float  xc, yc, zc; /* center */
 
 float vx0, vy0, vz0;
-long   type0;
+long  type0;
 
 long  ts, ns;
 float dt;
@@ -26,6 +27,7 @@ float dt;
 enum {X, Y, Z};
 
 void init_vars() {
+  n  = 300; /* number of particles */
   xl = -10; yl = -10; zl = -10; /* domain */
   xh =  10; yh =  10; zh =  10;
   Lx = xh - xl; Ly = yh - yl; Lz = zh - zl;
@@ -47,7 +49,7 @@ float rnd(float lo, float hi) {
 
 void init_pos() {
     for (long ip = 0; ip < n; ip++) {
-      auto r0 = &rr0[3*ip];
+      float *r0 = &rr0[3*ip];
       r0[X] = rnd(xl, xh); r0[Y] = rnd(yl, yh);  r0[Z] = rnd(zl, zh);
     }
 }
@@ -58,14 +60,14 @@ void init_type() {
 
 void init_vel() {
     for (long ip = 0; ip < n; ip++) {
-      auto v0 = &vv0[3*ip];
+      float *v0 = &vv0[3*ip];
       v0[X] = vx0; v0[Y] = vy0; v0[Z] = vz0;
     }
 }
 
 void print_bbox() {
 #define pr(...) fprintf (fd, __VA_ARGS__)
-  auto fd = fopen(bbox, "w");
+  FILE* fd = fopen(bbox, "w");
   pr("# vtk DataFile Version 3.0\n");
   pr("vtk output\n");
   pr("ASCII\n");
@@ -80,7 +82,7 @@ void print_bbox() {
 void print_part0(FILE* fd) {
   fprintf(fd, "x y z type\n");
   for (long ip = 0; ip < n; ip++) {
-    auto r0 = &rr0[3*ip];
+    float *r0 = &rr0[3*ip];
     fprintf(fd, "%g %g %g %ld\n", r0[X], r0[Y], r0[Z], type[ip]);
   }
 }
@@ -88,14 +90,14 @@ void print_part0(FILE* fd) {
 void print_part() { /* sets and manage file name */
   char fn[BUFSIZ];
   sprintf(fn, dir "/" fmt, ts);
-  auto fd = fopen(fn, "w");
+  FILE* fd = fopen(fn, "w");
   print_part0(fd);
   fclose(fd);
 }
 
 void new_pos() {
     for (long ip = 0; ip < n; ip++) {
-      auto r0 = &rr0[3*ip], r1 = &rr1[3*ip], v0 = &vv0[3*ip];
+      float *r0 = &rr0[3*ip], *r1 = &rr1[3*ip], *v0 = &vv0[3*ip];
       r1[X] = r0[X] + dt*v0[X];
       r1[Y] = r0[Y] + dt*v0[Y];
       r1[Z] = r0[Z] + dt*v0[Z];
@@ -104,13 +106,13 @@ void new_pos() {
 
 void new_vel() {
   for (long ip = 0; ip < n; ip++) {
-    auto v0 = &vv0[3*ip], v1 = &vv1[3*ip];
+    float *v0 = &vv0[3*ip], *v1 = &vv1[3*ip];
     v1[X] = v0[X]; v1[Y] = v0[Y]; v1[Z] = v0[Z];
   }
 }
 
 float wrp(float r, float c, float L) { /* wrap back to the domain */
-  auto dr = r - c;
+  float dr = r - c;
   if      (2*dr >  L) return r - L;
   else if (2*dr < -L) return r + L;
   else                return r;
@@ -118,7 +120,7 @@ float wrp(float r, float c, float L) { /* wrap back to the domain */
 
 void pbc() { /* periodic boundary conditions */
     for (long ip = 0; ip < n; ip++) {
-      auto r0 = &rr0[3*ip];
+      float *r0 = &rr0[3*ip];
       r0[X] = wrp(r0[X], xc, Lx);
       r0[Y] = wrp(r0[Y], yc, Ly);
       r0[Z] = wrp(r0[Z], zc, Lz);
@@ -133,14 +135,14 @@ void bounce() {
 
 void upd_vel() { /* new to old */
     for (long ip = 0; ip < n; ip ++) {
-      auto v0 = &vv0[3*ip], v1 = &vv1[3*ip];
+      float *v0 = &vv0[3*ip], *v1 = &vv1[3*ip];
       v0[X] = v1[X]; v0[Y] = v1[Y]; v0[Z] = v1[Z];
     }
 }
 
 void upd_pos() { /* new to old */
     for (long ip = 0; ip < n; ip ++) {
-      auto r0 = &rr0[3*ip], r1 = &rr1[3*ip];
+      float *r0 = &rr0[3*ip], *r1 = &rr1[3*ip];
       r0[X] = r1[X]; r0[Y] = r1[Y]; r0[Z] = r1[Z];
     }
 }
