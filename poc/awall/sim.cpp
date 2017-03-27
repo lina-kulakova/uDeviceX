@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <random>
 
-#define dir "xyz"     /* output directory and file name */
-#define fmt "%03ld.3d"
+#define dir "3d"     /* output directory and file name */
+#define fmt "%03ld.3D"
+
+#define bbox "bbox.vtk" /* simulation domain */
 
 /* number of particles */
 #define n 300
@@ -11,7 +13,6 @@ double xx[n],  yy[n], zz[n],
 double vvx[n], vvy[n], vvz[n]; /* velocity */
 long type[n];
 
-long np; /* number of particles */
 double xl, yl, zl; /* domain */
 double xh, yh, zh;
 double Lx, Ly, Lz;
@@ -35,7 +36,7 @@ void init_vars() {
   ns =  100;   /* number of time steps to make */
   dt = 0.1;
 
-  system("mkdir " dir);
+  system("mkdir -p " dir);
 }
 
 
@@ -48,24 +49,39 @@ float rnd(float lo, float hi) {
 }
 
 void init_pos() {
-    for (long ip = 0; ip < np; ip++) {
+    for (long ip = 0; ip < n; ip++) {
       xx[ip] = rnd(xl, xh); yy[ip] = rnd(yl, yh);  zz[ip] = rnd(zl, zh);
     }
 }
 
 void init_type() {
-  for (long ip = 0; ip < np; ip++) type[ip] = type0;
+  for (long ip = 0; ip < n; ip++) type[ip] = type0;
 }
 
 void init_vel() {
-    for (long ip = 0; ip < np; ip++) {
+    for (long ip = 0; ip < n; ip++) {
       vvx[ip] = vx0; vvy[ip] = vy0; vvz[ip] = vz0;
     }
 }
 
+void print_bb() {
+#define pr(...) fprintf (fd, __VA_ARGS__)
+  auto fd = fopen(bbox, "w");
+  pr("# vtk DataFile Version 3.0\n");
+  pr("vtk output\n");
+  pr("ASCII\n");
+  pr("DATASET STRUCTURED_POINTS\n");
+  pr("DIMENSIONS 2 2 2\n");
+  pr("ORIGIN %g %g %g\n" , xl, yl, zl);
+  pr("SPACING %g %g %g\n", Lx, Ly, Lz);
+  fclose(fd);
+#undef pr
+}
+
 void print_part0(FILE* fd) {
-    for (long ip = 0; ip < np; ip++)
-      fprintf(fd, "%g %g %g %ld\n", xx[ip], yy[ip], zz[ip], type[ip]);
+  fprintf(fd, "x y z type\n");
+  for (long ip = 0; ip < n; ip++)
+    fprintf(fd, "%g %g %g %ld\n", xx[ip], yy[ip], zz[ip], type[ip]);
 }
 
 void print_part() { /* sets and manage file name */
@@ -77,7 +93,7 @@ void print_part() { /* sets and manage file name */
 }
 
 void new_pos() {
-    for (long ip = 0; ip < np; ip++) {
+    for (long ip = 0; ip < n; ip++) {
       xxn[ip] = xx[ip] + dt*vvx[ip];
       yyn[ip] = yy[ip] + dt*vvy[ip];
       zzn[ip] = zz[ip] + dt*vvz[ip];
@@ -96,22 +112,21 @@ double wrp(double r, double c, double L) { /* wrap back to the domain */
 }
 
 void pbc() { /* periodic boundary conditions */
-    for (long ip = 0; ip < np; ip++) {
+    for (long ip = 0; ip < n; ip++) {
       xx[ip] = wrp(xx[ip], xc, Lx);
       yy[ip] = wrp(yy[ip], yc, Ly);
       zz[ip] = wrp(zz[ip], zc, Lz);
     }
 }
 
-
 void bounce() {
-    for (long ip = 0; ip < np; ip ++) {
+    for (long ip = 0; ip < n; ip ++) {
       auto x  = xx [ip],  y  = yy [ip], z  = zz [ip];
     }
 }
 
 void upd_pos() { /* new to old */
-    for (long ip = 0; ip < np; ip ++) {
+    for (long ip = 0; ip < n; ip ++) {
       xx[ip] = xxn[ip]; yy[ip] = yyn[ip]; zz[ip] = zzn[ip];
     }
 }
@@ -130,6 +145,8 @@ void init() {
   init_pos(); /* particle positions */
   init_type(); /*  ...      types */
   init_vel();  /* ...      velocity */
+
+  print_bb();  /* dump a file with simulation domain */
 }
 
 int main() {
