@@ -8,9 +8,7 @@
 
 /* number of particles */
 #define n 300
-float xx[n],  yy[n], zz[n],
-      xxn[n], yyn[n], zzn[n]; /* "next" particle position */
-float vvx[n], vvy[n], vvz[n]; /* velocity */
+float rr0[3*n], rr1[3*n], vv[3*n];
 long type[n];
 
 float xl, yl, zl; /* domain */
@@ -23,6 +21,8 @@ long   type0;
 
 long  ts, ns;
 float dt;
+
+enum {X, Y, Z};
 
 void init_vars() {
   xl = -10; yl = -10; zl = -10; /* domain */
@@ -46,7 +46,8 @@ float rnd(float lo, float hi) {
 
 void init_pos() {
     for (long ip = 0; ip < n; ip++) {
-      xx[ip] = rnd(xl, xh); yy[ip] = rnd(yl, yh);  zz[ip] = rnd(zl, zh);
+      auto r0 = &rr0[3*ip];
+      r0[X] = rnd(xl, xh); r0[Y] = rnd(yl, yh);  r0[Z] = rnd(zl, zh);
     }
 }
 
@@ -56,7 +57,8 @@ void init_type() {
 
 void init_vel() {
     for (long ip = 0; ip < n; ip++) {
-      vvx[ip] = vx0; vvy[ip] = vy0; vvz[ip] = vz0;
+      auto v = &vv[3*ip];
+      v[X] = vx0; v[Y] = vy0; v[Z] = vz0;
     }
 }
 
@@ -76,8 +78,10 @@ void print_bbox() {
 
 void print_part0(FILE* fd) {
   fprintf(fd, "x y z type\n");
-  for (long ip = 0; ip < n; ip++)
-    fprintf(fd, "%g %g %g %ld\n", xx[ip], yy[ip], zz[ip], type[ip]);
+  for (long ip = 0; ip < n; ip++) {
+    auto r0 = &rr0[3*ip];
+    fprintf(fd, "%g %g %g %ld\n", r0[X], r0[Y], r0[Z], type[ip]);
+  }
 }
 
 void print_part() { /* sets and manage file name */
@@ -90,9 +94,10 @@ void print_part() { /* sets and manage file name */
 
 void new_pos() {
     for (long ip = 0; ip < n; ip++) {
-      xxn[ip] = xx[ip] + dt*vvx[ip];
-      yyn[ip] = yy[ip] + dt*vvy[ip];
-      zzn[ip] = zz[ip] + dt*vvz[ip];
+      auto r0 = &rr0[3*ip], r1 = &rr1[3*ip], v = &vv[3*ip];
+      r1[X] = r0[X] + dt*v[X];
+      r1[Y] = r0[Y] + dt*v[Y];
+      r1[Z] = r0[Z] + dt*v[Z];
     }
 }
 
@@ -109,9 +114,10 @@ float wrp(float r, float c, float L) { /* wrap back to the domain */
 
 void pbc() { /* periodic boundary conditions */
     for (long ip = 0; ip < n; ip++) {
-      xx[ip] = wrp(xx[ip], xc, Lx);
-      yy[ip] = wrp(yy[ip], yc, Ly);
-      zz[ip] = wrp(zz[ip], zc, Lz);
+      auto r0 = &rr0[3*ip];
+      r0[X] = wrp(r0[X], xc, Lx);
+      r0[Y] = wrp(r0[Y], yc, Ly);
+      r0[Z] = wrp(r0[Z], zc, Lz);
     }
 }
 
@@ -123,7 +129,8 @@ void bounce() {
 
 void upd_pos() { /* new to old */
     for (long ip = 0; ip < n; ip ++) {
-      xx[ip] = xxn[ip]; yy[ip] = yyn[ip]; zz[ip] = zzn[ip];
+      auto r0 = &rr0[3*ip], r1 = &rr1[3*ip];
+      r0[X] = r1[X]; r0[Y] = r1[Y]; r0[Z] = r1[Z];
     }
 }
 
