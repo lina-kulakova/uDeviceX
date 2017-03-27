@@ -10,12 +10,11 @@
  out  :  dP, dL
 */
 
-
 int main(int argc, char* argv[]) {
   int c;
   float Rc[3] = {0, 0, 0};
   float rcyl  = 1.5;
-  int      D  = Z;
+  int      D  = X;
 
   float R0[3], V0[3];
   for (c = 0; c < 3; c++) R0[c] = atof(*(++argv));

@@ -4,7 +4,7 @@
 #include "stdio.h"
 #include "assert.h"
 
-float Rw[3];
+float Rw[3]; /* make it global so caller can check it */
 
 __HD__ void   cycle(int D, float* R) {
   if (D == Y) return;

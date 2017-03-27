@@ -55,7 +55,8 @@ function dump(   i, x, y, z, vx, vy, vz, cmd, rc) {
 
 BEGIN {
     ini()
-    gen_pos_cyl()
+    # gen_pos_cyl()
+    gen_pos_box()
     gen_vel()
     dump()
 }
