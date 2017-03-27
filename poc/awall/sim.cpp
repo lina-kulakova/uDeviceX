@@ -1,15 +1,15 @@
 #include <stdio.h>
 #include <random>
 
-#define MAX_NP 100000 /* maximum number of particles */
-
 #define dir "xyz"     /* output directory and file name */
 #define fmt "%03ld.3d"
 
-double xx[MAX_NP],  yy[MAX_NP], zz[MAX_NP],
-      xxn[MAX_NP], yyn[MAX_NP], zzn[MAX_NP]; /* "next" particle position */
-double vvx[MAX_NP], vvy[MAX_NP], vvz[MAX_NP]; /* velocity */
-long type[MAX_NP];
+/* number of particles */
+#define n 300
+double xx[n],  yy[n], zz[n],
+      xxn[n], yyn[n], zzn[n]; /* "next" particle position */
+double vvx[n], vvy[n], vvz[n]; /* velocity */
+long type[n];
 
 long np; /* number of particles */
 double xl, yl, zl; /* domain */
@@ -24,7 +24,6 @@ long  ts, ns;
 double dt;
 
 void init_vars() {
-  np = 300; /* number of particles */
   xl = -10; yl = -10; zl = -10; /* domain */
   xh =  10; yh =  10; zh =  10;
   Lx = xh - xl; Ly = yh - yl; Lz = zh - zl;
@@ -34,7 +33,7 @@ void init_vars() {
   type0 = 0;                  /* initial type  */
   ts = 0;    /* current time frame (0, 1, 2, ...) */
   ns =  100;   /* number of time steps to make */
-  dt = 0.1;   /* time steps */
+  dt = 0.1;
 
   system("mkdir " dir);
 }
@@ -70,7 +69,7 @@ void print_part0(FILE* fd) {
 }
 
 void print_part() { /* sets and manage file name */
-  char fn[2048];
+  char fn[BUFSIZ];
   sprintf(fn, dir "/" fmt, ts);
   auto fd = fopen(fn, "w");
   print_part0(fd);
@@ -117,7 +116,7 @@ void upd_pos() { /* new to old */
     }
 }
 
-void step() {
+void step() { /* simulation step */
   new_pos(); /* get new position in `[xyz]n' */
   bounce(); /* bouncing back */
   upd_pos(); /* [xyz] = [xyz]n */
@@ -137,6 +136,6 @@ int main() {
   init();
   while (ts < ns) {
     print_part();
-    upd();
+    step();
   }
 }
