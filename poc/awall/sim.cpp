@@ -34,7 +34,11 @@ float dt;
 
 enum {X, Y, Z};
 
-#define copy(A, B) memcpy((A), (B), 3*n*sizeof(B[0]));
+/* copy all particle */
+#define copy(A, B)  memcpy((A), (B), 3*n*sizeof((B)[0]));
+
+/* copy one particle */
+#define copy0(A, B) memcpy((A), (B),  3*sizeof((B)[0]));
 
 void init_vars() {
   n  = 300; /* number of particles */
@@ -63,6 +67,20 @@ void init_pos() {
       float *r0 = &rr0[3*ip];
       r0[X] = rnd(xl, xh); r0[Y] = rnd(yl, yh);  r0[Z] = rnd(zl, zh);
     }
+}
+
+bool inside_main(float *r) {
+  return r[X]*r[X] + r[Y]*r[Y] < 4*4;
+}
+
+void filter_pos() { /* updates `n' */
+  long ip = 0, jp = 0;
+  for (/*  */ ; ip < n; ip++) {
+    if (inside_main(rr0 + 3*ip)) continue;
+    copy0(rr0 + 3*jp, rr0 + 3*ip);
+    jp++;
+  }
+  n = jp;
 }
 
 void init_type() {
@@ -166,6 +184,8 @@ void step() { /* simulation step */
 void init() {
   init_vars(); /* variables */
   init_pos(); /* particle positions */
+  filter_pos(); /* kill particles inside the wall */
+
   init_type(); /*  ...      types */
   init_vel();  /* ...      velocity */
 
