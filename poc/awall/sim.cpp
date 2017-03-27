@@ -8,21 +8,21 @@
 
 /* number of particles */
 #define n 300
-double xx[n],  yy[n], zz[n],
+float xx[n],  yy[n], zz[n],
       xxn[n], yyn[n], zzn[n]; /* "next" particle position */
-double vvx[n], vvy[n], vvz[n]; /* velocity */
+float vvx[n], vvy[n], vvz[n]; /* velocity */
 long type[n];
 
-double xl, yl, zl; /* domain */
-double xh, yh, zh;
-double Lx, Ly, Lz;
-double xc, yc, zc; /* center */
+float xl, yl, zl; /* domain */
+float xh, yh, zh;
+float Lx, Ly, Lz;
+float  xc, yc, zc; /* center */
 
-double vx0, vy0, vz0;
+float vx0, vy0, vz0;
 long   type0;
 
 long  ts, ns;
-double dt;
+float dt;
 
 void init_vars() {
   xl = -10; yl = -10; zl = -10; /* domain */
@@ -33,7 +33,7 @@ void init_vars() {
   vx0 = -2; vy0 = 0; vz0 = 0; /* initial velocity */
   type0 = 0;                  /* initial type  */
   ts = 0;    /* current time frame (0, 1, 2, ...) */
-  ns =  100;   /* number of time steps to make */
+  ns =  10;   /* number of time steps to make */
   dt = 0.1;
 
   system("mkdir -p " dir);
@@ -41,11 +41,7 @@ void init_vars() {
 
 
 float rnd(float lo, float hi) {
-  using namespace std;
-  static random_device rd;
-  static default_random_engine e(rd()) ;
-  static uniform_real_distribution<> dist(0, 1);
-  return dist(e) * (hi - lo) + lo;
+  return drand48()*(hi - lo) + lo;
 }
 
 void init_pos() {
@@ -64,7 +60,7 @@ void init_vel() {
     }
 }
 
-void print_bb() {
+void print_bbox() {
 #define pr(...) fprintf (fd, __VA_ARGS__)
   auto fd = fopen(bbox, "w");
   pr("# vtk DataFile Version 3.0\n");
@@ -104,7 +100,7 @@ void upd_vel() {
   /*  do nothing: keep constant velocity */
 }
 
-double wrp(double r, double c, double L) { /* wrap back to the domain */
+float wrp(float r, float c, float L) { /* wrap back to the domain */
   auto dr = r - c;
   if      (2*dr >  L) return r - L;
   else if (2*dr < -L) return r + L;
@@ -121,7 +117,7 @@ void pbc() { /* periodic boundary conditions */
 
 void bounce() {
     for (long ip = 0; ip < n; ip ++) {
-      auto x  = xx [ip],  y  = yy [ip], z  = zz [ip];
+      
     }
 }
 
@@ -146,7 +142,7 @@ void init() {
   init_type(); /*  ...      types */
   init_vel();  /* ...      velocity */
 
-  print_bb();  /* dump a file with simulation domain */
+  print_bbox();  /* dump a file with simulation domain */
 }
 
 int main() {

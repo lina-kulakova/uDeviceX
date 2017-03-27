@@ -6,7 +6,6 @@ NVCC = $(NVCC_BIN)
 ARCH_VAL ?= compute_35
 CODE_VAL ?= sm_35
 NVCCFLAGS += -arch $(ARCH_VAL) -code $(CODE_VAL)
-LINK.o = $(LINK.cpp)
 CXXFLAGS = -Wall -Wextra -pedantic -O0 -g
 
 libawall_dev.a: awall_dev.o; ar rv $@ $<
