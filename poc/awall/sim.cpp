@@ -32,8 +32,12 @@ long  type0;
 long  ts, ns, dfrq;
 
 /* Langevin equation parameter: dissipation and temperature */
-#define la 0.1
-#define  T 1.0
+#define la 0.0
+#define  T 0.0
+
+#define vx0 1.0  /* initial velocity */
+#define vy0   0
+#define vz0   0
 
 enum {X, Y, Z};
 
@@ -50,7 +54,6 @@ void init_vars() {
   Lx = xh - xl; Ly = yh - yl; Lz = zh - zl;
   xc = 0.5*(xh + xl); yc = 0.5*(yh + yl); zc = 0.5*(zh + zl);
 
-  vx0 = 1.0; vy0 = 0; vz0 = 0; /* initial velocity */
   type0 = 0;                  /* initial type  */
   ts = 0;     /* current time frame (0, 1, 2, ...) */
   ns =  1000;   /* number of time steps to make */

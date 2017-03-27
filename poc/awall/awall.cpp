@@ -4,14 +4,11 @@
 
 #include "awall.h"
 
-#undef  X
-//#define X 0
-
 #define X 0
 #define Y 1
 #define Z 2
 
-#define D Z
+#define D Y
 #define dt 0.1
 #define Rcx 0
 #define Rcy 5.0
