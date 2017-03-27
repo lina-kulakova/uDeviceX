@@ -58,4 +58,4 @@ last-bit/last-bit.o: last-bit/last-bit.h
 clean:  ; rm -f udx gpuCode.o $(OBJS)
 	make -C ../cuda-dpd clean
 
-.PHONY = clean libcuda-dpd
+.PHONY = clean
