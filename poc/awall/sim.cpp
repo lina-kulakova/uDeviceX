@@ -3,6 +3,10 @@
 
 #include <string.h> /* memcpy */
 
+#include "hd.def.h"
+#include "awall.h"
+#define dt 0.1
+
 #define dir "3d"     /* output directory and file name format */
 #define file_fmt "%05ld.3D"
 
@@ -10,7 +14,7 @@
 #define bbox "bbox.vtk" /* output a file with simulation domain */
 
 /* MAX number of particles */
-#define MAX_N 300
+#define MAX_N 3000
 float rr0[3*MAX_N], rr1[3*MAX_N], vv0[3*MAX_N], vv1[3*MAX_N];
 long type[MAX_N];
 
@@ -26,7 +30,6 @@ float vx0, vy0, vz0;
 long  type0;
 
 long  ts, ns, dfrq;
-float dt;
 
 /* Langevin equation parameter: dissipation and temperature */
 #define la 0.1
@@ -41,19 +44,17 @@ enum {X, Y, Z};
 #define copy0(A, B) memcpy((A), (B),  3*sizeof((B)[0]));
 
 void init_vars() {
-  n  = 300; /* number of particles */
+  n  = 3000; /* number of particles */
   xl = -10; yl = -10; zl = -10; /* domain */
   xh =  10; yh =  10; zh =  10;
   Lx = xh - xl; Ly = yh - yl; Lz = zh - zl;
   xc = 0.5*(xh + xl); yc = 0.5*(yh + yl); zc = 0.5*(zh + zl);
 
-  vx0 = 0; vy0 = 0; vz0 = 0; /* initial velocity */
+  vx0 = 1.0; vy0 = 0; vz0 = 0; /* initial velocity */
   type0 = 0;                  /* initial type  */
   ts = 0;     /* current time frame (0, 1, 2, ...) */
   ns =  1000;   /* number of time steps to make */
   dfrq = 10;  /* dump every `dfrq' time steps */
-
-  dt = 0.1;
 
   system("mkdir -p " dir);
 }
@@ -63,14 +64,14 @@ float rnd(float lo, float hi) {
 }
 
 void init_pos() {
-    for (long ip = 0; ip < n; ip++) {
-      float *r0 = &rr0[3*ip];
-      r0[X] = rnd(xl, xh); r0[Y] = rnd(yl, yh);  r0[Z] = rnd(zl, zh);
-    }
+  for (long ip = 0; ip < n; ip++) {
+    float *r0 = &rr0[3*ip];
+    r0[X] = rnd(xl, xh); r0[Y] = rnd(yl, yh);  r0[Z] = rnd(zl, zh);
+  }
 }
 
 bool inside_main(float *r) {
-  return r[X]*r[X] + r[Y]*r[Y] < 4*4;
+  return inside(r);
 }
 
 void filter_pos() { /* updates `n' */
@@ -156,18 +157,20 @@ float wrp(float r, float c, float L) { /* wrap back to the domain */
 }
 
 void pbc() { /* periodic boundary conditions */
-    for (long ip = 0; ip < n; ip++) {
-      float *r1 = &rr1[3*ip];
-      r1[X] = wrp(r1[X], xc, Lx);
-      r1[Y] = wrp(r1[Y], yc, Ly);
-      r1[Z] = wrp(r1[Z], zc, Lz);
-    }
+  for (long ip = 0; ip < n; ip++) {
+    float *r1 = &rr1[3*ip];
+    r1[X] = wrp(r1[X], xc, Lx);
+    r1[Y] = wrp(r1[Y], yc, Ly);
+    r1[Z] = wrp(r1[Z], zc, Lz);
+  }
 }
 
 void bounce() {
-    for (long ip = 0; ip < n; ip ++) {
-
-    }
+  for (long ip = 0; ip < n; ip ++) {
+    float *r0 = &rr0[3*ip], *r1 = &rr1[3*ip];
+    float *v0 = &vv0[3*ip], *v1 = &vv1[3*ip];
+    int code = bb(r0, v0, r1, v1);
+  }
 }
 
 void step() { /* simulation step */

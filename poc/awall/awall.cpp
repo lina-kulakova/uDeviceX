@@ -11,12 +11,12 @@
 #define Y 1
 #define Z 2
 
-#define D X
+#define D Z
 #define dt 0.1
 #define Rcx 0
-#define Rcy 0
+#define Rcy 5.0
 #define Rcz 0
-#define rcyl 1.5
+#define rcyl 8.0
 
 float Rw[3]; /* make it global so caller can check it */
 
@@ -50,6 +50,7 @@ __HD__ bool inside(float *R) {
   for (c = 0; c < 3; c++) {
     Rs[c] = R[c]; Rs[c] -= Rc[c]; Rs[c] /= rcyl;
   }
+  cycle(Rs);
   return inside_sc(Rs);
 }
 
