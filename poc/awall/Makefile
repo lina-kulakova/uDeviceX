@@ -28,3 +28,5 @@ clean:; -rm \
 	sim main sim.o main.o awall.o \
 	awall_dev.o awall_hst.o \
 	libawall_hst.a libawall_dev.a
+
+.PHONY: clean all
