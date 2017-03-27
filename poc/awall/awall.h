@@ -12,3 +12,5 @@ __HD__ int  solve_half_quadratic(float a, float k, float c, /**/ float *x0, floa
 
 __HD__ int bb(float *R0_, float *V0_,
 	      /*inout*/ float *R1_, float *V1_);
+
+__HD__ bool inside(float *R);

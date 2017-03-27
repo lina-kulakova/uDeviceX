@@ -44,6 +44,15 @@ __HD__ bool inside_sc(float *R) {
   return R[X]*R[X] + R[Z]*R[Z] < 1;
 }
 
+__HD__ bool inside(float *R) {
+  float Rs[3], Rc[3] = {Rcx, Rcy, Rcz};
+  int c;
+  for (c = 0; c < 3; c++) {
+    Rs[c] = R[c]; Rs[c] -= Rc[c]; Rs[c] /= rcyl;
+  }
+  return inside_sc(Rs);
+}
+
 __HD__ void vwall_sc(float *R, /**/ float *V) {
   float om = 0;
   V[X] = -om*R[Z]; V[Y] = 0; V[Z] = om*R[X];
