@@ -1,3 +1,7 @@
+/* remove templated b-splins from uDeviceX (see bspline.mac)
+   compare templated and simple versions
+*/
+
 #include "stdio.h"
 
 template <int k> struct Bspline {
@@ -34,6 +38,6 @@ int main() {
     L = xhi - xlo, dx = L/n;
   for (int i = 0; i < n; i++) {
     x = xlo + dx*i;
-    printf("%g %g %g\n", x, f0(x), f1(x));    
+    printf("%g %g %g\n", x, f0(x), f1(x));
   }
 }
