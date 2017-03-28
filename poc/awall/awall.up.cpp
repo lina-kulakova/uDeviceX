@@ -14,7 +14,7 @@ namespace a {
   #define rcy 0
   #define rcz 0
   #define rcyl 2.0
-  #include "awall.cpp"
+  #include "cy.cpp"
 }
 
 namespace b {
@@ -23,7 +23,7 @@ namespace b {
   #define rcy 0
   #define rcz 4.0
   #define rcyl 2.0
-  #include "awall.cpp"
+  #include "cy.cpp"
 }
 
 __HD__ int bb(float *r0, float *v0, float *r1, float *v1) {
