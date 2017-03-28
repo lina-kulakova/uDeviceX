@@ -1,0 +1,34 @@
+/*
+
+Rescue particle from behind a plain with one point (0, 0, 0) and
+normal (nx, ny, nz) */
+
+load("cgrind") $
+load("scifac") $
+alias(cg, cgrind)$
+
+[X, Y, Z]: [1, 2, 3]$
+
+/* make a vector */
+mv(P)::=buildq([l: P,
+  r: create_list(concat(P, d), d,  ['x, 'y, 'z])],
+  l: r) $
+
+mv(r0)$ /* initial position of a point */
+
+tellsimpafter(nz^2+ny^2+nx^2, 1);
+mv(n) $ /* wall normal */
+
+r : r0 + n*h; /* move in a direction of a normal */
+eq: r  . [nx, ny, nz] $ /* now point should be on the plain */
+
+co(i):=ratcoef(eq, h, i);
+g(e):=expand(gcfac(e))$ /* simplify */
+a: g(co(1));
+b: g(co(0));
+
+/* equation: a * h + b = 0 */
+(cg('a=a), cg('b=b), cg('s0 = -'b/'a));
+
+rw: r; /* wall position */
+rn: r0 + 2*n*h; /* new position */
