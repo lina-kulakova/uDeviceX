@@ -11,7 +11,7 @@ namespace cy0 {
   #define  rcz cy0_rcz
   #define rcyl cy0_rcyl
 
-  #include "cy.cpp"
+  #include "cy.h"
 
   #undef D
   #undef rcx
@@ -29,7 +29,7 @@ namespace cy1 {
   #define  rcz cy1_rcz
   #define rcyl cy1_rcyl
 
-  #include "cy.cpp"
+  #include "cy.h"
 
   #undef D
   #undef rcx
