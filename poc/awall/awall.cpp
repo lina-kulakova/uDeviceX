@@ -15,8 +15,6 @@
 #define Rcz 0
 #define rcyl 8.0
 
-float Rw[3]; /* make it global so caller can check it */
-
 __HD__ void   cycle(float* R) {
   if (D == Y) return;
   float R0[3] = {R[X], R[Y], R[Z]};
@@ -105,7 +103,7 @@ __HD__ void bb_pos(float *Rw, float *Vn, float h, /**/ float *Rn) {
 }
 
 __HD__ int rescue(float *R, float* V) {
-  float rmag, rnew, sc, /* Rw[3], */ Vw[3], Vn[3];
+  float rmag, rnew, sc, Rw[3], Vw[3], Vn[3];
   rmag = sqrt(R[X]*R[X] + R[Z]*R[Z]);
   Rw[X] = R[X]/rmag; Rw[Y] = R[Y]; Rw[Z] = R[Z]/rmag;
   vwall_sc(Rw, /**/ Vw);
@@ -119,8 +117,8 @@ __HD__ int rescue(float *R, float* V) {
 
 __HD__ int bb1(float *R0, float *V0, float h,
 	       float *R1, float *V1) {
-  float /* Rw[3], */ Vw[3], Rn[3], Vn[3]; /* wall position, new position,
-				      new velocity */
+  float Rw[3], Vw[3], Rn[3], Vn[3]; /* wall position, new position,
+				       new velocity */
   wavg(R0, R1, h, /**/ Rw);
   vwall_sc(Rw, /**/ Vw);
 
@@ -156,45 +154,52 @@ __HD__ int bb0(float *R0, float *V0,
   return rescue(R1, V0);
 }
 
-__HD__ void g2l(float *rg, /**/ float *rl) { /* global to local */
-  
+__HD__ void rg2l(float *rg, /**/ float *rl) { /* global to local (coordinate) */
+  float Rc[3] = {Rcx, Rcy, Rcz};
+  int c;
+  for (c = 0; c < 3; c++)
+    rl[c] = (rg[c] - Rc[c])/rcyl;
+  cycle(rl);
 }
 
-__HD__ void l2g(float *rl, /**/ float *rg) { /* local to global */
-  
+__HD__ void vg2l(float *vg, /**/ float *vl) { /* global to local (velocity) */
+  int c;
+  for (c = 0; c < 3; c++)
+    vl[c] = vg[c] / rcyl;
+  cycle(vl);
+}
+
+__HD__ void rl2g(/*inout*/ float *rl, /**/ float *rg) { /* local to global */
+  float Rc[3] = {Rcx, Rcy, Rcz};
+  uncycle(rl);
+  int c;
+  for (c = 0; c < 3; c++)
+    rg[c] = rl[c] * rcyl + Rc[c];
+}
+
+__HD__ void vl2g(/*inout*/ float *vl, /**/ float *vg) { /* local to global */
+  uncycle(vl);
+  int c;
+  for (c = 0; c < 3; c++) vg[c] = vl[c] * rcyl;
 }
 
 __HD__ int bb(float *R0_, float *V0_,
 	      /*inout*/
 	      float *R1_, float *V1_) {
-  int c;
-  float R0[3], V0[3], R1[3], V1[3], Rc[3] = {Rcx, Rcy, Rcz};
-  
-  for (c = 0; c < 3; c++) { /* copy, shif, scale */
-    R1[c] = R1_[c]; R1[c] -= Rc[c]; R1[c] /= rcyl;
-    R0[c] = R0_[c]; R0[c] -= Rc[c]; R0[c] /= rcyl;
-  }
-  #define  cy(R) cycle(R)
-  cy(R1); cy(R0);
+  float R0[3], V0[3], R1[3], V1[3];
+  rg2l(R1_, R1); rg2l(R0_, R0);
 
   // TODO: check sdf
   if (!inside_sc(R1)) return BB_NO;
   if ( inside_sc(R0)) return BB_RO_INSIDE;
 
-  for (c = 0; c < 3; c++) {
-    V0[c] = V0_[c]; V0[c] /= rcyl;
-    V1[c] = V1_[c]; V1[c] /= rcyl;
-  }
-  cy(V0); cy(V1);
+  vg2l(V0_, V0); vg2l(V1_, V1);
 
-  int rc = bb0(R0, V0, /**/ R1, V1);
-  if (rc == BB_NO) return BB_NO;
+  int rcode = bb0(R0, V0, /**/ R1, V1);
+  if (rcode == BB_NO) return BB_NO;
 
-  #define ucy(R) uncycle(R)
-  ucy(R1); ucy(V1);
-  for (c = 0; c < 3; c++) { /* unscale, unshift and copy */
-    R1[c] *= rcyl; R1[c] += Rc[c]; R1_[c] = R1[c];
-    V1[c] *= rcyl;               ; V1_[c] = V1[c];
-  }
-  return rc;
+  rl2g(R1, R1_);
+  vl2g(V1, V1_);
+
+  return rcode;
 }
