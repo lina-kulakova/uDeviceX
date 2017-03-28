@@ -40,7 +40,7 @@ namespace cy1 {
 #endif
 
 __HD__ int bb(float *r0, float *v0, float *r1, float *v1) {
-  int rcode;
+  int rcode = BB_NO;
 
 #ifdef cy0_D
   rcode = cy0::bb(r0, v0, r1, v1);
@@ -56,7 +56,7 @@ __HD__ int bb(float *r0, float *v0, float *r1, float *v1) {
 }
 
 __HD__ bool inside(float *rg) {
-  int rcode;
+  int rcode = false;
 
 #ifdef cy0_D
   rcode = cy0::inside(rg);
