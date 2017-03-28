@@ -1,0 +1,5 @@
+# Generated with by ../tools/deps.awk *.cu *.h
+# (do not include '*.h' files in other '*.h' files)
+
+awall.up.cpp: .conf.h awall.up.h hd.def.h
+sim.cpp: .conf.h awall.up.h hd.def.h
