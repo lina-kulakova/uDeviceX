@@ -5,4 +5,6 @@ enum {BB_NO,
       BB_RESCUE,
       BB_FAIL};
 
+namespace c {
 #include "awall.h"
+}

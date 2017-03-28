@@ -14,4 +14,6 @@
 #define rcz 0
 #define rcyl 8.0
 
+namespace c {
 #include "awall.cpp"
+}
