@@ -16,15 +16,15 @@ namespace glb {
   /* subdomain to domain coordinates */
   void sub2dom(float *r, /**/ float *q) {
     q[X] = r[X] + XS*(m::coords[X] + 0.5);
-    q[Y] = r[Y] + XS*(m::coords[Y] + 0.5);
-    q[Z] = r[Z] + XS*(m::coords[Z] + 0.5);
+    q[Y] = r[Y] + YS*(m::coords[Y] + 0.5);
+    q[Z] = r[Z] + ZS*(m::coords[Z] + 0.5);
   }
 
   /* domain to subdomain coordinates */
   void dom2sub(float *r, /**/ float *q) {
     q[X] = r[X] - XS*(m::coords[X] + 0.5);
-    q[Y] = r[Y] - XS*(m::coords[Y] + 0.5);
-    q[Z] = r[Z] - XS*(m::coords[Z] + 0.5);
+    q[Y] = r[Y] - YS*(m::coords[Y] + 0.5);
+    q[Z] = r[Z] - ZS*(m::coords[Z] + 0.5);
   }
 
   void sim() {
