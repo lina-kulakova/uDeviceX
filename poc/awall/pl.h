@@ -11,7 +11,7 @@ __HD__ void rl2g(float *rl, /**/ float *rg) { /* local to global (position) */
 }
 
 __HD__ bool inside_sc(float *r) {
-  return r[X]*r[X] + r[Z]*r[Z] < 1;
+  return r[X]*nx + r[Y]*ny + r[Z]*nz > 0;
 }
 
 __HD__ bool inside(float *rg) {
