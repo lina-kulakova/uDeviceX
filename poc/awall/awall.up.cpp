@@ -8,7 +8,7 @@
 #define Z 2
 #define dt 0.1
 
-namespace c {
+namespace a {
   #define D Y
   #define rcx 0
   #define rcy 0
@@ -29,7 +29,7 @@ namespace b {
 __HD__ int bb(float *r0, float *v0, float *r1, float *v1) {
   int rcode;
 
-  rcode = c::bb(r0, v0, r1, v1);
+  rcode = a::bb(r0, v0, r1, v1);
   if (rcode == BB_NORMAL) return rcode;
 
   rcode = b::bb(r0, v0, r1, v1);
@@ -41,7 +41,7 @@ __HD__ int bb(float *r0, float *v0, float *r1, float *v1) {
 __HD__ bool inside(float *rg) {
   int rcode;
 
-  rcode = c::inside(rg);
+  rcode = a::inside(rg);
   if (rcode == true) return rcode;
 
   rcode = b::inside(rg);
