@@ -39,6 +39,26 @@ namespace cy1 {
 }
 #endif
 
+#ifdef pl0_rcx
+namespace pl0 {
+  #define rcx pl0_rcx
+  #define rcy pl0_rcy
+  #define rcz pl0_rcz
+  #define  nx pl0_nx
+  #define  ny pl0_ny
+  #define  nz pl0_nz
+
+  #include "pl.h"
+
+  #undef rcx
+  #undef rcy
+  #undef rcz
+  #undef nx
+  #undef ny
+  #undef nz
+}
+#endif
+
 __HD__ int bb(float *r0, float *v0, float *r1, float *v1) {
   int rcode = BB_NO;
 
@@ -49,6 +69,11 @@ __HD__ int bb(float *r0, float *v0, float *r1, float *v1) {
 
 #ifdef cy1_D
   rcode = cy1::bb(r0, v0, r1, v1);
+  if (rcode == BB_NORMAL) return rcode;
+#endif
+
+#ifdef pl0_rcx
+  rcode = pl0::bb(r0, v0, r1, v1);
   if (rcode == BB_NORMAL) return rcode;
 #endif
 
@@ -66,7 +91,12 @@ __HD__ bool inside(float *rg) {
 #ifdef cy1_D
   rcode = cy1::inside(rg);
   if (rcode) return rcode;
-#endif  
+#endif
+
+#ifdef pl0_rcx
+  rcode = pl0::inside(rg);
+  if (rcode) return rcode;
+#endif
 
   return rcode;
 }

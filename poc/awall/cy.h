@@ -115,8 +115,8 @@ __HD__ int rescue(float *r, float* v) {
   float rmag, rnew, sc, rw[3], vw[3], vn[3];
   rmag = sqrt(r[X]*r[X] + r[Z]*r[Z]);
   rw[X] = r[X]/rmag; rw[Y] = r[Y]; rw[Z] = r[Z]/rmag;
+  
   vwall_sc(rw, /**/ vw);
-
   bb_vel(v, vw, /**/ vn);
   rnew = 1 + (1 - rmag); sc = rnew/rmag;
   r[X] *= sc; r[Z] *= sc;
