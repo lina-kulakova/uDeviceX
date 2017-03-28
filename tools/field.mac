@@ -12,7 +12,7 @@ idefine(f, f0)::=buildq([f, f0, r: gensym(), r0: gensym()],
     so: fullratsimp(so),
     define(f(r), so))) $
 
-/* there are four coordinates systems
+/* there are 4 coordinates systems
 
 subdomain:
      [  WM  ][-S/2  0    S/2][  WM  ]
