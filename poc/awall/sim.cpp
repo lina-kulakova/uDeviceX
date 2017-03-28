@@ -4,8 +4,8 @@
 #include <string.h> /* memcpy */
 
 #include "hd.def.h"
+#include ".conf.h"
 #include "awall.up.h"
-#define dt 0.1
 
 #define dir "3d"     /* output directory and file name format */
 #define file_fmt "%05ld.3D"
@@ -38,8 +38,6 @@ long  ts, ns, dfrq;
 #define vx0 1.0  /* initial velocity */
 #define vy0   0
 #define vz0   0
-
-enum {X, Y, Z};
 
 /* copy all particle */
 #define copy(A, B)  memcpy((A), (B), 3*n*sizeof((B)[0]));

@@ -1,6 +1,3 @@
-#include "hd.def.h"
-#include "math.h"
-
 __HD__ void   cycle(float *r) {
   if (D == Y) return;
   float r0[3] = {r[X], r[Y], r[Z]};
