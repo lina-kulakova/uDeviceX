@@ -74,7 +74,7 @@ void init_pos() {
 }
 
 bool inside_main(float *r) {
-  return c::inside(r);
+  return inside(r);
 }
 
 void filter_pos() { /* updates `n' */
@@ -172,7 +172,7 @@ void bounce() {
   for (long ip = 0; ip < n; ip ++) {
     float *r0 = &rr0[3*ip], *r1 = &rr1[3*ip];
     float *v0 = &vv0[3*ip], *v1 = &vv1[3*ip];
-    int code = c::bb(r0, v0, r1, v1);
+    int code = bb(r0, v0, r1, v1);
   }
 }
 

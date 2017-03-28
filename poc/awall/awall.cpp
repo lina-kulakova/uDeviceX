@@ -1,6 +1,6 @@
 #include "hd.def.h"
 #include "math.h"
-#include "awall.up.h"
+#include "awall.h"
 
 __HD__ void   cycle(float *r) {
   if (D == Y) return;

@@ -5,6 +5,5 @@ enum {BB_NO,
       BB_RESCUE,
       BB_FAIL};
 
-namespace c {
-#include "awall.h"
-}
+__HD__ int  bb(float *r0, float *v0, float *r1, float *v1);
+__HD__ bool inside(float *rg);
