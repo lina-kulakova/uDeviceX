@@ -1,18 +1,6 @@
 #include "hd.def.h"
 #include "math.h"
-
 #include "awall.up.h"
-
-#define X 0
-#define Y 1
-#define Z 2
-
-#define D Y
-#define dt 0.1
-#define rcx 0
-#define rcy 5.0
-#define rcz 0
-#define rcyl 8.0
 
 __HD__ void   cycle(float *r) {
   if (D == Y) return;
