@@ -1,7 +1,7 @@
 /*
 
-Intersection of a point and a cylinder Cylinder is centered at (x=0,
-z=0), infinite in `y' and radius is 1
+Intersection of a point and a cylinder centered at (x=0, z=0),
+infinite in `y' and with radius 1
 
 */
 
