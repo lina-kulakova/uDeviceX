@@ -4,7 +4,7 @@
 #include <string.h> /* memcpy */
 
 #include "hd.def.h"
-#include "awall.h"
+#include "awall.up.h"
 #define dt 0.1
 
 #define dir "3d"     /* output directory and file name format */

@@ -1,7 +1,7 @@
 #include "hd.def.h"
 #include "math.h"
 
-#include "awall.up.h"
+#include "awall.h"
 
 #define X 0
 #define Y 1
