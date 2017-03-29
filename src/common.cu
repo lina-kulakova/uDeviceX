@@ -37,11 +37,11 @@ void diagnostics(Particle * particles, int n, int idstep) {
     for(int i = 0; i < n; ++i)
         ke += pow(particles[i].v[0], 2) + pow(particles[i].v[1], 2) + pow(particles[i].v[2], 2);
 
-    MC(MPI_Reduce(m::rank == 0 ? MPI_IN_PLACE : &ke,
-		  &ke,
-		  1, MPI_DOUBLE, MPI_SUM, 0, m::cart));
-    MC(MPI_Reduce(m::rank == 0 ? MPI_IN_PLACE : &n,
-		  &n, 1, MPI_INT, MPI_SUM, 0, m::cart));
+    MPI_Reduce(m::rank == 0 ? MPI_IN_PLACE : &ke,
+	       &ke,
+	       1, MPI_DOUBLE, MPI_SUM, 0, m::cart);
+    MPI_Reduce(m::rank == 0 ? MPI_IN_PLACE : &n,
+	       &n, 1, MPI_INT, MPI_SUM, 0, m::cart);
 
     double kbt = 0.5 * ke / (n * 3. / 2);
     if (m::rank == 0) {

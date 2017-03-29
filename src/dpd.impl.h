@@ -166,20 +166,20 @@ void _pack_all(Particle *p, int n, bool update_baginfos) {
 void post_expected_recv() {
   for (int i = 0, c = 0; i < 26; ++i) {
     if (recvhalos[i]->expected)
-      MC(MPI_Irecv(recvhalos[i]->hbuf->D, recvhalos[i]->expected,
+      MPI_Irecv(recvhalos[i]->hbuf->D, recvhalos[i]->expected,
 		   Particle::datatype(), dstranks[i], basetag + recv_tags[i],
-		   cart, recvreq + c++));
+		   cart, recvreq + c++);
   }
   for (int i = 0, c = 0; i < 26; ++i)
     if (recvhalos[i]->expected)
-      MC(MPI_Irecv(recvhalos[i]->hcellstarts->D,
+      MPI_Irecv(recvhalos[i]->hcellstarts->D,
 		   recvhalos[i]->hcellstarts->S, MPI_INTEGER, dstranks[i],
-		   basetag + recv_tags[i] + 350, cart, recvcellsreq + c++));
+		   basetag + recv_tags[i] + 350, cart, recvcellsreq + c++);
 
   for (int i = 0, c = 0; i < 26; ++i)
     if (recvhalos[i]->expected)
-      MC(MPI_Irecv(recv_counts + i, 1, MPI_INTEGER, dstranks[i],
-		   basetag + recv_tags[i] + 150, cart, recvcountreq + c++));
+      MPI_Irecv(recv_counts + i, 1, MPI_INTEGER, dstranks[i],
+		   basetag + recv_tags[i] + 150, cart, recvcountreq + c++);
     else
       recv_counts[i] = 0;
 }
@@ -308,14 +308,14 @@ void pack(Particle *p, int n, int *cellsstart, int *cellscount) {
   {
     for (int i = 0, c = 0; i < 26; ++i)
       if (sendhalos[i]->expected)
-	MC(MPI_Isend(sendhalos[i]->hcellstarts->D,
+	MPI_Isend(sendhalos[i]->hcellstarts->D,
 		     sendhalos[i]->hcellstarts->S, MPI_INTEGER, dstranks[i],
-		     basetag + i + 350, cart, sendcellsreq + c++));
+		     basetag + i + 350, cart, sendcellsreq + c++);
 
     for (int i = 0, c = 0; i < 26; ++i)
       if (sendhalos[i]->expected)
-	MC(MPI_Isend(&sendhalos[i]->hbuf->S, 1, MPI_INTEGER, dstranks[i],
-		     basetag + i + 150, cart, sendcountreq + c++));
+	MPI_Isend(&sendhalos[i]->hbuf->S, 1, MPI_INTEGER, dstranks[i],
+		     basetag + i + 150, cart, sendcountreq + c++);
 
     nsendreq = 0;
 
@@ -326,8 +326,8 @@ void pack(Particle *p, int n, int *cellsstart, int *cellscount) {
 
       int count = sendhalos[i]->hbuf->S;
 
-      MC(MPI_Isend(sendhalos[i]->hbuf->D, expected, Particle::datatype(),
-		   dstranks[i], basetag + i, cart, sendreq + nsendreq));
+      MPI_Isend(sendhalos[i]->hbuf->D, expected, Particle::datatype(),
+		   dstranks[i], basetag + i, cart, sendreq + nsendreq);
 
       ++nsendreq;
 
@@ -340,9 +340,9 @@ void pack(Particle *p, int n, int *cellsstart, int *cellscount) {
 	       "%d %d! difference %d, expected is %d\n",
 	       m::rank, dstranks[i], d[0], d[1], d[2], difference, expected);
 
-	MC(MPI_Isend(sendhalos[i]->hbuf->D + expected, difference,
+	MPI_Isend(sendhalos[i]->hbuf->D + expected, difference,
 		     Particle::datatype(), dstranks[i], basetag + i + 555,
-		     cart, sendreq + nsendreq));
+		     cart, sendreq + nsendreq);
 	++nsendreq;
       }
     }

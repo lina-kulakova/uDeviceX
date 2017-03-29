@@ -110,9 +110,9 @@ void pack_sendcnt(Particle *pp, int nc, int nv) {
   pack_all(src.size(), nv, &src.front(), &dst.front());
   dSync(); /* was CC(cudaStreamSynchronize(stream)); */
   for (int i = 1; i < 27; ++i)
-    MC(MPI_Isend(&sbuf[i]->S, 1, MPI_INTEGER,
+    MPI_Isend(&sbuf[i]->S, 1, MPI_INTEGER,
 		 rnk_ne[i], i + 1024, cart,
-		 &sendcntreq[i - 1]));
+		 &sendcntreq[i - 1]);
 }
 
 int post(int nv) {
@@ -137,18 +137,18 @@ int post(int nv) {
   for (int i = 1; i < 27; ++i)
     if (rbuf[i]->S > 0) {
       MPI_Request request;
-      MC(MPI_Irecv(rbuf[i]->D, rbuf[i]->S,
+      MPI_Irecv(rbuf[i]->D, rbuf[i]->S,
 		   Particle::datatype(), ank_ne[i], i + 1155,
-		   cart, &request));
+		   cart, &request);
       recvreq.pb(request);
     }
 
   for (int i = 1; i < 27; ++i)
     if (sbuf[i]->S > 0) {
       MPI_Request request;
-      MC(MPI_Isend(sbuf[i]->D, sbuf[i]->S,
+      MPI_Isend(sbuf[i]->D, sbuf[i]->S,
 		   Particle::datatype(), rnk_ne[i], i + 1155,
-		   cart, &request));
+		   cart, &request);
       sendreq.pb(request);
     }
   return nstay + ncome;
