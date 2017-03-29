@@ -3,7 +3,6 @@ texture<float2, 1, cudaReadModeElementType> texVertices;
 texture<int, 1, cudaReadModeElementType> texAdjVert;
 texture<int, 1, cudaReadModeElementType> texAdjVert2;
 texture<int4, cudaTextureType1D> texTriangles4;
-__constant__ float A[4][4];
 
 #define cross(a, b) make_float3 \
   ((a).y*(b).z - (a).z*(b).y, \

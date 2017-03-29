@@ -89,7 +89,7 @@ function emacs_buffer(   f, is_hdr) {
 }
 
 function makefile_header() {
-    printf "%s", "# Generated with by ../tools/deps.awk *.cu *.h\n"
+    printf "%s", "# Generated with ../tools/deps.awk *.cu *.h k/*.*\n"
     printf "%s", "# (do not include '*.h' files in other '*.h' files)\n"
     printf "\n"
 }
