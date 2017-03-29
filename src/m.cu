@@ -9,7 +9,6 @@ namespace m { /* MPI (man MPI_Cart_get) */
   const bool reorder = false;
   MPI_Comm cart;
 
-
   void init(int argc, char **argv) {
     MPI_Init(&argc, &argv);
     MPI_Comm_rank(MPI_COMM_WORLD,   &rank);
