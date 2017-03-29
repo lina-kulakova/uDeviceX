@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #### RBC in a periodic box (mpi on falcon)
-# sTEST: mpi.t1
+# TEST: mpi.t1
 # set -x
 # export PATH=../tools:$PATH
 # export PATH=/usr/lib64/mpich/bin:$PATH
@@ -13,7 +13,7 @@
 # awk '{print 100*$2}' diag.txt    | fhash.awk -v tol=2 > diag.out.txt
 
 #### Double poiseuille
-# sTEST: mpi.t2
+# TEST: mpi.t2
 # set -x
 # export PATH=../tools:$PATH
 # export PATH=/usr/lib64/mpich/bin:$PATH
@@ -48,7 +48,7 @@
 #
 
 #### Poiseuille
-# sTEST: mpi.t4
+# TEST: mpi.t4
 # export PATH=../tools:$PATH
 # export PATH=/usr/lib64/mpich/bin:$PATH
 # rm -rf ply h5 diag.txt
