@@ -28,17 +28,12 @@ clean () {
 trap "clean; exit 1" 1 2 3 15
 e="$1"; shift
 
-gdb_script () {
-    (
-	printf "%s" "set args"
-	for f
-	do
-	    printf " \'%s\'" "$f"
-	done
-	printf "\n"
-	printf "start\n"
-    )
-}
+gdb_script () (
+    printf "%s" "set args"
+    for f; do printf " \'%s\'" "$f"; done
+    printf "\n"
+    printf "start\n"
+)
 
 gdb_script "$@" > "$t"
 printf '(gud-gdb "%s --fullname /ssh:%s:%s/%s -x %s")' "$cgdb" "$h" "`pwd`" "$e" "$t"
