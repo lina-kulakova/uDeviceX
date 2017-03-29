@@ -9,7 +9,7 @@ namespace wall {
 
 	int coordsneighbor[3];
 	for (int c = 0; c < 3; ++c) coordsneighbor[c] = m::coords[c] + d[c];
-	MC(MPI_Cart_rank(m::cart, coordsneighbor, dstranks + i));
+	MPI_Cart_rank(m::cart, coordsneighbor, dstranks + i);
       }
 
       // send local counts - receive remote counts
@@ -26,8 +26,8 @@ namespace wall {
 	  MC(MPI_Isend(w_n, 1, MPI_INTEGER, dstranks[i], 123 + i,
 		       m::cart, reqsend + i));
 	MPI_Status statuses[26];
-	MC(MPI_Waitall(26, reqrecv, statuses));
-	MC(MPI_Waitall(26, reqsend, statuses));
+	MPI_Waitall(26, reqrecv, statuses);
+	MPI_Waitall(26, reqsend, statuses);
       }
 
       std::vector<Particle> remote[26];
@@ -46,8 +46,8 @@ namespace wall {
 		       dstranks[i], 321 + i, m::cart, reqsend + i));
 
 	MPI_Status statuses[26];
-	MC(MPI_Waitall(26, reqrecv, statuses));
-	MC(MPI_Waitall(26, reqsend, statuses));
+	MPI_Waitall(26, reqrecv, statuses);
+	MPI_Waitall(26, reqsend, statuses);
       }
       MPI_Barrier(m::cart);
 

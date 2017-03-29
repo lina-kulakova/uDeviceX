@@ -22,5 +22,5 @@ int main(int argc, char **argv) {
   sim::run();
   sim::close();
   
-  MC(MPI_Finalize());
+  MPI_Finalize();
 }

@@ -22,14 +22,14 @@ bool H5FieldDump::directory_exists = false;
 
 void _write_bytes(const void * const ptr, const int nbytes32, MPI_File f) {
     MPI_Offset base;
-    MC(MPI_File_get_position(f, &base));
+    MPI_File_get_position(f, &base);
     MPI_Offset offset = 0, nbytes = nbytes32;
-    MC(MPI_Exscan(&nbytes, &offset, 1, MPI_OFFSET, MPI_SUM, m::cart));
+    MPI_Exscan(&nbytes, &offset, 1, MPI_OFFSET, MPI_SUM, m::cart);
     MPI_Status status;
-    MC(MPI_File_write_at_all(f, base + offset, ptr, nbytes, MPI_CHAR, &status));
+    MPI_File_write_at_all(f, base + offset, ptr, nbytes, MPI_CHAR, &status);
     MPI_Offset ntotal = 0;
-    MC(MPI_Allreduce(&nbytes, &ntotal, 1, MPI_OFFSET, MPI_SUM, m::cart) );
-    MC(MPI_File_seek(f, ntotal, MPI_SEEK_CUR));
+    MPI_Allreduce(&nbytes, &ntotal, 1, MPI_OFFSET, MPI_SUM, m::cart) ;
+    MPI_File_seek(f, ntotal, MPI_SEEK_CUR);
 }
 
 void ply_dump(const char * filename,
@@ -38,15 +38,15 @@ void ply_dump(const char * filename,
     std::vector<Particle> particles(_particles, _particles + ninstances * nvertices_per_instance);
     int NPOINTS = 0;
     const int n = particles.size();
-    MC(MPI_Reduce(&n, &NPOINTS, 1, MPI_INT, MPI_SUM, 0, m::cart) );
+    MPI_Reduce(&n, &NPOINTS, 1, MPI_INT, MPI_SUM, 0, m::cart) ;
     const int ntriangles = ntriangles_per_instance * ninstances;
     int NTRIANGLES = 0;
-    MC(MPI_Reduce(&ntriangles, &NTRIANGLES, 1, MPI_INT, MPI_SUM, 0, m::cart) );
+    MPI_Reduce(&ntriangles, &NTRIANGLES, 1, MPI_INT, MPI_SUM, 0, m::cart) ;
     MPI_File f;
     MC(MPI_File_open(m::cart, filename,
 		     MPI_MODE_WRONLY |  MPI_MODE_CREATE,
 		     MPI_INFO_NULL, &f) );
-    MC(MPI_File_set_size (f, 0));
+    MPI_File_set_size (f, 0);
 
     std::stringstream ss;
     if (m::rank == 0) {
@@ -68,7 +68,7 @@ void ply_dump(const char * filename,
 
     _write_bytes(&particles.front(), sizeof(Particle) * n, f);
     int poffset = 0;
-    MC(MPI_Exscan(&n, &poffset, 1, MPI_INTEGER, MPI_SUM, m::cart));
+    MPI_Exscan(&n, &poffset, 1, MPI_INTEGER, MPI_SUM, m::cart);
     std::vector<int> buf;
     for(int j = 0; j < ninstances; ++j)
       for(int i = 0; i < ntriangles_per_instance; ++i) {
@@ -79,7 +79,7 @@ void ply_dump(const char * filename,
             buf.insert(buf.end(), primitive, primitive + 4);
       }
     _write_bytes(&buf.front(), sizeof(int) * buf.size(), f);
-    MC(MPI_File_close(&f));
+    MPI_File_close(&f);
 }
 
 H5PartDump::H5PartDump(const std::string fname): tstamp(0), disposed(false)
@@ -286,7 +286,7 @@ void H5FieldDump::dump(Particle *p, int n) {
       if (m::rank == 0)
 	mkdir("h5", S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
       directory_exists = true;
-      MC(MPI_Barrier(m::cart));
+      MPI_Barrier(m::cart);
     }
 
     char filepath[512];

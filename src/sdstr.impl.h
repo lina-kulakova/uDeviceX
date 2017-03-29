@@ -4,7 +4,7 @@ namespace sdstr {
 
   void _waitall(MPI_Request * reqs, int n) {
     MPI_Status statuses[n];
-    MC( MPI_Waitall(n, reqs, statuses) );
+    MPI_Waitall(n, reqs, statuses) ;
   }
 
   void init()  {
@@ -22,14 +22,14 @@ namespace sdstr {
     scattered_indices = new DeviceBuffer<uint>;
 
     nactiveneighbors  = 26; firstcall = true;
-    MC(MPI_Comm_dup(m::cart, &cart));
+    MPI_Comm_dup(m::cart, &cart);
 
     for(int i = 0; i < 27; ++i) {
       int d[3] = { (i + 1) % 3 - 1, (i / 3 + 1) % 3 - 1, (i / 9 + 1) % 3 - 1 };
       recv_tags[i] = (3 - d[0]) % 3 + 3 * ((3 - d[1]) % 3 + 3 * ((3 - d[2]) % 3));
       int coordsneighbor[3];
       for(int c = 0; c < 3; ++c) coordsneighbor[c] = m::coords[c] + d[c];
-      MC( MPI_Cart_rank(cart, coordsneighbor, neighbor_ranks + i) );
+      MPI_Cart_rank(cart, coordsneighbor, neighbor_ranks + i) ;
 
       int nhalodir[3] =  {
 	d[0] != 0 ? 1 : XS,
@@ -353,10 +353,10 @@ namespace sdstr {
       _waitall(sendmsgreq, nsendmsgreq);
 
       for(int i = 0; i < nactiveneighbors; ++i)
-	MC( MPI_Cancel(recvcountreq + i) );
+	MPI_Cancel(recvcountreq + i) ;
 
       for(int i = 0; i < nactiveneighbors; ++i)
-	MC( MPI_Cancel(recvmsgreq + i) );
+	MPI_Cancel(recvmsgreq + i) ;
 
       firstcall = true;
     }

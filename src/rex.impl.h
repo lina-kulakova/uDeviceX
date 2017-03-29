@@ -24,7 +24,7 @@ namespace rex {
     for (int i = 0; i < SE_HALO_SIZE; i++) local[i] = new LocalHalo;
     for (int i = 0; i < SE_HALO_SIZE; i++) remote[i] = new RemoteHalo;
 
-    MC(MPI_Comm_dup(m::cart, &cart));
+    MPI_Comm_dup(m::cart, &cart);
     for (int i = 0; i < 26; ++i) {
       int d[3] = {(i + 2) % 3 - 1, (i / 3 + 2) % 3 - 1, (i / 9 + 2) % 3 - 1};
 
@@ -33,7 +33,7 @@ namespace rex {
       int coordsneighbor[3];
       for (int c = 0; c < 3; ++c) coordsneighbor[c] = m::coords[c] + d[c];
 
-      MC(MPI_Cart_rank(cart, coordsneighbor, dstranks + i));
+      MPI_Cart_rank(cart, coordsneighbor, dstranks + i);
 
       int estimate = 1;
       remote[i]->preserve_resize(estimate);
@@ -58,7 +58,7 @@ namespace rex {
 
   void _wait(std::vector<MPI_Request> &v) {
     MPI_Status statuses[v.size()];
-    if (v.size()) MC(MPI_Waitall(v.size(), &v.front(), statuses));
+    if (v.size()) MPI_Waitall(v.size(), &v.front(), statuses);
     v.clear();
   }
 
@@ -371,7 +371,7 @@ namespace rex {
   }
 
   void close() {
-    MC(MPI_Comm_free(&cart));
+    MPI_Comm_free(&cart);
 
     CC(cudaEventDestroy(evPpacked));
     CC(cudaEventDestroy(evAcomputed));

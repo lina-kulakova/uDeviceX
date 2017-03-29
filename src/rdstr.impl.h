@@ -17,7 +17,7 @@ void _post_recvcnt() {
   recv_cnts[0] = 0;
   for (int i = 1; i < 27; ++i) {
     MPI_Request req;
-    MC(MPI_Irecv(&recv_cnts[i], 1, MPI_INTEGER, ank_ne[i], i + 1024, cart, &req));
+    MPI_Irecv(&recv_cnts[i], 1, MPI_INTEGER, ank_ne[i], i + 1024, cart, &req);
     recvcntreq.pb(req);
   }
 }
@@ -29,9 +29,9 @@ void gen_ne(MPI_Comm cart, /* */ int* rnk_ne, int* ank_ne) {
     int d[3] = i2del(i); /* index to delta */
     int co_ne[3];
     for (int c = 0; c < 3; ++c) co_ne[c] = m::coords[c] + d[c];
-    MC(MPI_Cart_rank(cart, co_ne, &rnk_ne[i]));
+    MPI_Cart_rank(cart, co_ne, &rnk_ne[i]);
     for (int c = 0; c < 3; ++c) co_ne[c] = m::coords[c] - d[c];
-    MC(MPI_Cart_rank(cart, co_ne, &ank_ne[i]));
+    MPI_Cart_rank(cart, co_ne, &ank_ne[i]);
   }
 }
 
@@ -46,7 +46,7 @@ void init() {
   _ddst = new DeviceBuffer<float *>;
   _dsrc = new DeviceBuffer<const float *>;
 
-  MC(MPI_Comm_dup(m::cart, &cart));
+  MPI_Comm_dup(m::cart, &cart);
   gen_ne(cart,   rnk_ne, ank_ne); /* generate ranks and anti-ranks */
 
   _post_recvcnt();
@@ -118,7 +118,7 @@ void pack_sendcnt(Particle *pp, int nc, int nv) {
 int post(int nv) {
   {
     MPI_Status statuses[recvcntreq.size()];
-    MC(MPI_Waitall(recvcntreq.size(), &recvcntreq.front(), statuses));
+    MPI_Waitall(recvcntreq.size(), &recvcntreq.front(), statuses);
     recvcntreq.clear();
   }
 
@@ -132,7 +132,7 @@ int post(int nv) {
   nstay = n_bulk / nv;
 
   MPI_Status statuses[26];
-  MC(MPI_Waitall(26, sendcntreq, statuses));
+  MPI_Waitall(26, sendcntreq, statuses);
 
   for (int i = 1; i < 27; ++i)
     if (rbuf[i]->S > 0) {
@@ -156,8 +156,8 @@ int post(int nv) {
 
 void unpack(Particle *pp, int nrbcs, int nv) {
   MPI_Status statuses[26];
-  MC(MPI_Waitall(recvreq.size(), &recvreq.front(), statuses));
-  MC(MPI_Waitall(sendreq.size(), &sendreq.front(), statuses));
+  MPI_Waitall(recvreq.size(), &recvreq.front(), statuses);
+  MPI_Waitall(sendreq.size(), &sendreq.front(), statuses);
   recvreq.clear();
   sendreq.clear();
   CC(cudaMemcpyAsync(pp, bulk, nstay * nv * sizeof(Particle), D2D));
@@ -173,7 +173,7 @@ void unpack(Particle *pp, int nrbcs, int nv) {
 }
 
 void close() {
-  MC(MPI_Comm_free(&cart));
+  MPI_Comm_free(&cart);
   for (int i = 0; i < 27; i++) delete rbuf[i];
   for (int i = 0; i < 27; i++) delete sbuf[i];
   delete   llo; delete   hhi;

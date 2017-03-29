@@ -86,8 +86,8 @@ struct Particle {
   static MPI_Datatype mytype;
   static MPI_Datatype datatype() {
     if (!initialized) {
-      MC(MPI_Type_contiguous(6, MPI_FLOAT, &mytype));
-      MC(MPI_Type_commit(&mytype));
+      MPI_Type_contiguous(6, MPI_FLOAT, &mytype);
+      MPI_Type_commit(&mytype);
       initialized = true;
     }
     return mytype;

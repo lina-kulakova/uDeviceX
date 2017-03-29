@@ -102,14 +102,14 @@ void init0(int _basetag) {
   safety_factor =
       getenv("HEX_COMM_FACTOR") ? atof(getenv("HEX_COMM_FACTOR")) : 1.2;
 
-  MC(MPI_Comm_dup(m::cart, &cart));
+  MPI_Comm_dup(m::cart, &cart);
   
   for (int i = 0; i < 26; ++i) {
     int d[3] = {(i + 2) % 3 - 1, (i / 3 + 2) % 3 - 1, (i / 9 + 2) % 3 - 1};
     recv_tags[i] = (2 - d[0]) % 3 + 3 * ((2 - d[1]) % 3 + 3 * ((2 - d[2]) % 3));
     int coordsneighbor[3];
     for (int c = 0; c < 3; ++c) coordsneighbor[c] = m::coords[c] + d[c];
-    MC(MPI_Cart_rank(cart, coordsneighbor, dstranks + i));
+    MPI_Cart_rank(cart, coordsneighbor, dstranks + i);
     halosize[i].x = d[0] != 0 ? 1 : XS;
     halosize[i].y = d[1] != 0 ? 1 : YS;
     halosize[i].z = d[2] != 0 ? 1 : ZS;
@@ -224,9 +224,9 @@ void pack(Particle *p, int n, int *cellsstart, int *cellscount) {
     post_expected_recv();
   else {
     MPI_Status statuses[26 * 2];
-    MC(MPI_Waitall(nactive, sendcellsreq, statuses));
-    MC(MPI_Waitall(nsendreq, sendreq, statuses));
-    MC(MPI_Waitall(nactive, sendcountreq, statuses));
+    MPI_Waitall(nactive, sendcellsreq, statuses);
+    MPI_Waitall(nsendreq, sendreq, statuses);
+    MPI_Waitall(nactive, sendcountreq, statuses);
   }
 
   if (firstpost) {
@@ -355,9 +355,9 @@ void recv() {
   {
     MPI_Status statuses[26];
 
-    MC(MPI_Waitall(nactive, recvreq, statuses));
-    MC(MPI_Waitall(nactive, recvcellsreq, statuses));
-    MC(MPI_Waitall(nactive, recvcountreq, statuses));
+    MPI_Waitall(nactive, recvreq, statuses);
+    MPI_Waitall(nactive, recvcellsreq, statuses);
+    MPI_Waitall(nactive, recvcountreq, statuses);
   }
 
   for (int i = 0; i < 26; ++i) {
@@ -406,21 +406,21 @@ void _cancel_recv() {
   if (!firstpost) {
     {
       MPI_Status statuses[26 * 2];
-      MC(MPI_Waitall(nactive, sendcellsreq, statuses));
-      MC(MPI_Waitall(nsendreq, sendreq, statuses));
-      MC(MPI_Waitall(nactive, sendcountreq, statuses));
+      MPI_Waitall(nactive, sendcellsreq, statuses);
+      MPI_Waitall(nsendreq, sendreq, statuses);
+      MPI_Waitall(nactive, sendcountreq, statuses);
     }
 
-    for (int i = 0; i < nactive; ++i) MC(MPI_Cancel(recvreq + i));
-    for (int i = 0; i < nactive; ++i) MC(MPI_Cancel(recvcellsreq + i));
-    for (int i = 0; i < nactive; ++i) MC(MPI_Cancel(recvcountreq + i));
+    for (int i = 0; i < nactive; ++i) MPI_Cancel(recvreq + i);
+    for (int i = 0; i < nactive; ++i) MPI_Cancel(recvcellsreq + i);
+    for (int i = 0; i < nactive; ++i) MPI_Cancel(recvcountreq + i);
     firstpost = true;
   }
 }
 
 void close() {
   CC(cudaFreeHost(required_send_bag_size));
-  MC(MPI_Comm_free(&cart));
+  MPI_Comm_free(&cart);
   _cancel_recv();
   CC(cudaEventDestroy(evfillall));
   CC(cudaEventDestroy(evdownloaded));
